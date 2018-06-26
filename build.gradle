@@ -12,6 +12,10 @@ plugins {
 }
 
 dependencies {
+
+	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
+	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.0.1.201806211838-r'
+
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
 
