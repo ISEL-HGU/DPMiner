@@ -61,8 +61,8 @@ public class BugPatchCollector {
 			// System.out.println(message);
 			// }
 
-			String oldCommitHash = "9d457a312e161b800f43a4694cffb663034df511";
-			String newCommitHash = "45c754d81e119a4b1d51116454b9717e64c77be7";
+			String oldCommitHash = "45c754d81e119a4b1d51116454b9717e64c77be7";
+			String newCommitHash = "bb2d6a394abdf735a606e4494c8dc6041766ab6b";
 
 			/* print patch between two commits */
 			bc.printPatch(oldCommitHash, newCommitHash, repository);
@@ -90,7 +90,7 @@ public class BugPatchCollector {
 		AbstractTreeIterator newTreeParser = prepareTreeParser(repository, newCommitHash);
 
 		List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-				.setPathFilter(PathFilter.create("src/main/java/edu/handong/csee/java/isel/TestClass.java")).
+				.setPathFilter(PathFilter.create("src/main/java/edu/handong/csee/java/isel/TestClass2.java")).
 				// to filter on Suffix use the following insteadF
 				// setPathFilter(PathSuffixFilter.create(".java")).
 				call();
