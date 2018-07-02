@@ -33,7 +33,7 @@ public class BugPatchCollector {
 		BugPatchCollector bc = new BugPatchCollector();
 		String selectedBranch = "";
 
-		selectedBranch = "Test2";
+		//selectedBranch = "Test2";
 
 		try {
 
