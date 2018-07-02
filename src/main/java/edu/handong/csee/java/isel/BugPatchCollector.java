@@ -39,8 +39,26 @@ public class BugPatchCollector {
 
 			Iterable<RevCommit> logs = git.log().call();
 
-			/*  */
+			/* pull commits list and print them */
 			bc.printLog(logs, repository, selectedBranch);
+
+			
+			
+			/* commit Hash */
+			ArrayList<String> commitHashList = new ArrayList<String>();
+			commitHashList = bc.loadCommitHash(logs, repository, selectedBranch);
+			System.out.println("Commit Hash: ");
+			for (String hash : commitHashList) {
+				System.out.println(hash);
+			}
+
+			/* commit Message */
+			// ArrayList<String> commitMessageList = new ArrayList<String>();
+			// commitMessageList = bc.loadCommitMessages(logs, repository, selectedBranch);
+			// System.out.println("Commit Messages: ");
+			// for(String message : commitMessageList) {
+			// System.out.println(message);
+			// }
 
 			// /*잠깐만 냅둬보자..*/
 			// AbstractTreeIterator oldTreeParser =
@@ -77,6 +95,55 @@ public class BugPatchCollector {
 		} catch (Exception e) {
 			System.out.println(e.fillInStackTrace());
 		}
+	}
+
+	private ArrayList<String> loadCommitHash(Iterable<RevCommit> logs, Repository repository, String selectedBranch) throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException, AmbiguousObjectException, GitAPIException, IOException {
+		Git git = new Git(repository);
+		ArrayList<String> commitHashList = new ArrayList<String>();
+
+		int count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+			count++;
+		}
+
+		logs = git.log().add(repository.resolve("remotes/origin/" + selectedBranch)).call();
+		count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+
+			commitHashList.add(rev.name());
+			count++;
+		}
+		return commitHashList;
+	}
+
+	private ArrayList<String> loadCommitMessages(Iterable<RevCommit> logs, Repository repository, String selectedBranch)
+			throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException,
+			AmbiguousObjectException, GitAPIException, IOException {
+
+		Git git = new Git(repository);
+		ArrayList<String> commitMessageList = new ArrayList<String>();
+
+		int count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+			count++;
+		}
+
+		logs = git.log().add(repository.resolve("remotes/origin/" + selectedBranch)).call();
+		count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+
+			commitMessageList.add(rev.getShortMessage());
+			count++;
+		}
+		return commitMessageList;
 	}
 
 	private void printLog(Iterable<RevCommit> logs, Repository repository, String selectedBranch)
