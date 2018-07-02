@@ -5,10 +5,13 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -17,7 +20,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -40,17 +43,15 @@ public class BugPatchCollector {
 			Iterable<RevCommit> logs = git.log().call();
 
 			/* pull commits list and print them */
-			bc.printLog(logs, repository, selectedBranch);
+//			bc.printLog(logs, repository, selectedBranch);
 
-			
-			
 			/* commit Hash */
-			ArrayList<String> commitHashList = new ArrayList<String>();
-			commitHashList = bc.loadCommitHash(logs, repository, selectedBranch);
-			System.out.println("Commit Hash: ");
-			for (String hash : commitHashList) {
-				System.out.println(hash);
-			}
+			// ArrayList<String> commitHashList = ne  w ArrayList<String>();
+			// commitHashList = bc.loadCommitHash(logs, repository, selectedBranch);
+			// System.out.println("Commit Hash: ");
+			// for (String hash : commitHashList) {
+			// System.out.println(hash);
+			// }
 
 			/* commit Message */
 			// ArrayList<String> commitMessageList = new ArrayList<String>();
@@ -60,29 +61,13 @@ public class BugPatchCollector {
 			// System.out.println(message);
 			// }
 
-			// /*잠깐만 냅둬보자..*/
-			// AbstractTreeIterator oldTreeParser =
-			// BugPatchCollector.prepareTreeParser(repository,
-			// "695c0f411ec30c850405f08db44f36a033d6e9e7");
-			// AbstractTreeIterator newTreeParser =
-			// BugPatchCollector.prepareTreeParser(repository,
-			// "5e17168aa16b7c8b4dce83390399285c14be97ad");
-			//
-			// // then the porcelain diff-command returns a list of diff entries
-			// List<DiffEntry> diff =
-			// git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-			// .setPathFilter(PathFilter.create("README.md")).
-			// // to filter on Suffix use the following instead
-			// // setPathFilter(PathSuffixFilter.create(".java")).
-			// call();
-			// for (DiffEntry entry : diff) {
-			// System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to:
-			// " + entry.getNewId());
-			// try (DiffFormatter formatter = new DiffFormatter(System.out)) {
-			// formatter.setRepository(repository);
-			// formatter.format(entry);
-			// }
-			// }
+			String oldCommitHash = "5e17168aa16b7c8b4dce83390399285c14be97ad";
+			String newCommitHash = "8bc4f0c9e6f705d6085f271db0fe1434eb9fd80b";
+
+			/* print patch between two commits */
+			bc.printPatch(oldCommitHash, newCommitHash, repository);
+
+			/* 잠깐만 냅둬보자.. */
 
 			/* Commit message */
 			// ArrayList<String> messages = bc.getCommitMessages(git);
@@ -97,7 +82,31 @@ public class BugPatchCollector {
 		}
 	}
 
-	private ArrayList<String> loadCommitHash(Iterable<RevCommit> logs, Repository repository, String selectedBranch) throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException, AmbiguousObjectException, GitAPIException, IOException {
+	private void printPatch(String oldCommitHash, String newCommitHash, Repository repository) throws IOException, GitAPIException {
+		
+		Git git = new Git(repository);
+		
+		AbstractTreeIterator oldTreeParser = prepareTreeParser(repository, oldCommitHash);
+		AbstractTreeIterator newTreeParser = prepareTreeParser(repository, newCommitHash);
+
+		List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
+				.setPathFilter(PathFilter.create("src/main/java/edu/handong/csee/java/isel/BugPatchCollector.java")).
+				// to filter on Suffix use the following insteadF
+				// setPathFilter(PathSuffixFilter.create(".java")).
+				call();
+		for (DiffEntry entry : diff) {
+			System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
+			try (DiffFormatter formatter = new DiffFormatter(System.out)) {
+				formatter.setRepository(repository);
+				formatter.format(entry);
+			}
+		}
+
+	}
+
+	private ArrayList<String> loadCommitHash(Iterable<RevCommit> logs, Repository repository, String selectedBranch)
+			throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException,
+			AmbiguousObjectException, GitAPIException, IOException {
 		Git git = new Git(repository);
 		ArrayList<String> commitHashList = new ArrayList<String>();
 
