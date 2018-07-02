@@ -1,35 +1,108 @@
 package edu.handong.csee.java.isel;
 
 import java.io.File;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 public class BugPatchCollector {
 
 	public static void main(String[] args) {
 		File directory = new File("/Users/imseongbin/documents/Java/BugPatchCollector");
 		BugPatchCollector bc = new BugPatchCollector();
+		String selectedBranch = "";
+
+		selectedBranch = "Test2";
 
 		try {
 
-			Git git = Git.open(directory);
+			Git git = Git.open(new File(directory.toString() + "/.git"));
 			Repository repository = git.getRepository();
 
-			ArrayList<String> messages = bc.getCommitMessages(git);
-			for (String message : messages) {
-				System.out.println(message);
-			}
+			Iterable<RevCommit> logs = git.log().call();
 
+			/*  */
+			bc.printLog(logs, repository, selectedBranch);
+
+			// /*잠깐만 냅둬보자..*/
+			// AbstractTreeIterator oldTreeParser =
+			// BugPatchCollector.prepareTreeParser(repository,
+			// "695c0f411ec30c850405f08db44f36a033d6e9e7");
+			// AbstractTreeIterator newTreeParser =
+			// BugPatchCollector.prepareTreeParser(repository,
+			// "5e17168aa16b7c8b4dce83390399285c14be97ad");
+			//
+			// // then the porcelain diff-command returns a list of diff entries
+			// List<DiffEntry> diff =
+			// git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
+			// .setPathFilter(PathFilter.create("README.md")).
+			// // to filter on Suffix use the following instead
+			// // setPathFilter(PathSuffixFilter.create(".java")).
+			// call();
+			// for (DiffEntry entry : diff) {
+			// System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to:
+			// " + entry.getNewId());
+			// try (DiffFormatter formatter = new DiffFormatter(System.out)) {
+			// formatter.setRepository(repository);
+			// formatter.format(entry);
+			// }
+			// }
+
+			/* Commit message */
+			// ArrayList<String> messages = bc.getCommitMessages(git);
+			// for (String message : messages) {
+			// System.out.println(message);
+			// }
+			/* git-diff */
 			// bc.printGitDiff(git);
 
 		} catch (Exception e) {
 			System.out.println(e.fillInStackTrace());
 		}
+	}
+
+	private void printLog(Iterable<RevCommit> logs, Repository repository, String selectedBranch)
+			throws RevisionSyntaxException, NoHeadException, MissingObjectException, IncorrectObjectTypeException,
+			AmbiguousObjectException, GitAPIException, IOException {
+		Git git = new Git(repository);
+
+		int count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+			count++;
+		}
+		System.out.println("Had " + count + " commits overall on " + selectedBranch + " branch");
+
+		logs = git.log().add(repository.resolve("remotes/origin/" + selectedBranch)).call();
+		count = 0;
+		for (RevCommit rev : logs) {
+			// System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id:
+			// " + rev.getId().getName() */);
+
+			System.out.println("Message: " + rev.getShortMessage());
+			System.out.println("Commit: " + rev.name());
+			count++;
+		}
+
 	}
 
 	private ArrayList<String> getCommitMessages(Git git) throws Exception {
@@ -46,5 +119,24 @@ public class BugPatchCollector {
 
 	private void printGitDiff(Git git) throws GitAPIException {
 		git.diff().setOutputStream(System.out).call();
+	}
+
+	private static AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {
+		// from the commit we can build the tree which allows us to construct the
+		// TreeParser
+		// noinspection Duplicates
+		try (RevWalk walk = new RevWalk(repository)) {
+			RevCommit commit = walk.parseCommit(ObjectId.fromString(objectId));
+			RevTree tree = walk.parseTree(commit.getTree().getId());
+
+			CanonicalTreeParser treeParser = new CanonicalTreeParser();
+			try (ObjectReader reader = repository.newObjectReader()) {
+				treeParser.reset(reader, tree.getId());
+			}
+
+			walk.dispose();
+
+			return treeParser;
+		}
 	}
 }
