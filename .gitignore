@@ -23,3 +23,4 @@
 hs_err_pid*
 /.gradle/
 /bin/
+/0001-print-patch-between-two-commits-using-old-commit-has.patch

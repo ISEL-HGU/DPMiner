@@ -11,6 +11,9 @@ plugins {
     id 'java-library'
 }
 
+apply plugin: 'application'
+mainClassName = "edu.handong.csee.isel.java.patch.BugPatchCollector"
+
 dependencies {
 
 	// https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
@@ -24,6 +27,9 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    
+    // https://mvnrepository.com/artifact/commons-cli/commons-cli
+	compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
 
 // In this section you declare where to find the dependencies of your project
