@@ -1,4 +1,4 @@
-package edu.handong.csee.java.isel;
+package edu.handong.csee.isel.java;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,8 +37,9 @@ public class BugPatchCollector {
 		String selectedBranch = "";
 
 		// selectedBranch = "Test2";
-		
-		
+
+		/* 필요한게 Branch List, All path List, Commit-hash List, */
+
 		try {
 
 			Git git = Git.open(new File(directory.toString() + "/.git"));
@@ -50,7 +51,7 @@ public class BugPatchCollector {
 			String newCommitHash = "47eb740a401d0d2cb8b6423e0af2bff8a51dfb4a";
 
 			List<String> paths = bc.readElementsAt(repository, oldCommitHash,
-					"src/main/java/edu/handong/csee/java/isel");
+					"src/main/java/edu/handong/csee/isel/java");
 
 			System.out.println("Had paths for commit: " + paths);
 
@@ -69,7 +70,7 @@ public class BugPatchCollector {
 			// bc.printLog(logs, repository, selectedBranch);
 
 			/* commit Hash */
-			// ArrayList<String> commitHashList = ne w ArrayList<String>();
+			// ArrayList<String> commitHashList = new ArrayList<String>();
 			// commitHashList = bc.loadCommitHash(logs, repository, selectedBranch);
 			// System.out.println("Commit Hash: ");
 			// for (String hash : commitHashList) {
@@ -88,64 +89,66 @@ public class BugPatchCollector {
 			System.out.println(e.fillInStackTrace());
 		}
 	}
-	
+
 	private static RevCommit buildRevCommit(Repository repository, String commit) throws IOException {
-        // a RevWalk allows to walk over commits based on some filtering that is defined
-        try (RevWalk revWalk = new RevWalk(repository)) {
-            return revWalk.parseCommit(ObjectId.fromString(commit));
-        }
-    }
+		// a RevWalk allows to walk over commits based on some filtering that is defined
+		try (RevWalk revWalk = new RevWalk(repository)) {
+			return revWalk.parseCommit(ObjectId.fromString(commit));
+		}
+	}
 
-    private static TreeWalk buildTreeWalk(Repository repository, RevTree tree, final String path) throws IOException {
-        TreeWalk treeWalk = TreeWalk.forPath(repository, path, tree);
+	private static TreeWalk buildTreeWalk(Repository repository, RevTree tree, final String path) throws IOException {
+		TreeWalk treeWalk = TreeWalk.forPath(repository, path, tree);
 
-        if(treeWalk == null) {
-            throw new FileNotFoundException("Did not find expected file '" + path + "' in tree '" + tree.getName() + "'");
-        }
+		if (treeWalk == null) {
+			throw new FileNotFoundException(
+					"Did not find expected file '" + path + "' in tree '" + tree.getName() + "'");
+		}
 
-        return treeWalk;
-    }
-	
+		return treeWalk;
+	}
+
 	private List<String> readElementsAt(Repository repository, String commit, String path) throws IOException {
-        RevCommit revCommit = buildRevCommit(repository, commit);
+		RevCommit revCommit = buildRevCommit(repository, commit);
 
-        // and using commit's tree find the path
-        RevTree tree = revCommit.getTree();
-        //System.out.println("Having tree: " + tree + " for commit " + commit);
+		// and using commit's tree find the path
+		RevTree tree = revCommit.getTree();
+		// System.out.println("Having tree: " + tree + " for commit " + commit);
 
-        List<String> items = new ArrayList<>();
+		List<String> items = new ArrayList<>();
 
-        // shortcut for root-path
-        if(path.isEmpty()) {
-            try (TreeWalk treeWalk = new TreeWalk(repository)) {
-                treeWalk.addTree(tree);
-                treeWalk.setRecursive(false);
-                treeWalk.setPostOrderTraversal(false);
+		// shortcut for root-path
+		if (path.isEmpty()) {
+			try (TreeWalk treeWalk = new TreeWalk(repository)) {
+				treeWalk.addTree(tree);
+				treeWalk.setRecursive(false);
+				treeWalk.setPostOrderTraversal(false);
 
-                while(treeWalk.next()) {
-                    items.add(treeWalk.getPathString());
-                }
-            }
-        } else {
-            // now try to find a specific file
-            try (TreeWalk treeWalk = buildTreeWalk(repository, tree, path)) {
-                if((treeWalk.getFileMode(0).getBits() & FileMode.TYPE_TREE) == 0) {
-                    throw new IllegalStateException("Tried to read the elements of a non-tree for commit '" + commit + "' and path '" + path + "', had filemode " + treeWalk.getFileMode(0).getBits());
-                }
+				while (treeWalk.next()) {
+					items.add(treeWalk.getPathString());
+				}
+			}
+		} else {
+			// now try to find a specific file
+			try (TreeWalk treeWalk = buildTreeWalk(repository, tree, path)) {
+				if ((treeWalk.getFileMode(0).getBits() & FileMode.TYPE_TREE) == 0) {
+					throw new IllegalStateException("Tried to read the elements of a non-tree for commit '" + commit
+							+ "' and path '" + path + "', had filemode " + treeWalk.getFileMode(0).getBits());
+				}
 
-                try (TreeWalk dirWalk = new TreeWalk(repository)) {
-                    dirWalk.addTree(treeWalk.getObjectId(0));
-                    dirWalk.setRecursive(false);
-                    while(dirWalk.next()) {
-                        items.add(dirWalk.getPathString());
-                    }
-                }
-            }
-        }
+				try (TreeWalk dirWalk = new TreeWalk(repository)) {
+					dirWalk.addTree(treeWalk.getObjectId(0));
+					dirWalk.setRecursive(false);
+					while (dirWalk.next()) {
+						items.add(dirWalk.getPathString());
+					}
+				}
+			}
+		}
 
-        return items;
-    }
-	
+		return items;
+	}
+
 	private void printPatch(String oldCommitHash, String newCommitHash, Repository repository)
 			throws IOException, GitAPIException {
 
@@ -155,7 +158,7 @@ public class BugPatchCollector {
 		AbstractTreeIterator newTreeParser = prepareTreeParser(repository, newCommitHash);
 
 		List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-				.setPathFilter(PathFilter.create("src/main/java/edu/handong/csee/java/isel/TestClass.java")).
+				.setPathFilter(PathFilter.create("src/main/java/edu/handong/csee/isel/java/TestClass.java")).
 				// to filter on Suffix use the following insteadF
 				// setPathFilter(PathSuffixFilter.create(".java")).
 				call();
