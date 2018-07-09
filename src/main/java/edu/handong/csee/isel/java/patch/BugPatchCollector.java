@@ -17,8 +17,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class BugPatchCollector
-{
+public class BugPatchCollector {
 	String gitRepositoryPath;
 	String resultDirectory;
 	boolean verbose;
@@ -37,16 +36,24 @@ public class BugPatchCollector
 				printHelp(options);
 				return;
 			}
-			
+
 			/* Start Main */
-			
-			
-			
-			
-			
-			/* until */
-			
-			if(verbose) {
+
+			try {
+
+				Patch p = new Patch(gitRepositoryPath);
+
+				String patchsDirectory = (resultDirectory + "/patches");
+				p.makePatchsFromCommitsByBranchType(p, patchsDirectory);
+				System.out.println("saved patches in \""+patchsDirectory+"\"");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			/* until here */
+
+			if (verbose) {
 				System.out.println("******The program help making Patch from all commit");
 				System.out.println("******input git-repository-path ");
 				System.out.println("******input result-File-Name");
@@ -85,9 +92,9 @@ public class BugPatchCollector
 		options.addOption(Option.builder("g").longOpt("gitRepositoryPath").desc("Set a path of a git-repository")
 				.hasArg().argName("Git-repository path name").required().build());
 
-		options.addOption(
-				Option.builder("r").longOpt("resultDirectory").desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
-						.argName("Path name to construct result files").required().build());
+		options.addOption(Option.builder("r").longOpt("resultDirectory")
+				.desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
+				.argName("Path name to construct result files").required().build());
 
 		// add options by using OptionBuilder
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Display detailed messages!")
@@ -110,5 +117,35 @@ public class BugPatchCollector
 		String footer = "\nPlease report issues at https://github.com/HGUISEL/BugPatchCollector/issues";
 		formatter.printHelp("BugPatchCollector", header, options, footer, true);
 	}
-}
 
+	public void printCommitHashList(Patch p, HashMap<String, ArrayList<String>> commitHashList) throws IOException {
+		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
+		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
+			System.out.println("branch: " + e.getKey());
+			ArrayList<String> pathList = new ArrayList<String>();
+			for (String commitHash : e.getValue()) {
+				System.out.println("	commitHash: " + commitHash);
+				pathList = p.getPathList(commitHash);
+				if (pathList.isEmpty())
+					continue;
+			}
+		}
+	}
+
+	public void ShowdiffFromTwoCommits(Patch p, HashMap<String, ArrayList<String>> commitHashList)
+			throws IOException, GitAPIException {
+		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
+		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
+			System.out.print("@@@@@@@@@@@@@@@@@@@@@@@@ Branch: " + e.getKey());
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@\n");
+			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
+			for (int i = 0; i < hashList.length - 1; i++) {
+				p.showFileDiff(hashList[i], hashList[i + 1]);
+			}
+		}
+	}
+}
