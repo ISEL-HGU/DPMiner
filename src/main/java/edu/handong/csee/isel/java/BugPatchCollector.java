@@ -39,48 +39,70 @@ public class BugPatchCollector {
 
 	public static void main(String[] args) {
 		String directoryPath = "/Users/imseongbin/documents/Java/BugPatchCollector";
-		File directory = new File(directoryPath);
 		BugPatchCollector bc = new BugPatchCollector();
 
-		/* 필요한게 Branch List, All path List, Commit-hash List, */
-
+		String outPath = directoryPath;
 		ArrayList<String> branchList = new ArrayList<String>();
 		HashMap<String, ArrayList<String>> commitHashList = new HashMap<String, ArrayList<String>>(); // <branch, commits>
-		HashMap<String, ArrayList<String>> allPathList = new HashMap<String, ArrayList<String>>(); // <commit, paths>
 
 		try {
-
-			Git git = Git.open(new File(directoryPath + "/.git"));
-			Repository repository = git.getRepository();
-
+			
 			Patch p = new Patch(directoryPath);
+			
 			branchList = p.getBranchList();
-			allPathList = p.getAllPathList();
-
-			for (String branch : branchList) {
-				p.setCommitHashs(branch);
-			}
-
-			System.out.println("Successe");
+//			System.out.println(branchList);
+//			System.out.println("Successe");
 
 			commitHashList = p.getCommitHashs();
-			Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
-			Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-			while (it.hasNext()) {
-				Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
-				System.out.println("branch: " + e.getKey());
-				ArrayList<String> pathList = new ArrayList<String>();
-				for (String commitHash : e.getValue()) {
-					System.out.println("	commitHash: " + commitHash);
-					pathList = p.getPathList(commitHash);
-					if (pathList.isEmpty())
-						continue;
-
-					allPathList.put(commitHash, pathList);
-				}
-			}
+//			bc.printCommitHashList(p,commitHashList);		
+//			System.out.println("Successe");
+			
+//			bc.ShowdiffFromTwoCommits(p,commitHashList);
+//			System.out.println("Successe");
+			
+			String patchsDirectory = (outPath + "/patchs");
+			
+//			File directory = new File(patchsDirectory) ;
+//	        if(!directory.exists()) {
+//	        	System.out.println("폴더가 없어유!!");
+//	        	directory.mkdirs();
+//	        }
+	        
+			p.makePatchsFromCommitsByBranchType(p, patchsDirectory);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+		}
+
+	
+	public void printCommitHashList(Patch p, HashMap<String, ArrayList<String>> commitHashList) throws IOException {
+		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
+		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
+			System.out.println("branch: " + e.getKey());
+			ArrayList<String> pathList = new ArrayList<String>();
+			for (String commitHash : e.getValue()) {
+				System.out.println("	commitHash: " + commitHash);
+				pathList = p.getPathList(commitHash);
+				if (pathList.isEmpty())
+					continue;
+			}
+		}
+	}
+	
+	public void ShowdiffFromTwoCommits(Patch p,HashMap<String, ArrayList<String>> commitHashList) throws IOException, GitAPIException {
+		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
+		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
+			System.out.print("@@@@@@@@@@@@@@@@@@@@@@@@ Branch: " + e.getKey());
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@\n");
+			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
+			for(int i = 0;i<hashList.length-1;i++) {
+				p.showFileDiff(hashList[i], hashList[i+1]);
+			}
 		}
 	}
 }
