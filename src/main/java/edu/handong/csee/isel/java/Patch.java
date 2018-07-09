@@ -1,10 +1,7 @@
 package edu.handong.csee.isel.java;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -21,7 +18,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.lib.FileMode;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
@@ -208,17 +204,26 @@ public class Patch {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
-				p.makePatch(hashList[i], hashList[i + 1], patchsDirectory + "/" + e.getKey());
+				// System.out.println("@@ branch:"+e.getKey());
+				p.makePatch(hashList[i + 1], hashList[i], patchsDirectory + "/" + e.getKey(), i);
 			}
 		}
 	}
 
-	public void makePatch(String oldCommitHash, String newCommitHash, String dir) throws IOException, GitAPIException {
+	public void makePatch(String oldCommitHash, String newCommitHash, String dir, int count)
+			throws IOException, GitAPIException {
 		File directory = new File(dir);
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
-		OutputStream fw = new FileOutputStream(dir + "/" + oldCommitHash + ".patch");
+
+		RevWalk walk = new RevWalk(repository);
+		ObjectId id = repository.resolve(newCommitHash);
+		RevCommit commit = walk.parseCommit(id);
+
+		String commitMessage = commit.getShortMessage();
+
+		OutputStream fw = new FileOutputStream(dir + "/" + count + "-" + commitMessage + ".patch");
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
 		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
@@ -239,13 +244,9 @@ public class Patch {
 					// to filter on Suffix use the following instead
 					// setPathFilter(PathSuffixFilter.create(".java")).
 					call();
-			for (DiffEntry entry : diff) {
-				System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
-				// try (DiffFormatter formatter = new DiffFormatter(System.out)) {
-				try (DiffFormatter formatter = new DiffFormatter(fw)) {
-					formatter.setRepository(repository);
-					formatter.format(entry);
-				}
+			try (DiffFormatter formatter = new DiffFormatter(fw)) {
+				formatter.setRepository(repository);
+				formatter.format(diff);
 			}
 		}
 		fw.flush();
