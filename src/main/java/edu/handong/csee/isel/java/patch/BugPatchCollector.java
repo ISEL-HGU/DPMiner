@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.java;
+package edu.handong.csee.isel.java.patch;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 public class BugPatchCollector {
 
 	public static void main(String[] args) {
-		String directoryPath = "/Users/imseongbin/documents/Java/BugPatchCollector";
+		String directoryPath = "/Users/imseongbin/documents/Java/patch/BugPatchCollector";
 		// BugPatchCollector bc = new BugPatchCollector();
 
 		String outPath = directoryPath;
