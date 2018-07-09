@@ -10,70 +10,105 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
-public class BugPatchCollector {
+public class BugPatchCollector
+{
+	String gitRepositoryPath;
+	String resultDirectory;
+	boolean verbose;
+	boolean help;
 
 	public static void main(String[] args) {
-		String directoryPath = "/Users/imseongbin/documents/Java/patch/BugPatchCollector";
-		// BugPatchCollector bc = new BugPatchCollector();
+		BugPatchCollector bc = new BugPatchCollector();
+		bc.run(args);
+	}
 
-		String outPath = directoryPath;
+	public void run(String[] args) {
+		Options options = createOptions();
+
+		if (parseOptions(options, args)) {
+			if (help) {
+				printHelp(options);
+				return;
+			}
+			
+			/* Start Main */
+			
+			
+			
+			
+			
+			/* until */
+			
+			if(verbose) {
+				System.out.println("******The program help making Patch from all commit");
+				System.out.println("******input git-repository-path ");
+				System.out.println("******input result-File-Name");
+				System.out.println("****************************");
+				System.out.println("******SB Made it******");
+				System.out.println("****************************");
+			}
+		}
+	}
+
+	private boolean parseOptions(Options options, String[] args) {
+		CommandLineParser parser = new DefaultParser();
 
 		try {
 
-			Patch p = new Patch(directoryPath);
+			CommandLine cmd = parser.parse(options, args);
 
-			// ArrayList<String> branchList = new ArrayList<String>();
-			// branchList = p.getBranchList();
-			// System.out.println(branchList);
-			// System.out.println("Successe");
-
-			// HashMap<String, ArrayList<String>> commitHashList = new HashMap<String,
-			// ArrayList<String>>(); // <branch, commits>
-			// commitHashList = p.getCommitHashs();
-			// bc.printCommitHashList(p,commitHashList);
-			// System.out.println("Successe");
-
-			// bc.ShowdiffFromTwoCommits(p,commitHashList);
-			// System.out.println("Successe");
-
-			String patchsDirectory = (outPath + "/patchs");
-			p.makePatchsFromCommitsByBranchType(p, patchsDirectory);
-			// System.out.println("Successe");
+			gitRepositoryPath = cmd.getOptionValue("g");
+			resultDirectory = cmd.getOptionValue("r");
+			verbose = cmd.hasOption("v");
+			help = cmd.hasOption("h");
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			printHelp(options);
+			return false;
 		}
+
+		return true;
 	}
 
-	public void printCommitHashList(Patch p, HashMap<String, ArrayList<String>> commitHashList) throws IOException {
-		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
-		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
-			System.out.println("branch: " + e.getKey());
-			ArrayList<String> pathList = new ArrayList<String>();
-			for (String commitHash : e.getValue()) {
-				System.out.println("	commitHash: " + commitHash);
-				pathList = p.getPathList(commitHash);
-				if (pathList.isEmpty())
-					continue;
-			}
-		}
+	// Definition Stage
+	private Options createOptions() {
+		Options options = new Options();
+
+		// add options by using OptionBuilder
+		options.addOption(Option.builder("g").longOpt("gitRepositoryPath").desc("Set a path of a git-repository")
+				.hasArg().argName("Git-repository path name").required().build());
+
+		options.addOption(
+				Option.builder("r").longOpt("resultDirectory").desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
+						.argName("Path name to construct result files").required().build());
+
+		// add options by using OptionBuilder
+		options.addOption(Option.builder("v").longOpt("verbose").desc("Display detailed messages!")
+				// .hasArg() // this option is intended not to have an option value but just an
+				// option
+				.argName("verbose option")
+				// .required() // this is an optional option. So disabled required().
+				.build());
+
+		// add options by using OptionBuilder
+		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
+
+		return options;
 	}
 
-	public void ShowdiffFromTwoCommits(Patch p, HashMap<String, ArrayList<String>> commitHashList)
-			throws IOException, GitAPIException {
-		Set<Entry<String, ArrayList<String>>> set = commitHashList.entrySet();
-		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
-			System.out.print("@@@@@@@@@@@@@@@@@@@@@@@@ Branch: " + e.getKey());
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@\n");
-			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
-			for (int i = 0; i < hashList.length - 1; i++) {
-				p.showFileDiff(hashList[i], hashList[i + 1]);
-			}
-		}
+	private void printHelp(Options options) {
+		// automatically generate the help statement
+		HelpFormatter formatter = new HelpFormatter();
+		String header = "Collecting bug-patch program";
+		String footer = "\nPlease report issues at https://github.com/HGUISEL/BugPatchCollector/issues";
+		formatter.printHelp("BugPatchCollector", header, options, footer, true);
 	}
 }
+
