@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.java.patch;
+package edu.handong.csee.isel.patch;
 
 import java.io.File;
 import java.io.FileOutputStream;

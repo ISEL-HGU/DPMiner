@@ -15,7 +15,10 @@ apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.java.patch.BugPatchCollector"
 
 dependencies {
-
+	
+	// https://mvnrepository.com/artifact/net.sf.supercsv/super-csv
+	compile group: 'net.sf.supercsv', name: 'super-csv', version: '2.4.0'
+	
 	// https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
