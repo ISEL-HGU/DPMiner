@@ -210,8 +210,13 @@ public class Patch {
 
 	}
 
-	public void makePatchsFromCommitsByBranchType(Patch p, String patchsDirectory) throws IOException, GitAPIException {
-
+	public void makePatchsFromCommitsByBranchType(Patch p, String patchesDirectory) throws IOException, GitAPIException {
+		
+		File folder = new File(patchesDirectory);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+		
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
 		int j = 1;
@@ -219,14 +224,14 @@ public class Patch {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
-				p.makePatch(hashList[i + 1], hashList[i], patchsDirectory + "/" + e.getKey(), j);
+				p.makePatch(hashList[i + 1], hashList[i], patchesDirectory + "/" + e.getKey(), j);
 				j++;
 			}
 		}
 		
 		
 		ICsvMapWriter mapWriter = null;
-		mapWriter = new CsvMapWriter(new FileWriter("/Users/imseongbin/Desktop/ExampleOfCsv.csv"), // 여기 수정해야함.
+		mapWriter = new CsvMapWriter(new FileWriter(patchesDirectory+"/reulst.csv"), // 여기 수정해야함.
 				CsvPreference.STANDARD_PREFERENCE);
 
 		final CellProcessor[] processors = this.getProcessors();
