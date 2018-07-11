@@ -2,6 +2,7 @@ package edu.handong.csee.isel.patch;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -29,6 +30,13 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.constraint.UniqueHashCode;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.io.ICsvMapWriter;
+import org.supercsv.prefs.CsvPreference;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -36,6 +44,9 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 public class Patch {
 
+	final String[] header = new String[] { "num", "ShortMessage", "CommitHash", "Patch", "Date", "Author",
+			"FullMessage" };
+	ArrayList<Map<String, Object>> commits = new ArrayList<Map<String, Object>>();
 	String directoryPath;
 	File directory;
 	Git git;
@@ -58,7 +69,7 @@ public class Patch {
 
 		/**/
 		Iterable<RevCommit> logs = git.log().call();
-		logs = git.log().add(repository.resolve(branch)) // 여길 remotes로 할지, head로 해야할지 잘 모르겠음.
+		logs = git.log().add(repository.resolve(branch)) // this decide branch in result
 				.call();
 		for (RevCommit rev : logs) {
 
@@ -93,6 +104,7 @@ public class Patch {
 		this.directory = new File(directoryPath);
 		this.git = Git.open(new File(directoryPath + "/.git"));
 		this.repository = this.git.getRepository();
+		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
 	}
 
@@ -102,6 +114,7 @@ public class Patch {
 		this.git = null;
 		this.repository = null;
 		this.branchList = null;
+		this.commitHashs = null;
 	}
 
 	public void set(String directoryPath) throws IOException, GitAPIException {
@@ -110,6 +123,7 @@ public class Patch {
 		this.directory = new File(directoryPath);
 		this.git = Git.open(new File(directoryPath + "/.git"));
 		this.repository = this.git.getRepository();
+		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
 	}
 
@@ -200,14 +214,33 @@ public class Patch {
 
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
+		int j = 1;
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
-				// System.out.println("@@ branch:"+e.getKey());
-				p.makePatch(hashList[i + 1], hashList[i], patchsDirectory + "/" + e.getKey(), i);
+				p.makePatch(hashList[i + 1], hashList[i], patchsDirectory + "/" + e.getKey(), j);
+				j++;
 			}
 		}
+		
+		
+		ICsvMapWriter mapWriter = null;
+		mapWriter = new CsvMapWriter(new FileWriter("/Users/imseongbin/Desktop/ExampleOfCsv.csv"), // 여기 수정해야함.
+				CsvPreference.STANDARD_PREFERENCE);
+
+		final CellProcessor[] processors = this.getProcessors();
+		// write the header
+		mapWriter.writeHeader(header);
+
+		// write the customer maps
+		for (Map<String, Object> commit : commits) {
+			mapWriter.write(commit, header, processors);
+		}
+		if (mapWriter != null) {
+			mapWriter.close();
+		}
+
 	}
 
 	public void makePatch(String oldCommitHash, String newCommitHash, String dir, int count)
@@ -223,7 +256,11 @@ public class Patch {
 
 		String commitMessage = commit.getShortMessage();
 
-		OutputStream fw = new FileOutputStream(dir + "/" + count + "-" + commitMessage + ".patch");
+		String filename = dir + "/" + count + "-" + commitMessage + ".patch";
+		OutputStream fw = new FileOutputStream(filename);
+
+		this.addContentsToCommitList(String.valueOf(count), commit.getShortMessage(), newCommitHash, filename,
+				commit.getCommitTime(), commit.getAuthorIdent().getName(), commit.getFullMessage());
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
 		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
@@ -251,5 +288,30 @@ public class Patch {
 		}
 		fw.flush();
 		fw.close();
+	}
+
+	private void addContentsToCommitList(String num, String shortMessage, String newCommitHash, String filename,
+			int commitTime, String name, String fullMessage) {
+
+		Map<String, Object> temp = new HashMap<String, Object>();
+
+		temp.put(header[0], num);
+		temp.put(header[1], shortMessage);
+		temp.put(header[2], newCommitHash);
+		temp.put(header[3], filename);
+		temp.put(header[4], String.valueOf(commitTime));
+		temp.put(header[5], name);
+		temp.put(header[6], fullMessage);
+
+		commits.add(temp);
+
+	}
+
+	private CellProcessor[] getProcessors() {
+
+		CellProcessor[] processors = new CellProcessor[] { new UniqueHashCode(), // customerNo (must be unique)
+				new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), };
+
+		return processors;
 	}
 }

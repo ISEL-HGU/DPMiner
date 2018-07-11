@@ -45,7 +45,7 @@ public class BugPatchCollector {
 
 				String patchsDirectory = (resultDirectory + "/patches");
 				p.makePatchsFromCommitsByBranchType(p, patchsDirectory);
-				System.out.println("saved patches in \""+patchsDirectory+"\"");
+				System.out.println("saved patches in \"" + patchsDirectory + "\"");
 
 			} catch (Exception e) {
 				e.printStackTrace();
