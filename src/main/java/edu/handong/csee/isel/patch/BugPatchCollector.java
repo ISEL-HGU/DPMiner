@@ -44,7 +44,7 @@ public class BugPatchCollector {
 				Patch p = new Patch(gitRepositoryPath);
 
 				String patchsDirectory = (resultDirectory + "/patches");
-				p.makePatchsFromCommitsByBranchType(p, patchsDirectory);
+				p.analyze(p, patchsDirectory);
 				System.out.println("saved patches in \"" + patchsDirectory + "\"");
 
 			} catch (Exception e) {

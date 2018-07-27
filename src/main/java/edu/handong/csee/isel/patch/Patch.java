@@ -196,7 +196,7 @@ public class Patch {
 
 	}
 
-	public void makePatchsFromCommitsByBranchType(Patch p, String patchesDirectory) throws IOException, GitAPIException {
+	public void analyze(Patch p, String patchesDirectory) throws IOException, GitAPIException {
 		
 		File folder = new File(patchesDirectory);
 		if (!folder.exists()) {
@@ -212,7 +212,19 @@ public class Patch {
 			for (int i = 0; i < hashList.length - 1; i++) {
 				diffs = p.pullDiffs(hashList[i + 1], hashList[i]);
 				/* i+1 -> old Hash, i -> new Hash */
+				RevWalk walk = new RevWalk(repository);
+				ObjectId id = repository.resolve(hashList[i]);
+				RevCommit commit = walk.parseCommit(id);
+				
 				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
+				/*"Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
+				
+				String project = "Hbase";
+				String shortMessage = commit.getShortMessage();
+				String commitHash = hashList[i];
+				int date = commit.getCommitTime();
+				String Author = commit.getAuthorIdent().getName();
+				//diffs;
 				
 			}
 		}
