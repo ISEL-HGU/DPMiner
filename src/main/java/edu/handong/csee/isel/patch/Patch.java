@@ -205,10 +205,10 @@ public class Patch {
 		
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-		List<DiffEntry> diffs = null;
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
+			List<List<DiffEntry>> diffs = null;
 			for (int i = 0; i < hashList.length - 1; i++) {
 				diffs = p.pullDiffs(hashList[i + 1], hashList[i]);
 				/* i+1 -> old Hash, i -> new Hash */
@@ -225,13 +225,19 @@ public class Patch {
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
 				//diffs;
+				for(List<DiffEntry> diff : diffs) {
+					for(DiffEntry entry : diff) {
+						System.out.println(entry + "** **");
+					}
+					System.out.println("@@@@@@@@@");
+				}
 				
 			}
 		}
 		
 	}
 
-	public List<DiffEntry> pullDiffs(String oldCommitHash, String newCommitHash)
+	public List<List<DiffEntry>> pullDiffs(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
 
 		RevWalk walk = new RevWalk(repository);
@@ -245,7 +251,7 @@ public class Patch {
 		paths.addAll(pathsOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
-		List<DiffEntry> diffs = null;
+		List<List<DiffEntry>> diffs = null;
 		
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
@@ -254,7 +260,9 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).
 					call();
-			diffs.addAll(diff);
+			if(diff == null)
+				continue;
+			diffs.add(diff);
 		}
 		return diffs;
 	}
