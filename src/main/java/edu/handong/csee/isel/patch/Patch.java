@@ -30,13 +30,6 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.constraint.NotNull;
-import org.supercsv.cellprocessor.constraint.UniqueHashCode;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -148,7 +141,7 @@ public class Patch {
 		return pathList;
 	}
 
-	public void showFileDiff(String oldCommitHash, String newCommitHash) // filePath 지울예정.
+	public void showFileDiff(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
@@ -160,15 +153,11 @@ public class Patch {
 		ArrayList<String> pathList = new ArrayList<String>(paths);
 
 		for (String filePath : pathList) {
-			// the diff works on TreeIterators, we prepare two for the two branches
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
 
-			// then the porcelain diff-command returns a list of diff entries
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).
-					// to filter on Suffix use the following instead
-					// setPathFilter(PathSuffixFilter.create(".java")).
 					call();
 			for (DiffEntry entry : diff) {
 				System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
@@ -181,9 +170,6 @@ public class Patch {
 	}
 
 	private AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {
-		// from the commit we can build the tree which allows us to construct the
-		// TreeParser
-		// noinspection Duplicates
 		try (RevWalk walk = new RevWalk(repository)) {
 			RevCommit commit = walk.parseCommit(ObjectId.fromString(objectId));
 			RevTree tree = walk.parseTree(commit.getTree().getId());
@@ -225,26 +211,12 @@ public class Patch {
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
 				diffs = p.pullDiffs(hashList[i + 1], hashList[i]);
+				/* i+1 -> old Hash, i -> new Hash */
+				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
+				
 			}
 		}
 		
-		
-		ICsvMapWriter mapWriter = null;
-		mapWriter = new CsvMapWriter(new FileWriter(patchesDirectory+"/reulst.csv"), // 여기 수정해야함.
-				CsvPreference.STANDARD_PREFERENCE);
-
-		final CellProcessor[] processors = this.getProcessors();
-		// write the header
-		mapWriter.writeHeader(header);
-
-		// write the customer maps
-		for (Map<String, Object> commit : commits) {
-			mapWriter.write(commit, header, processors);
-		}
-		if (mapWriter != null) {
-			mapWriter.close();
-		}
-
 	}
 
 	public List<DiffEntry> pullDiffs(String oldCommitHash, String newCommitHash)
@@ -253,10 +225,6 @@ public class Patch {
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
-		
-		/* go to */
-//		this.addContentsToCommitList(String.valueOf(count), commit.getShortMessage(), newCommitHash, filename,
-//				commit.getCommitTime(), commit.getAuthorIdent().getName(), commit.getFullMessage());
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
 		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
@@ -268,72 +236,14 @@ public class Patch {
 		List<DiffEntry> diffs = null;
 		
 		for (String filePath : pathList) {
-			// the diff works on TreeIterators, we prepare two for the two branches
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
 
-			// then the porcelain diff-command returns a list of diff entries
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).
-					// to filter on Suffix use the following instead
-					// setPathFilter(PathSuffixFilter.create(".java")).
 					call();
 			diffs.addAll(diff);
-//			try (DiffFormatter formatter = new DiffFormatter(fw)) {
-//				formatter.setRepository(repository);
-//				formatter.format(diff);
-//			}
 		}
 		return diffs;
-//		fw.flush();
-//		fw.close();
-	}
-	
-	private void addContentsToCommitList(String project, String shortMessage, String commitHash, int date, String Author, String diff) {
-
-		Map<String, Object> temp = new HashMap<String, Object>();
-		
-		temp.put(header[0], project);
-		temp.put(header[1], shortMessage);
-		temp.put(header[2], commitHash);
-		temp.put(header[3], date);
-		temp.put(header[4], Author);
-		temp.put(header[5], diff);
-
-		commits.add(temp);
-
-	}
-	
-	/* 여기도 수정해야함. */
-//	private void addContentsToCommitList(String num, String shortMessage, String newCommitHash, String filename,
-//			int commitTime, String name, String fullMessage) {
-//
-//		Map<String, Object> temp = new HashMap<String, Object>();
-//
-//		temp.put(header[0], num);
-//		temp.put(header[1], shortMessage);
-//		temp.put(header[2], newCommitHash);
-//		temp.put(header[3], filename);
-//		temp.put(header[4], String.valueOf(commitTime));
-//		temp.put(header[5], name);
-//		temp.put(header[6], fullMessage);
-//
-//		commits.add(temp);
-//
-//	}
-
-	/* 여기도 수정해야함. */
-	private CellProcessor[] getProcessors() {
-
-		
-		CellProcessor[] processors = new CellProcessor[] { 
-				new Optional(), new Optional(),
-				new Optional(), new Optional(),
-				new Optional(), new Optional(),};
-		
-//		CellProcessor[] processors = new CellProcessor[] { new UniqueHashCode(), // customerNo (must be unique)
-//				new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), };  
-
-		return processors;
 	}
 }
