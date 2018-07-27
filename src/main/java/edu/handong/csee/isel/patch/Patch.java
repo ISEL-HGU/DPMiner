@@ -44,8 +44,8 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 public class Patch {
 
-	final String[] header = new String[] { "num", "ShortMessage", "CommitHash", "Patch", "Date", "Author",
-			"FullMessage" };
+	final String[] header = new String[] { "Project", "ShortMessage", "CommitHash", "Date", "Author",
+			"Diff" };
 	ArrayList<Map<String, Object>> commits = new ArrayList<Map<String, Object>>();
 	String directoryPath;
 	File directory;
@@ -219,13 +219,12 @@ public class Patch {
 		
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-		int j = 1;
+		List<DiffEntry> diffs = null;
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
-				p.makePatch(hashList[i + 1], hashList[i], patchesDirectory + "/" + e.getKey(), j);
-				j++;
+				diffs = p.makePatch(hashList[i + 1], hashList[i]);
 			}
 		}
 		
@@ -248,21 +247,21 @@ public class Patch {
 
 	}
 
-	public void makePatch(String oldCommitHash, String newCommitHash, String dir, int count)
+	public List<DiffEntry> makePatch(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
-		File directory = new File(dir);
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
+//		File directory = new File(dir);
+//		if (!directory.exists()) {
+//			directory.mkdirs();
+//		}
 
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
 
-		String commitMessage = commit.getShortMessage();
+//		String commitMessage = commit.getShortMessage();
 
-		String filename = dir + "/" + count + "-" + commitMessage + ".patch";
-		OutputStream fw = new FileOutputStream(filename);
+//		String filename = dir + "/" + count + "-" + commitMessage + ".patch";
+//		OutputStream fw = new FileOutputStream(filename);
 
 		this.addContentsToCommitList(String.valueOf(count), commit.getShortMessage(), newCommitHash, filename,
 				commit.getCommitTime(), commit.getAuthorIdent().getName(), commit.getFullMessage());
@@ -286,36 +285,61 @@ public class Patch {
 					// to filter on Suffix use the following instead
 					// setPathFilter(PathSuffixFilter.create(".java")).
 					call();
-			try (DiffFormatter formatter = new DiffFormatter(fw)) {
-				formatter.setRepository(repository);
-				formatter.format(diff);
-			}
+//			try (DiffFormatter formatter = new DiffFormatter(fw)) {
+//				formatter.setRepository(repository);
+//				formatter.format(diff);
+//			}
+			return diff;
 		}
-		fw.flush();
-		fw.close();
+		return null;
+//		fw.flush();
+//		fw.close();
 	}
-
-	private void addContentsToCommitList(String num, String shortMessage, String newCommitHash, String filename,
-			int commitTime, String name, String fullMessage) {
+	
+	private void addContentsToCommitList(String project, String shortMessage, String commitHash, int date, String Author, String diff) {
 
 		Map<String, Object> temp = new HashMap<String, Object>();
-
-		temp.put(header[0], num);
+		
+		temp.put(header[0], project);
 		temp.put(header[1], shortMessage);
-		temp.put(header[2], newCommitHash);
-		temp.put(header[3], filename);
-		temp.put(header[4], String.valueOf(commitTime));
-		temp.put(header[5], name);
-		temp.put(header[6], fullMessage);
+		temp.put(header[2], commitHash);
+		temp.put(header[3], date);
+		temp.put(header[4], Author);
+		temp.put(header[5], diff);
 
 		commits.add(temp);
 
 	}
+	
+	/* 여기도 수정해야함. */
+//	private void addContentsToCommitList(String num, String shortMessage, String newCommitHash, String filename,
+//			int commitTime, String name, String fullMessage) {
+//
+//		Map<String, Object> temp = new HashMap<String, Object>();
+//
+//		temp.put(header[0], num);
+//		temp.put(header[1], shortMessage);
+//		temp.put(header[2], newCommitHash);
+//		temp.put(header[3], filename);
+//		temp.put(header[4], String.valueOf(commitTime));
+//		temp.put(header[5], name);
+//		temp.put(header[6], fullMessage);
+//
+//		commits.add(temp);
+//
+//	}
 
+	/* 여기도 수정해야함. */
 	private CellProcessor[] getProcessors() {
 
-		CellProcessor[] processors = new CellProcessor[] { new UniqueHashCode(), // customerNo (must be unique)
-				new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), };
+		
+		CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(), new Optional(),
+				new Optional(), new Optional(),
+				new Optional(), new Optional(),};
+		
+//		CellProcessor[] processors = new CellProcessor[] { new UniqueHashCode(), // customerNo (must be unique)
+//				new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), };  
 
 		return processors;
 	}
