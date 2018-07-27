@@ -226,9 +226,9 @@ public class Patch {
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
 				
-				for(DiffEntry entry : diffs) {
-					System.out.println();
-				}
+//				for(DiffEntry entry : diffs) {
+//					System.out.println();
+//				}
 				
 				//diffs;
 //				System.out.println(project);
@@ -251,9 +251,11 @@ public class Patch {
 	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
 		
-		/* fw 부분을 수정해야함 */
-		/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨.*/
-		OutputStream fw = new FileOutputStream(filename);
+		File dir = new File("temp");
+		if(!dir.exists()) {
+			if(dir.mkdirs()) { System.out.println("temp 폴더 생성 성공!"); }
+			else { System.out.println("temp 폴더 생성 실패..");; }
+		}
 		
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
@@ -269,6 +271,7 @@ public class Patch {
 //		List<List<DiffEntry>> diffs = null;
 		ArrayList<File> diffs = new ArrayList<File>();
 		
+		int i = 1;
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
@@ -276,12 +279,20 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).
 					call();
+			
+			/* fw 부분을 수정해야함 */
+			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨.*/
+			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i)+".txt");
+			OutputStream fw = new FileOutputStream(newFile);
+			
 			try (DiffFormatter formatter = new DiffFormatter(fw)) {
 				formatter.setRepository(repository);
 				formatter.format(diff);
 			}
 			fw.flush();
 			fw.close();
+			i++;
+			diffs.add(newFile);
 		}
 		return diffs;
 	}
