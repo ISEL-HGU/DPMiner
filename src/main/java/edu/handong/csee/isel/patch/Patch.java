@@ -208,9 +208,10 @@ public class Patch {
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
-			List<List<DiffEntry>> diffs = null;
+//			List<List<DiffEntry>> diffs = null;
+			ArrayList<File> diffFiles = null;
 			for (int i = 0; i < hashList.length - 1; i++) {
-				diffs = p.pullDiffs(hashList[i + 1], hashList[i]);
+				diffFiles = p.pullDiffs(hashList[i + 1], hashList[i]);
 				/* i+1 -> old Hash, i -> new Hash */
 				RevWalk walk = new RevWalk(repository);
 				ObjectId id = repository.resolve(hashList[i]);
@@ -224,22 +225,36 @@ public class Patch {
 				String commitHash = hashList[i];
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
-				//diffs;
-				for(List<DiffEntry> diff : diffs) {
-					for(DiffEntry entry : diff) {
-						System.out.println(entry + "** **");
-					}
-					System.out.println("@@@@@@@@@");
+				
+				for(DiffEntry entry : diffs) {
+					System.out.println();
 				}
+				
+				//diffs;
+//				System.out.println(project);
+//				System.out.println(shortMessage);
+//				System.out.println(commitHash);
+//				System.out.println(date);
+//				System.out.println(Author);
+//				for(List<DiffEntry> diff : diffs) {
+//					for(DiffEntry entry : diff) {
+//						System.out.println(entry + "** **");
+//					}
+//					System.out.println("@@@@@@@@@");
+//				}
 				
 			}
 		}
 		
 	}
 
-	public List<List<DiffEntry>> pullDiffs(String oldCommitHash, String newCommitHash)
+	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
-
+		
+		/* fw 부분을 수정해야함 */
+		/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨.*/
+		OutputStream fw = new FileOutputStream(filename);
+		
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
@@ -251,7 +266,8 @@ public class Patch {
 		paths.addAll(pathsOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
-		List<List<DiffEntry>> diffs = null;
+//		List<List<DiffEntry>> diffs = null;
+		ArrayList<File> diffs = new ArrayList<File>();
 		
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
@@ -260,9 +276,12 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).
 					call();
-			if(diff == null)
-				continue;
-			diffs.add(diff);
+			try (DiffFormatter formatter = new DiffFormatter(fw)) {
+				formatter.setRepository(repository);
+				formatter.format(diff);
+			}
+			fw.flush();
+			fw.close();
 		}
 		return diffs;
 	}
