@@ -224,7 +224,7 @@ public class Patch {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
 			for (int i = 0; i < hashList.length - 1; i++) {
-				diffs = p.makePatch(hashList[i + 1], hashList[i]);
+				diffs = p.pullDiffs(hashList[i + 1], hashList[i]);
 			}
 		}
 		
@@ -247,24 +247,16 @@ public class Patch {
 
 	}
 
-	public List<DiffEntry> makePatch(String oldCommitHash, String newCommitHash)
+	public List<DiffEntry> pullDiffs(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
-//		File directory = new File(dir);
-//		if (!directory.exists()) {
-//			directory.mkdirs();
-//		}
 
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
-
-//		String commitMessage = commit.getShortMessage();
-
-//		String filename = dir + "/" + count + "-" + commitMessage + ".patch";
-//		OutputStream fw = new FileOutputStream(filename);
-
-		this.addContentsToCommitList(String.valueOf(count), commit.getShortMessage(), newCommitHash, filename,
-				commit.getCommitTime(), commit.getAuthorIdent().getName(), commit.getFullMessage());
+		
+		/* go to */
+//		this.addContentsToCommitList(String.valueOf(count), commit.getShortMessage(), newCommitHash, filename,
+//				commit.getCommitTime(), commit.getAuthorIdent().getName(), commit.getFullMessage());
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
 		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
@@ -273,7 +265,8 @@ public class Patch {
 		paths.addAll(pathsOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
-
+		List<DiffEntry> diffs = null;
+		
 		for (String filePath : pathList) {
 			// the diff works on TreeIterators, we prepare two for the two branches
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
@@ -285,13 +278,13 @@ public class Patch {
 					// to filter on Suffix use the following instead
 					// setPathFilter(PathSuffixFilter.create(".java")).
 					call();
+			diffs.addAll(diff);
 //			try (DiffFormatter formatter = new DiffFormatter(fw)) {
 //				formatter.setRepository(repository);
 //				formatter.format(diff);
 //			}
-			return diff;
 		}
-		return null;
+		return diffs;
 //		fw.flush();
 //		fw.close();
 	}
