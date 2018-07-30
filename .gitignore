@@ -29,3 +29,4 @@ hs_err_pid*
 /bin/
 /0001-print-patch-between-two-commits-using-old-commit-has.patch
 /build/
+/temp/
