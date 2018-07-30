@@ -212,9 +212,9 @@ public class Patch {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		int max = 1000;
 		int count = 0;
 		while (it.hasNext()) {
-			count ++;
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = this.makeArrayStringFromArrayListOfString(e.getValue());
 			// List<List<DiffEntry>> diffs = null;
@@ -222,6 +222,9 @@ public class Patch {
 			System.out.println("hashList size: " + hashList.length + ",");
 			for (int i = 0; i < hashList.length - 1; i++) {
 				count ++;
+				if(count > max) {
+					break;
+				}
 				RevWalk walk = new RevWalk(repository);
 				ObjectId id = repository.resolve(hashList[i]);
 				RevCommit commit = walk.parseCommit(id);
