@@ -46,7 +46,12 @@ public class BugPatchCollector {
 			/* Start Main */
 
 			try {
-
+				
+				int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
+				System.out.println("Thread n: "+numOfCoresInMyCPU);
+				
+				Thread.sleep(5000);
+				
 				Patch p = new Patch(gitRepositoryPath);
 				
 				//csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
