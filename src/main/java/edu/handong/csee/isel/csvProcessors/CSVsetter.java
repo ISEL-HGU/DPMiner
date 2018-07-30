@@ -1,7 +1,18 @@
 package edu.handong.csee.isel.csvProcessors;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 import edu.handong.csee.isel.patch.CommitStatus;
 
@@ -24,22 +35,43 @@ public class CSVsetter {
 
 	File newFile;
 
-	public void makeCSVfromCommits(ArrayList<CommitStatus> commits) {
+	public void makeCSVfromCommits(ArrayList<CommitStatus> commits) throws IOException {
 		File folder = newFile.getParentFile();
 		if (!folder.exists()) {
 			folder.mkdirs();
 		}
-		
-		for(CommitStatus commit : commits) {
-			String project = commit.getProject();
-			String commitHash = commit.getShortMessage();
-			int date = commit.getDate();
-			String author = commit.getAuthor();
-			ArrayList<String> patches = commit.getPathes();
-			
-			/* csv 만드는 로직~. */
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(newFile.getAbsolutePath()));
+				CSVPrinter csvPrinter = new CSVPrinter(writer,
+						CSVFormat.DEFAULT.withHeader("Project", "Commit Hash", "Date", "Author", "Patches"));) {
+			for (CommitStatus commit : commits) {
+				String project = commit.getProject(); //
+				String commitHash = commit.getShortMessage(); //
+
+				int date = commit.getDate();
+				String dTime = this.convertCalendar(date); //
+
+				String author = commit.getAuthor(); //
+				ArrayList<String> patches = commit.getPathes();
+
+				int size = 0;
+				String[] patchList = new String[patches.size()]; //
+				for (String temp : patches) {
+					patchList[size++] = temp;
+				}
+
+				/* csv 만드는 로직~. */
+
+				csvPrinter.printRecord(project, commitHash, dTime, author, patchList);
+
+			}
+			csvPrinter.flush();
 		}
-		
 	}
 
+	public String convertCalendar(int date) {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.KOREA);
+		Date currentTime = new Date(date);
+		String dTime = formatter.format(currentTime);
+		return dTime;
+	}
 }
