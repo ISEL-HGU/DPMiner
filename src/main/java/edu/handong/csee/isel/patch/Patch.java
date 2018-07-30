@@ -1,7 +1,10 @@
 package edu.handong.csee.isel.patch;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -209,11 +212,13 @@ public class Patch {
 //			List<List<DiffEntry>> diffs = null;
 			ArrayList<File> diffFiles = null;
 			for (int i = 0; i < hashList.length - 1; i++) {
-				diffFiles = p.pullDiffs(hashList[i + 1], hashList[i]);
-				/* i+1 -> old Hash, i -> new Hash */
 				RevWalk walk = new RevWalk(repository);
 				ObjectId id = repository.resolve(hashList[i]);
 				RevCommit commit = walk.parseCommit(id);
+				if(commit.getShortMessage().contains(""))
+				
+				diffFiles = p.pullDiffs(hashList[i + 1], hashList[i]);
+				/* i+1 -> old Hash, i -> new Hash */
 				
 				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
 				/*"Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
@@ -223,18 +228,44 @@ public class Patch {
 				String commitHash = hashList[i];
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
-				ArrayList<String> patches = null; //
+				ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
 				
 				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
-				
-				
 				
 			}
 		}
 		return commits;
 		
 	}
-
+	public ArrayList<String> getStringFromFiles(ArrayList<File> files) throws FileNotFoundException {
+		
+		ArrayList<String> stringList = new ArrayList<String>();
+		for(File file : files) {
+			stringList.add(this.getStringFromFile(file));
+		}
+		return stringList;
+	}
+	
+	
+	public String getStringFromFile(File file) throws FileNotFoundException {
+		
+		String newString = "";
+		
+		FileReader reader = new FileReader(file);
+		BufferedReader br = new BufferedReader(reader);
+		String line = "";
+		try {
+			while((line = br.readLine()) != null) {
+				newString += (line + "\n");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return newString;
+	}
+	
 	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash)
 			throws IOException, GitAPIException {
 		
