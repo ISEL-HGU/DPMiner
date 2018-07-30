@@ -20,6 +20,7 @@ import org.apache.commons.cli.Options;
 public class BugPatchCollector {
 	String gitRepositoryPath;
 	String resultDirectory;
+	String csvFile;
 	boolean verbose;
 	boolean help;
 
@@ -42,6 +43,9 @@ public class BugPatchCollector {
 			try {
 
 				Patch p = new Patch(gitRepositoryPath);
+				
+				//csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
+				
 
 				String patchsDirectory = (resultDirectory + "/patches");
 				p.analyze(p, patchsDirectory);
@@ -71,6 +75,7 @@ public class BugPatchCollector {
 
 			CommandLine cmd = parser.parse(options, args);
 
+			csvFile = cmd.getOptionValue("c");
 			gitRepositoryPath = cmd.getOptionValue("g");
 			resultDirectory = cmd.getOptionValue("r");
 			verbose = cmd.hasOption("v");
@@ -89,6 +94,9 @@ public class BugPatchCollector {
 		Options options = new Options();
 
 		// add options by using OptionBuilder
+		options.addOption(Option.builder("c").longOpt("csv").desc("Set a path of CSV reference relative to commits")
+				.hasArg().argName("CSV File").required().build());
+		
 		options.addOption(Option.builder("g").longOpt("gitRepositoryPath").desc("Set a path of a git-repository")
 				.hasArg().argName("Git-repository path name").required().build());
 
