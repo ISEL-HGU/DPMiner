@@ -214,16 +214,16 @@ public class Patch {
 				RevCommit commit = walk.parseCommit(id);
 				
 				//HashList에 있는 커밋인지 확인하는 중.
-				boolean con = true;
-				for (String issueHash : issueHashList) {
-					if (!commit.getShortMessage().contains(issueHash)) {
-						con = false;
-						continue;
-					}
-				}
-				if(con == false) {
-					continue;
-				}
+//				boolean con = true;
+//				for (String issueHash : issueHashList) {
+//					if (!commit.getShortMessage().contains(issueHash)) {
+//						con = false;
+//						break;
+//					}
+//				}
+//				if(con == false) {
+//					continue;
+//				}
 				
 				diffFiles = p.pullDiffs(hashList[i + 1], hashList[i]);
 				/* i+1 -> old Hash, i -> new Hash */
@@ -239,7 +239,8 @@ public class Patch {
 				ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
 
 				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
-
+				System.out.println(commits);
+				
 			}
 		}
 		return commits;
