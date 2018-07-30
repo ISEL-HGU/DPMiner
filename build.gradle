@@ -12,7 +12,7 @@ plugins {
 }
 
 apply plugin: 'application'
-mainClassName = "edu.handong.csee.isel.java.patch.BugPatchCollector"
+mainClassName = "edu.handong.csee.isel.patch.BugPatchCollector"
 
 dependencies {
 	
