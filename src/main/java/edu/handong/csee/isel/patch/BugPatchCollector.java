@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import edu.handong.csee.isel.csvProcessors.CSVgetter;
@@ -49,10 +52,10 @@ public class BugPatchCollector {
 				
 				int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
 				System.out.println("Thread n: "+numOfCoresInMyCPU);
+				ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
 				
-				Thread.sleep(5000);
+				Thread.sleep(3000);
 				
-				Patch p = new Patch(gitRepositoryPath);
 				
 				//csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
 				//(1)
@@ -62,8 +65,27 @@ public class BugPatchCollector {
 //					System.out.println(issue);
 				
 				
+				
 				//(2)
-				ArrayList<CommitStatus> commitIncludedInIssueHashList = p.analyze(p, issueHashList);
+				Patch p = new Patch(gitRepositoryPath);
+				ArrayList<CommitStatus> commitIncludedInIssueHashList = p.analyze(issueHashList);
+				
+//				ArrayList<Patch> patches = new ArrayList<Patch>();
+//				int count = 0;
+//				for(String issue : issueHashList) {
+//					Runnable worker = new Patch(gitRepositoryPath, issueHashList);
+//					executor.execute(worker);
+//					count++;
+//					
+//					patches.add((Patch)worker);
+//				}
+//				executor.shutdown();
+//				while (!executor.isTerminated()) {
+//		        }
+//				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
+//				for(Patch p : patches) {
+//					commitIncludedInIssueHashList.add(p.getRefinedCommit());
+//				}
 				
 				
 				//(3)

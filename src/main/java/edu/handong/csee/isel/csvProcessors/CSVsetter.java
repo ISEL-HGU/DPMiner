@@ -83,7 +83,7 @@ public class CSVsetter {
 		}
 	}
 
-	public String convertCalendar(int date) {
+	public String convertCalendar(int date) { 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.KOREA);
 		Date currentTime = new Date(date);
 		String dTime = formatter.format(currentTime);
