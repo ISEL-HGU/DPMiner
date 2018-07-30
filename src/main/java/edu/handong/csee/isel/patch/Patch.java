@@ -40,8 +40,7 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 public class Patch {
 
-	final String[] header = new String[] { "Project", "ShortMessage", "CommitHash", "Date", "Author",
-			"Diff" };
+	final String[] header = new String[] { "Project", "ShortMessage", "CommitHash", "Date", "Author", "Diff" };
 	ArrayList<Map<String, Object>> commits = new ArrayList<Map<String, Object>>();
 	String directoryPath;
 	File directory;
@@ -144,8 +143,7 @@ public class Patch {
 		return pathList;
 	}
 
-	public void showFileDiff(String oldCommitHash, String newCommitHash)
-			throws IOException, GitAPIException {
+	public void showFileDiff(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
 
 		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
 		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
@@ -160,8 +158,7 @@ public class Patch {
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
 
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-					.setPathFilter(PathFilter.create(filePath)).
-					call();
+					.setPathFilter(PathFilter.create(filePath)).call();
 			for (DiffEntry entry : diff) {
 				System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
 				try (DiffFormatter formatter = new DiffFormatter(System.out)) {
@@ -199,82 +196,96 @@ public class Patch {
 
 	}
 
-	public ArrayList<CommitStatus> analyze(Patch p, ArrayList<String> issueHashList) throws IOException, GitAPIException {
-		
-		
+	public ArrayList<CommitStatus> analyze(Patch p, ArrayList<String> issueHashList)
+			throws IOException, GitAPIException {
+
 		ArrayList<CommitStatus> commits = new ArrayList<CommitStatus>();
-		
+
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			String[] hashList = p.makeArrayStringFromArrayListOfString(e.getValue());
-//			List<List<DiffEntry>> diffs = null;
+			// List<List<DiffEntry>> diffs = null;
 			ArrayList<File> diffFiles = null;
 			for (int i = 0; i < hashList.length - 1; i++) {
 				RevWalk walk = new RevWalk(repository);
 				ObjectId id = repository.resolve(hashList[i]);
 				RevCommit commit = walk.parseCommit(id);
-				if(commit.getShortMessage().contains(""))
+				
+				//HashList에 있는 커밋인지 확인하는 중.
+				boolean con = true;
+				for (String issueHash : issueHashList) {
+					if (!commit.getShortMessage().contains(issueHash)) {
+						con = false;
+						continue;
+					}
+				}
+				if(con == false) {
+					continue;
+				}
 				
 				diffFiles = p.pullDiffs(hashList[i + 1], hashList[i]);
 				/* i+1 -> old Hash, i -> new Hash */
-				
+
 				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
-				/*"Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
-				
+				/* "Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
+
 				String project = "Hbase";
 				String shortMessage = commit.getShortMessage();
 				String commitHash = hashList[i];
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
 				ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
-				
+
 				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
-				
+
 			}
 		}
 		return commits;
-		
+
 	}
+
 	public ArrayList<String> getStringFromFiles(ArrayList<File> files) throws FileNotFoundException {
-		
+
 		ArrayList<String> stringList = new ArrayList<String>();
-		for(File file : files) {
+		for (File file : files) {
 			stringList.add(this.getStringFromFile(file));
 		}
 		return stringList;
 	}
-	
-	
+
 	public String getStringFromFile(File file) throws FileNotFoundException {
-		
+
 		String newString = "";
-		
+
 		FileReader reader = new FileReader(file);
 		BufferedReader br = new BufferedReader(reader);
 		String line = "";
 		try {
-			while((line = br.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				newString += (line + "\n");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return newString;
 	}
-	
-	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash)
-			throws IOException, GitAPIException {
-		
+
+	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
+
 		File dir = new File("temp");
-		if(!dir.exists()) {
-			if(dir.mkdirs()) { System.out.println("temp 폴더 생성 성공!"); }
-			else { System.out.println("temp 폴더 생성 실패..");; }
+		if (!dir.exists()) {
+			if (dir.mkdirs()) {
+				System.out.println("temp 폴더 생성 성공!");
+			} else {
+				System.out.println("temp 폴더 생성 실패..");
+				;
+			}
 		}
-		
+
 		RevWalk walk = new RevWalk(repository);
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
@@ -286,23 +297,22 @@ public class Patch {
 		paths.addAll(pathsOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
-//		List<List<DiffEntry>> diffs = null;
+		// List<List<DiffEntry>> diffs = null;
 		ArrayList<File> diffs = new ArrayList<File>();
-		
+
 		int i = 1;
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
 
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-					.setPathFilter(PathFilter.create(filePath)).
-					call();
-			
+					.setPathFilter(PathFilter.create(filePath)).call();
+
 			/* fw 부분을 수정해야함 */
-			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨.*/
-			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i)+".txt");
+			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨. */
+			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i) + ".txt");
 			OutputStream fw = new FileOutputStream(newFile);
-			
+
 			try (DiffFormatter formatter = new DiffFormatter(fw)) {
 				formatter.setRepository(repository);
 				formatter.format(diff);
