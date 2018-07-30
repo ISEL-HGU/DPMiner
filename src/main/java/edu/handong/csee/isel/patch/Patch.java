@@ -222,9 +222,9 @@ public class Patch {
 			System.out.println("hashList size: " + hashList.length + ",");
 			for (int i = 0; i < hashList.length - 1; i++) {
 				count ++;
-				if(count > max) {
-					break;
-				}
+//				if(count > max) {
+//					break;
+//				}
 				RevWalk walk = new RevWalk(repository);
 				ObjectId id = repository.resolve(hashList[i]);
 				RevCommit commit = walk.parseCommit(id);
