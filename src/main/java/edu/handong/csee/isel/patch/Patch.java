@@ -196,12 +196,10 @@ public class Patch {
 
 	}
 
-	public void analyze(Patch p, String patchesDirectory) throws IOException, GitAPIException {
+	public ArrayList<CommitStatus> analyze(Patch p, ArrayList<String> issueHashList) throws IOException, GitAPIException {
 		
-		File folder = new File(patchesDirectory);
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
+		
+		ArrayList<CommitStatus> commits = new ArrayList<CommitStatus>();
 		
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
@@ -225,26 +223,15 @@ public class Patch {
 				String commitHash = hashList[i];
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
+				ArrayList<String> patches = null; //
 				
-//				for(DiffEntry entry : diffs) {
-//					System.out.println();
-//				}
+				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
 				
-				//diffs;
-//				System.out.println(project);
-//				System.out.println(shortMessage);
-//				System.out.println(commitHash);
-//				System.out.println(date);
-//				System.out.println(Author);
-//				for(List<DiffEntry> diff : diffs) {
-//					for(DiffEntry entry : diff) {
-//						System.out.println(entry + "** **");
-//					}
-//					System.out.println("@@@@@@@@@");
-//				}
+				
 				
 			}
 		}
+		return commits;
 		
 	}
 
