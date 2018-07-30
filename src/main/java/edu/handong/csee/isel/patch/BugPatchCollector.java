@@ -53,9 +53,13 @@ public class BugPatchCollector {
 				//(1)
 				CSVgetter getter = new CSVgetter(csvFile);
 				ArrayList<String> issueHashList = getter.getColumn(1);
+//				for(String issue : issueHashList)
+//					System.out.println(issue);
+				
 				
 				//(2)
 				ArrayList<CommitStatus> commitIncludedInIssueHashList = p.analyze(p, issueHashList);
+				
 				
 				//(3)
 				File newFile = new File(resultDirectory + "/result.csv");
