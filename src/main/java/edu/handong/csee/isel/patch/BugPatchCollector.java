@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+
+import edu.handong.csee.isel.csvProcessors.CSVgetter;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -45,10 +48,11 @@ public class BugPatchCollector {
 				Patch p = new Patch(gitRepositoryPath);
 				
 				//csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
-				
-
+				CSVgetter getter = new CSVgetter(csvFile);
+				ArrayList<String> issueHashList = getter.getColumn(1);
 				String patchsDirectory = (resultDirectory + "/patches");
-				p.analyze(p, patchsDirectory);
+				p.analyze(p, patchsDirectory, issueHashList);
+				
 				System.out.println("saved patches in \"" + patchsDirectory + "\"");
 
 			} catch (Exception e) {
