@@ -68,8 +68,7 @@ public class BugPatchCollector {
 				
 				//(2)
 				Patch p = new Patch(gitRepositoryPath);
-				ArrayList<String> commitHashes = p.analyze();
-				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
+				ArrayList<TwoCommit> commitHashes = p.analyze();
 				
 				//(3) apply Thread pool
 				
@@ -78,22 +77,22 @@ public class BugPatchCollector {
 				 * return은 CommitStatus.
 				 */
 				
-//				ArrayList<Patch> patches = new ArrayList<Patch>();
-//				int count = 0;
-//				for(String issue : issueHashList) {
-//					Runnable worker = new Patch(gitRepositoryPath, issueHashList);
-//					executor.execute(worker);
-//					count++;
-//					
-//					patches.add((Patch)worker);
-//				}
-//				executor.shutdown();
-//				while (!executor.isTerminated()) {
-//		        }
-//				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
-//				for(Patch p : patches) {
-//					commitIncludedInIssueHashList.add(p.getRefinedCommit());
-//				}
+				ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
+				int count = 0;
+				for(TwoCommit commitHash : commitHashes) {
+					Runnable worker = new MyExecutor(gitRepositoryPath,commitHash.getOldCommitHash(),commitHash.getNewCommitHash());
+					executor.execute(worker);
+					count++;
+					
+					myExecutors.add((MyExecutor)worker);
+				}
+				executor.shutdown();
+				while (!executor.isTerminated()) {
+		        }
+				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
+				for(MyExecutor my : myExecutors) {
+					commitIncludedInIssueHashList.add(my.getCommitStatus());
+				}
 				
 				
 				//(4)
