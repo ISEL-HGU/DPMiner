@@ -68,7 +68,15 @@ public class BugPatchCollector {
 				
 				//(2)
 				Patch p = new Patch(gitRepositoryPath);
-				ArrayList<CommitStatus> commitIncludedInIssueHashList = p.analyze(issueHashList);
+				ArrayList<String> commitHashes = p.analyze();
+				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
+				
+				//(3) apply Thread pool
+				
+				/* MyExecutor 클래스를 만들고 extends Thread
+				 * 한 개의 commit Hash를 받아드려.
+				 * return은 CommitStatus.
+				 */
 				
 //				ArrayList<Patch> patches = new ArrayList<Patch>();
 //				int count = 0;
@@ -88,7 +96,7 @@ public class BugPatchCollector {
 //				}
 				
 				
-				//(3)
+				//(4)
 				File newFile = new File(resultDirectory + "/result.csv");
 				CSVsetter setter = new CSVsetter(newFile);
 				setter.makeCSVfromCommits(commitIncludedInIssueHashList);

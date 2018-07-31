@@ -196,7 +196,7 @@ public class Patch {
 
 	}
 
-	public ArrayList<CommitStatus> analyze(ArrayList<String> issueHashList)
+	public ArrayList<String> analyze()
 			throws IOException, GitAPIException {
 //		for(String issue : issueHashList)
 //			System.out.println(issue);
@@ -207,27 +207,29 @@ public class Patch {
 		System.out.println("set size: " + set.size());
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		int max = 1000;
+//		int max = 1000;
 		int count = 0;
+		ArrayList<String> sumCommitHash = new ArrayList<String>();
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
-			String[] hashList = this.makeArrayStringFromArrayListOfString(e.getValue());
+			ArrayList<String> hashList = e.getValue();
+			sumCommitHash.addAll(hashList);
 			// List<List<DiffEntry>> diffs = null;
-			ArrayList<File> diffFiles = null;
-			System.out.println("hashList size: " + hashList.length + ",");
-			for (int i = 0; i < hashList.length - 1; i++) {
-				count ++;
-//				if(count > max) {
-//					break;
-//				}
-				RevWalk walk = new RevWalk(repository);
-				ObjectId id = repository.resolve(hashList[i]);
-				RevCommit commit = walk.parseCommit(id);
+//			ArrayList<File> diffFiles = null;
+			System.out.println("hashList size: " + hashList.size() + ",");
+//			for (int i = 0; i < hashList.length - 1; i++) {
+//				count ++;
+////				if(count > max) {
+////					break;
+////				}
+//				RevWalk walk = new RevWalk(repository);
+//				ObjectId id = repository.resolve(hashList[i]);
+//				RevCommit commit = walk.parseCommit(id);
 				
 				
 				
@@ -239,41 +241,42 @@ public class Patch {
 //				}
 				
 				//HashList에 있는 커밋인지 확인하는 중.
-				boolean con = true;
-				for (String issueHash : issueHashList) {
-					
-					if (commit.getShortMessage().contains(issueHash)) {
-						System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
-						con = false;
-					}
-				}
-				if(con) {
-					continue;
-				}
-				
-				int percent = count / hashList.length;
-				System.out.println(count+"/"+ hashList.length + ", ShortMessage: " + commit.getShortMessage());
-				
-				
-				diffFiles = this.pullDiffs(hashList[i + 1], hashList[i]);
-				/* i+1 -> old Hash, i -> new Hash */
-
-				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
-				/* "Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
-
-				String project = "Hbase";
-				String shortMessage = commit.getShortMessage();
-				String commitHash = hashList[i];
-				int date = commit.getCommitTime();
-				String Author = commit.getAuthorIdent().getName();
-				ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
-
-				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
-				System.out.println(commits);
-				
-			}
+//				boolean con = true;
+//				for (String issueHash : issueHashList) {
+//					
+//					if (commit.getShortMessage().contains(issueHash)) {
+//						System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
+//						con = false;
+//					}
+//				}
+//				if(con) {
+//					continue;
+//				}
+//				
+//				int percent = count / hashList.length;
+//				System.out.println(count+"/"+ hashList.length + ", ShortMessage: " + commit.getShortMessage());
+//				
+//				
+//				diffFiles = this.pullDiffs(hashList[i + 1], hashList[i]);
+//				/* i+1 -> old Hash, i -> new Hash */
+//
+//				/* 여기에 Csv 작성하는 메소드가 들어와야함. */
+//				/* "Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
+//
+//				String project = "Hbase";
+//				String shortMessage = commit.getShortMessage();
+//				String commitHash = hashList[i];
+//				int date = commit.getCommitTime();
+//				String Author = commit.getAuthorIdent().getName();
+//				ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
+//
+//				commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author, patches));
+//				System.out.println(commits);
+//				
+//			}
 		}
-		return commits;
+		return sumCommitHash;
+//		return commits;
 
 	}
 
