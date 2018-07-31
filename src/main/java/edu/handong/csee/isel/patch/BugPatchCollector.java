@@ -49,58 +49,61 @@ public class BugPatchCollector {
 			/* Start Main */
 
 			try {
-				
+
 				int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
-				System.out.println("Thread n: "+numOfCoresInMyCPU);
+				System.out.println("Thread n: " + numOfCoresInMyCPU);
 				ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
-				
+
 				Thread.sleep(3000);
-				
-				
-				//csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
-				//(1)
+
+				// csvFile 을 넣어서 ArrayList<String> issueHashes 로 받는다.
+				// (1)
 				CSVgetter getter = new CSVgetter(csvFile);
 				ArrayList<String> issueHashList = getter.getColumn(1);
-//				for(String issue : issueHashList)
-//					System.out.println(issue);
-				
-				
-				
-				//(2)
+				// for(String issue : issueHashList)
+				// System.out.println(issue);
+
+				// (2)
 				Patch p = new Patch(gitRepositoryPath);
 				ArrayList<TwoCommit> commitHashes = p.analyze();
-				
-				//(3) apply Thread pool
-				
-				/* MyExecutor 클래스를 만들고 extends Thread
-				 * 한 개의 commit Hash를 받아드려.
-				 * return은 CommitStatus.
+
+				// (3) apply Thread pool
+
+				/*
+				 * MyExecutor 클래스를 만들고 extends Thread 한 개의 commit Hash를 받아드려. return은
+				 * CommitStatus.
 				 */
-				
+
 				ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
 				int count = 0;
-				for(TwoCommit commitHash : commitHashes) {
-					Runnable worker = new MyExecutor(gitRepositoryPath,commitHash.getOldCommitHash(),commitHash.getNewCommitHash());
+				int total = commitHashes.size();
+				for (TwoCommit commitHash : commitHashes) {
+					Runnable worker = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
+							commitHash.getNewCommitHash(), issueHashList);
 					executor.execute(worker);
 					count++;
-					
-					myExecutors.add((MyExecutor)worker);
+					System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
+					myExecutors.add((MyExecutor) worker);
 				}
 				executor.shutdown();
 				while (!executor.isTerminated()) {
-		        }
-				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
-				for(MyExecutor my : myExecutors) {
-					commitIncludedInIssueHashList.add(my.getCommitStatus());
 				}
 				
+				System.out.println("100%!!");
+				Thread.sleep(3000);
 				
-				//(4)
+				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
+				CommitStatus temp;
+				for (MyExecutor my : myExecutors) {
+					if ((temp = my.getCommitStatus()) != null)
+						commitIncludedInIssueHashList.add(temp);
+				}
+
+				// (4)
 				File newFile = new File(resultDirectory + "/result.csv");
 				CSVsetter setter = new CSVsetter(newFile);
 				setter.makeCSVfromCommits(commitIncludedInIssueHashList);
-				
-				
+
 				System.out.println("saved patches in \"" + resultDirectory + "\"");
 
 			} catch (Exception e) {
@@ -148,7 +151,7 @@ public class BugPatchCollector {
 		// add options by using OptionBuilder
 		options.addOption(Option.builder("c").longOpt("csv").desc("Set a path of CSV reference relative to commits")
 				.hasArg().argName("CSV File").required().build());
-		
+
 		options.addOption(Option.builder("g").longOpt("gitRepositoryPath").desc("Set a path of a git-repository")
 				.hasArg().argName("Git-repository path name").required().build());
 

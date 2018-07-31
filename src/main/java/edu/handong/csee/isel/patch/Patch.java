@@ -220,7 +220,7 @@ public class Patch {
 			// List<List<DiffEntry>> diffs = null;
 			// ArrayList<File> diffFiles = null;
 			System.out.println("hashList size: " + hashList.size() + ",");
-			for (int i = 0; i < hashList.size(); i++) {
+			for (int i = 0; i < hashList.size() - 1; i++) {
 				sumCommitHash.add(new TwoCommit(hashList.get(i + 1), hashList.get(i)));
 			}
 			// for (int i = 0; i < hashList.length - 1; i++) {
