@@ -42,6 +42,10 @@ dependencies {
 	compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
+}
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use jcenter for resolving your dependencies.

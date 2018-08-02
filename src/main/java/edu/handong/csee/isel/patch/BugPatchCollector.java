@@ -53,6 +53,7 @@ public class BugPatchCollector {
 				int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
 				System.out.println("Thread n: " + numOfCoresInMyCPU);
 				ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
+				//ExecutorService executor = Executors.newFixedThreadPool(1);
 
 				Thread.sleep(3000);
 
