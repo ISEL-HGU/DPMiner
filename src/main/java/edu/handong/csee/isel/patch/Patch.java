@@ -245,7 +245,9 @@ public class Patch {
 
 		ArrayList<String> stringList = new ArrayList<String>();
 		for (File file : files) {
-			stringList.add(this.getStringFromFile(file));
+			String temp = this.getStringFromFile(file);
+			if(!temp.trim().equals(""))
+				stringList.add(temp);
 		}
 		return stringList;
 	}
