@@ -110,6 +110,15 @@ public class Patch {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
 	}
+	public Patch(Git git, Repository repository) throws IOException, GitAPIException {
+		this.commitHashs = new HashMap<String, ArrayList<String>>();
+		this.directoryPath = repository.getDirectory().toString();
+		this.directory = new File(directoryPath);
+		this.git = git;
+		this.repository = repository;
+		this.commitHashs = new HashMap<String, ArrayList<String>>();
+		this.setBranchList();
+	}
 
 	public void reset() {
 		this.directoryPath = null;

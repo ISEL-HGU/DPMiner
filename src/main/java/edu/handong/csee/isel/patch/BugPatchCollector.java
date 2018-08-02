@@ -84,15 +84,20 @@ public class BugPatchCollector {
 				int count = 0;
 				int total = commitHashes.size();
 				for (TwoCommit commitHash : commitHashes) {
-					Runnable worker = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
+//					MyExecutor myTemp = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
+//							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
+					Runnable worker = new MyExecutor(commitHash.getOldCommitHash(),
 							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
 					executor.execute(worker);
 					myExecutors.add((MyExecutor) worker);
+					if(((MyExecutor) worker).isDone()) {
+						count++;
+						System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
+					}
 				}
-				count++;
-				System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
 				executor.shutdown();
 				while (!executor.isTerminated()) {
+				
 				}
 				
 				System.out.println("100%!!");
@@ -114,6 +119,12 @@ public class BugPatchCollector {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 
 			/* until here */

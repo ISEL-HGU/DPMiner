@@ -18,17 +18,19 @@ public class MyExecutor extends Thread {
 	private Git git;
 	private Repository repository;
 	private ArrayList<String> issueHashList;
+	private boolean done;
+	
 	public CommitStatus getCommitStatus() {
 		return commitStatus;
 	}
 
-	public MyExecutor(String gitRepositoryPath, String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git, Repository repository) throws IOException {
-		this.gitRepositoryPath = gitRepositoryPath;
+	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git, Repository repository) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
 		this.issueHashList = issueHashList;
 		this.git = git;
 		this.repository = repository;
+		this.done = false;
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class MyExecutor extends Thread {
 				newCommitStatus = null;
 			}
 			else {
-				Patch p = new Patch(gitRepositoryPath);
+				Patch p = new Patch(git, repository);
 				ArrayList<File> diffFiles = null;
 				diffFiles = p.pullDiffs(oldCommitHash, newCommitHash);
 				
@@ -64,17 +66,22 @@ public class MyExecutor extends Thread {
 				String commitHash = newCommitHash;
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
-//				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+				this.done = true;
 				
-//				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
+				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
 				
-				commitStatus = null;
+//				newCommitStatus = null;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		this.commitStatus = newCommitStatus;
+	}
+
+	public boolean isDone() {
+		return done;
 	}
 
 }
