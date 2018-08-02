@@ -97,7 +97,7 @@ public class Patch {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.directoryPath = directoryPath;
 		this.directory = new File(directoryPath);
-		this.git = Git.open(new File(directoryPath + "/.git"));
+		this.git = Git.open(new File(directoryPath));
 		this.repository = this.git.getRepository();
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
@@ -116,7 +116,7 @@ public class Patch {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.directoryPath = directoryPath;
 		this.directory = new File(directoryPath);
-		this.git = Git.open(new File(directoryPath + "/.git"));
+		this.git = Git.open(new File(directoryPath));
 		this.repository = this.git.getRepository();
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
