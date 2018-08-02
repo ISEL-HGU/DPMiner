@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,25 +68,29 @@ public class BugPatchCollector {
 				// (2)
 				Patch p = new Patch(gitRepositoryPath);
 				ArrayList<TwoCommit> commitHashes = p.analyze();
-
+				
+				
+				
 				// (3) apply Thread pool
 
 				/*
 				 * MyExecutor 클래스를 만들고 extends Thread 한 개의 commit Hash를 받아드려. return은
 				 * CommitStatus.
 				 */
-
+				
+				//Thread.sleep(10000);
+				
 				ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
 				int count = 0;
 				int total = commitHashes.size();
 				for (TwoCommit commitHash : commitHashes) {
 					Runnable worker = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
-							commitHash.getNewCommitHash(), issueHashList);
+							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
 					executor.execute(worker);
-					count++;
-					System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
 					myExecutors.add((MyExecutor) worker);
 				}
+				count++;
+				System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
 				executor.shutdown();
 				while (!executor.isTerminated()) {
 				}

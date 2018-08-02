@@ -54,6 +54,14 @@ public class Patch {
 		return commitHashs;
 	}
 
+	public Git getGit() {
+		return git;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
 	public void setCommitHashs(String branch) throws RevisionSyntaxException, NoHeadException, MissingObjectException,
 			IncorrectObjectTypeException, AmbiguousObjectException, GitAPIException, IOException {
 		if (branchList.isEmpty() || !branchList.contains(branch)) {
@@ -197,11 +205,7 @@ public class Patch {
 	}
 
 	public ArrayList<TwoCommit> analyze() throws IOException, GitAPIException {
-		// for(String issue : issueHashList)
-		// System.out.println(issue);
-
-		// ArrayList<CommitStatus> commits = new ArrayList<CommitStatus>();
-
+		
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		System.out.println("set size: " + set.size());
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
@@ -217,70 +221,14 @@ public class Patch {
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			ArrayList<String> hashList = e.getValue();
-			// List<List<DiffEntry>> diffs = null;
-			// ArrayList<File> diffFiles = null;
 			System.out.println("hashList size: " + hashList.size() + ",");
 			for (int i = 0; i < hashList.size() - 1; i++) {
 				sumCommitHash.add(new TwoCommit(hashList.get(i + 1), hashList.get(i)));
 			}
-			// for (int i = 0; i < hashList.length - 1; i++) {
-			// count ++;
-			//// if(count > max) {
-			//// break;
-			//// }
-			// RevWalk walk = new RevWalk(repository);
-			// ObjectId id = repository.resolve(hashList[i]);
-			// RevCommit commit = walk.parseCommit(id);
-
-			// try {
-			// Thread.sleep(5000);
-			// } catch (InterruptedException e1) {
-			// // TODO Auto-generated catch block
-			// e1.printStackTrace();
-			// }
-
-			// HashList에 있는 커밋인지 확인하는 중.
-			// boolean con = true;
-			// for (String issueHash : issueHashList) {
-			//
-			// if (commit.getShortMessage().contains(issueHash)) {
-			// System.out.println("issue: " + issueHash + "\nshortMessage: " +
-			// commit.getShortMessage());
-			// con = false;
-			// }
-			// }
-			// if(con) {
-			// continue;
-			// }
-			//
-			// int percent = count / hashList.length;
-			// System.out.println(count+"/"+ hashList.length + ", ShortMessage: " +
-			// commit.getShortMessage());
-			//
-			//
-			// diffFiles = this.pullDiffs(hashList[i + 1], hashList[i]);
-			// /* i+1 -> old Hash, i -> new Hash */
-			//
-			// /* 여기에 Csv 작성하는 메소드가 들어와야함. */
-			// /* "Project", "ShortMessage", "CommitHash", "Date", "Author","Diff" */
-			//
-			// String project = "Hbase";
-			// String shortMessage = commit.getShortMessage();
-			// String commitHash = hashList[i];
-			// int date = commit.getCommitTime();
-			// String Author = commit.getAuthorIdent().getName();
-			// ArrayList<String> patches = this.getStringFromFiles(diffFiles); //
-			//
-			// commits.add(new CommitStatus(project, shortMessage, commitHash, date, Author,
-			// patches));
-			// System.out.println(commits);
-			//
-			// }
 		}
 		HashSet<TwoCommit> mySet = new HashSet<TwoCommit>(sumCommitHash);
 		ArrayList<TwoCommit> refinedSumCommitHash = new ArrayList<TwoCommit>(mySet);
 		return refinedSumCommitHash;
-		// return commits;
 
 	}
 

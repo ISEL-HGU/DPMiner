@@ -22,13 +22,13 @@ public class MyExecutor extends Thread {
 		return commitStatus;
 	}
 
-	public MyExecutor(String gitRepositoryPath, String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList) throws IOException {
+	public MyExecutor(String gitRepositoryPath, String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git, Repository repository) throws IOException {
 		this.gitRepositoryPath = gitRepositoryPath;
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
-		this.git = Git.open(new File(gitRepositoryPath));
-		this.repository = git.getRepository();
 		this.issueHashList = issueHashList;
+		this.git = git;
+		this.repository = repository;
 	}
 
 	@Override
@@ -64,9 +64,11 @@ public class MyExecutor extends Thread {
 				String commitHash = newCommitHash;
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
-				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+//				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
 				
-				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
+//				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
+				
+				commitStatus = null;
 			}
 
 		} catch (Exception e) {
