@@ -90,10 +90,6 @@ public class BugPatchCollector {
 							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
 					executor.execute(worker);
 					myExecutors.add((MyExecutor) worker);
-					if(((MyExecutor) worker).isDone()) {
-						count++;
-						System.out.println("("+count+"/"+total+"), "+(count*100)/total+"%..");
-					}
 				}
 				executor.shutdown();
 				while (!executor.isTerminated()) {

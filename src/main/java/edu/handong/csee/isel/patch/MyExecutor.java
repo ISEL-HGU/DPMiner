@@ -1,8 +1,14 @@
 package edu.handong.csee.isel.patch;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -18,19 +24,18 @@ public class MyExecutor extends Thread {
 	private Git git;
 	private Repository repository;
 	private ArrayList<String> issueHashList;
-	private boolean done;
-	
+
 	public CommitStatus getCommitStatus() {
 		return commitStatus;
 	}
 
-	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git, Repository repository) throws IOException {
+	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
+			Repository repository) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
 		this.issueHashList = issueHashList;
 		this.git = git;
 		this.repository = repository;
-		this.done = false;
 	}
 
 	@Override
@@ -41,8 +46,6 @@ public class MyExecutor extends Thread {
 			RevWalk walk = new RevWalk(repository);
 			ObjectId id = repository.resolve(newCommitHash);
 			RevCommit commit = walk.parseCommit(id);
-
-			 
 
 			// HashList에 있는 커밋인지 확인하는 중.
 			boolean con = true;
@@ -55,33 +58,41 @@ public class MyExecutor extends Thread {
 			}
 			if (con) {
 				newCommitStatus = null;
-			}
-			else {
+			} else {
 				Patch p = new Patch(git, repository);
-				ArrayList<File> diffFiles = null;
+				HashMap<File, String> diffFiles = null;
 				diffFiles = p.pullDiffs(oldCommitHash, newCommitHash);
-				
+
 				String project = "Hbase";
 				String shortMessage = commit.getShortMessage();
 				String commitHash = newCommitHash;
 				int date = commit.getCommitTime();
 				String Author = commit.getAuthorIdent().getName();
-				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
-				this.done = true;
-				
-				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
-				
+
+				Set key = diffFiles.keySet();
+				for (Iterator iterator = key.iterator(); iterator.hasNext();) {
+					File patchFile = (File) iterator.next();
+					String patch = p.getStringFromFile(patchFile);
+					String path = (String) diffFiles.get(patchFile); // 값이 따라 형변환 필요
+					
+					
+					newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, path, patch);
+				}
+
+//				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+
+//				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
+
 //				newCommitStatus = null;
 			}
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 		}
 		this.commitStatus = newCommitStatus;
 	}
 
-	public boolean isDone() {
-		return done;
-	}
 
 }
