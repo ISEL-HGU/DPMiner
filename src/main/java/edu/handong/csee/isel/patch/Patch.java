@@ -318,7 +318,7 @@ public class Patch {
 			fw.flush();
 			fw.close();
 			i++;
-			System.out.println("made.. " + newFile.getAbsolutePath());
+			System.out.println("made.. " + newFile + ", "+filePath);
 			diffFilesAndPath.put(newFile, filePath);
 			
 //			diffs.add(newFile);

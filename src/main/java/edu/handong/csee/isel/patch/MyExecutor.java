@@ -76,7 +76,18 @@ public class MyExecutor extends Thread {
 				date = commit.getCommitTime();
 				author = commit.getAuthorIdent().getName();
 				
+				
+				System.out.println("start~!");
+				
+				System.out.println(shortMessage);
+				System.out.println(date);
+				System.out.println(author);
+				System.out.println(diffFiles);
 				for (File diff : diffFiles.keySet()){
+					if(diff == null)
+						continue;
+					System.out.println(diff);
+					System.out.println(diffFiles.get(diff));
 			        //System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
 			        String patch = p.getStringFromFile(diff);
 			        if(patch.equals(""))
@@ -84,9 +95,10 @@ public class MyExecutor extends Thread {
 			        String path = diffFiles.get(diff);
 			        newCommitStatus = null;
 			        newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, author, path ,patch);
+			        System.out.println(newCommitStatus);
 			        commitStatusList.add(newCommitStatus);
 			    }
-
+				System.out.println("complete.");
 				
 				//ArrayList<String> patches = p.getStringFromFiles(diffFiles);
 				
