@@ -100,10 +100,10 @@ public class BugPatchCollector {
 				Thread.sleep(3000);
 				
 				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
-				CommitStatus temp;
+				ArrayList<CommitStatus> temp = null;
 				for (MyExecutor my : myExecutors) {
-					if ((temp = my.getCommitStatus()) != null)
-						commitIncludedInIssueHashList.add(temp);
+					if ((temp = my.getCommitStatusList()) != null)
+						commitIncludedInIssueHashList.addAll(temp);
 				}
 
 				// (4)

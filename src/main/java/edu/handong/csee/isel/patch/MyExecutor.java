@@ -18,15 +18,15 @@ import org.eclipse.jgit.revwalk.RevWalk;
 
 public class MyExecutor extends Thread {
 	private String gitRepositoryPath;
-	private CommitStatus commitStatus;
+	private ArrayList<CommitStatus> commitStatusList;
 	private String oldCommitHash;
 	private String newCommitHash;
 	private Git git;
 	private Repository repository;
 	private ArrayList<String> issueHashList;
 
-	public CommitStatus getCommitStatus() {
-		return commitStatus;
+	public ArrayList<CommitStatus> getCommitStatusList() {
+		return commitStatusList;
 	}
 
 	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
@@ -60,7 +60,7 @@ public class MyExecutor extends Thread {
 				newCommitStatus = null;
 			} else {
 				Patch p = new Patch(git, repository);
-				HashMap<File, String> diffFiles = null;
+				HashMap<File, String> diffFiles = null; //PatchFile, Path
 				diffFiles = p.pullDiffs(oldCommitHash, newCommitHash);
 
 				String project = "Hbase";
@@ -73,10 +73,12 @@ public class MyExecutor extends Thread {
 				for (Iterator iterator = key.iterator(); iterator.hasNext();) {
 					File patchFile = (File) iterator.next();
 					String patch = p.getStringFromFile(patchFile);
+					if(patch.equals(""))
+						continue;
 					String path = (String) diffFiles.get(patchFile); // 값이 따라 형변환 필요
 					
 					
-					newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, path, patch);
+					this.commitStatusList.add(new CommitStatus(project, shortMessage, commitHash, date, Author, path, patch));
 				}
 
 //				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
@@ -91,7 +93,6 @@ public class MyExecutor extends Thread {
 		Exception e) {
 			e.printStackTrace();
 		}
-		this.commitStatus = newCommitStatus;
 	}
 
 
