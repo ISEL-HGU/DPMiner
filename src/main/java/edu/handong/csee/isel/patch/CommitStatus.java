@@ -18,24 +18,28 @@ public class CommitStatus {
 	public String getAuthor() {
 		return Author;
 	}
-	public ArrayList<String> getPathes() {
-		return pathes;
+	public String getPatch() {
+		return patch;
+	}
+	public String getPath() {
+		return path;
 	}
 	public CommitStatus(String project, String shortMessage, String commitHash, int date, String author,
-			ArrayList<String> pathes) {
+			String path,String patch) {
 		this.project = project;
 		this.shortMessage = shortMessage;
 		this.commitHash = commitHash;
 		this.date = date;
 		Author = author;
-		this.pathes = pathes;
+		this.patch = patch;
 	}
 	String project;
 	String shortMessage;
 	String commitHash;
 	int date;
 	String Author;
-	ArrayList<String> pathes;
+	String path;
+	String patch;
 	
 	
 	
