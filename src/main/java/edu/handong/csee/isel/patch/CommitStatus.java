@@ -40,7 +40,4 @@ public class CommitStatus {
 	String Author;
 	String path;
 	String patch;
-	
-	
-	
 }
