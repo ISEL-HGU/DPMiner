@@ -271,7 +271,7 @@ public class Patch {
 		return newString;
 	}
 
-	public ArrayList<File> pullDiffs(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
+	public HashMap<File,String> pullDiffs(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
 
 		File dir = new File("temp");
 		if (!dir.exists()) {
@@ -295,8 +295,9 @@ public class Patch {
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
 		// List<List<DiffEntry>> diffs = null;
-		ArrayList<File> diffs = new ArrayList<File>();
-
+		
+		HashMap<File,String> diffFilesAndPath = new HashMap<File,String>();
+		
 		int i = 1;
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
@@ -318,8 +319,11 @@ public class Patch {
 			fw.close();
 			i++;
 			System.out.println("made.. " + newFile.getAbsolutePath());
-			diffs.add(newFile);
+			diffFilesAndPath.put(newFile, filePath);
+			
+//			diffs.add(newFile);
 		}
-		return diffs;
+//		return diffs;
+		return diffFilesAndPath;
 	}
 }

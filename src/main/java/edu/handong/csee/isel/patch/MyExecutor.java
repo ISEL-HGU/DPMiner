@@ -1,8 +1,14 @@
 package edu.handong.csee.isel.patch;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -11,77 +17,95 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
 public class MyExecutor extends Thread {
-	private String gitRepositoryPath;
-	private CommitStatus commitStatus;
+	private ArrayList<CommitStatus> commitStatusList;
 	private String oldCommitHash;
 	private String newCommitHash;
 	private Git git;
 	private Repository repository;
 	private ArrayList<String> issueHashList;
-	private boolean done;
-	
-	public CommitStatus getCommitStatus() {
-		return commitStatus;
+
+	public ArrayList<CommitStatus> getCommitStatusList() {
+		return commitStatusList;
 	}
 
-	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git, Repository repository) throws IOException {
+	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
+			Repository repository) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
 		this.issueHashList = issueHashList;
 		this.git = git;
 		this.repository = repository;
-		this.done = false;
 	}
 
 	@Override
 	public void run() {
 		CommitStatus newCommitStatus = null;
-
+		commitStatusList = new ArrayList<CommitStatus>();
 		try {
 			RevWalk walk = new RevWalk(repository);
 			ObjectId id = repository.resolve(newCommitHash);
 			RevCommit commit = walk.parseCommit(id);
 
-			 
-
 			// HashList에 있는 커밋인지 확인하는 중.
 			boolean con = true;
-			for (String issueHash : issueHashList) {
-
-				if (commit.getShortMessage().contains(issueHash)) {
-//					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
-					con = false;
-				}
-			}
+//			for (String issueHash : issueHashList) {
+//
+//				if (commit.getShortMessage().contains(issueHash)) {
+////					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
+//					con = false;
+//				}
+//			}
+			con = false;
 			if (con) {
 				newCommitStatus = null;
 			}
 			else {
 				Patch p = new Patch(git, repository);
-				ArrayList<File> diffFiles = null;
+				HashMap<File,String> diffFiles = null;
 				diffFiles = p.pullDiffs(oldCommitHash, newCommitHash);
 				
-				String project = "Hbase";
-				String shortMessage = commit.getShortMessage();
-				String commitHash = newCommitHash;
-				int date = commit.getCommitTime();
-				String Author = commit.getAuthorIdent().getName();
-				ArrayList<String> patches = p.getStringFromFiles(diffFiles);
-				this.done = true;
+				String project = "";
+				String shortMessage = "";
+				String commitHash = "";
+				int date = 0;
+				String author = "";
 				
-				newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, Author, patches);
+				project = "Hbase";
+				shortMessage = commit.getShortMessage();
+				commitHash = newCommitHash;
+				date = commit.getCommitTime();
+				author = commit.getAuthorIdent().getName();
 				
-//				newCommitStatus = null;
+				for (File diff : diffFiles.keySet()){
+			        //System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
+			        String patch = p.getStringFromFile(diff);
+			        if(patch.equals(""))
+			        	continue;
+			        String path = diffFiles.get(diff);
+			        newCommitStatus = null;
+			        newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, author, path ,patch);
+			        commitStatusList.add(newCommitStatus);
+			    }
+
+				
+				//ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+				
+				
 			}
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
+			System.out.println(newCommitStatus.toString());
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
-		this.commitStatus = newCommitStatus;
 	}
 
-	public boolean isDone() {
-		return done;
-	}
 
 }

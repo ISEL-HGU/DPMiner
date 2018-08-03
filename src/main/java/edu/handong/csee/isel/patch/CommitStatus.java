@@ -15,6 +15,12 @@ public class CommitStatus {
 		return commitHash;
 	}
 
+	@Override
+	public String toString() {
+		return "CommitStatus [project=" + project + ", shortMessage=" + shortMessage + ", commitHash=" + commitHash
+				+ ", date=" + date + ", author=" + author + ", path=" + path + ", patch=" + patch + "]";
+	}
+
 	public int getDate() {
 		return date;
 	}
