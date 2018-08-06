@@ -30,6 +30,7 @@ public class BugPatchCollector {
 	String resultDirectory;
 	String csvFile;
 	int conditionMax;
+	int conditionMin;
 	boolean verbose;
 	boolean help;
 
@@ -146,8 +147,18 @@ public class BugPatchCollector {
 			csvFile = cmd.getOptionValue("c");
 			gitRepositoryPath = cmd.getOptionValue("g");
 			resultDirectory = cmd.getOptionValue("r");
-			if(cmd.hasOption("M"))
-				conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+			
+			if(cmd.hasOption("M") || cmd.hasOption("m")) {
+				if(cmd.hasOption("M") && cmd.hasOption("m")) {
+					conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+					conditionMin = Integer.parseInt(cmd.getOptionValue("m"));
+				}
+				else {
+					throw new Exception("");
+				}
+			}
+			
+			
 			
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
@@ -178,6 +189,10 @@ public class BugPatchCollector {
 		options.addOption(Option.builder("M").longOpt("Maxline")
 				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
 				.argName("Max lines of patch").build());
+		
+		options.addOption(Option.builder("m").longOpt("Minline")
+				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).").hasArg()
+				.argName("Min lines of patch").build());
 
 
 		// add options by using OptionBuilder
