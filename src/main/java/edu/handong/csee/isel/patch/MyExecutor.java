@@ -48,10 +48,13 @@ public class MyExecutor extends Thread {
 			// HashList에 있는 커밋인지 확인하는 중.
 			boolean con = true;
 			for (String issueHash : issueHashList) {
-
-				if (commit.getShortMessage().substring(0, 10).contains(issueHash)) {
-//					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
+				if (commit.getShortMessage().length() < 11) {
 					con = false;
+				} else {
+					if (commit.getShortMessage().substring(0, 11).contains(issueHash)) {
+//					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
+						con = false;
+					}
 				}
 			}
 //			con = false;
@@ -76,10 +79,10 @@ public class MyExecutor extends Thread {
 
 				System.out.println("start~!");
 
-				System.out.println(shortMessage);
-				System.out.println(date);
-				System.out.println(author);
-				System.out.println(diffFiles);
+//				System.out.println(shortMessage);
+//				System.out.println(date);
+//				System.out.println(author);
+//				System.out.println(diffFiles);
 				for (File diff : diffFiles.keySet()) {
 					if (diff == null)
 						continue;
@@ -92,7 +95,7 @@ public class MyExecutor extends Thread {
 					String path = diffFiles.get(diff);
 					newCommitStatus = null;
 					newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, author, path, patch);
-					System.out.println(newCommitStatus);
+//					System.out.println(newCommitStatus);
 					commitStatusList.add(newCommitStatus);
 				}
 				System.out.println("complete.");

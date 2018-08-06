@@ -146,7 +146,8 @@ public class BugPatchCollector {
 			csvFile = cmd.getOptionValue("c");
 			gitRepositoryPath = cmd.getOptionValue("g");
 			resultDirectory = cmd.getOptionValue("r");
-			conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+			if(cmd.hasOption("M"))
+				conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
 			
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
