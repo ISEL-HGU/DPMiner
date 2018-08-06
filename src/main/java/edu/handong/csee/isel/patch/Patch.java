@@ -305,7 +305,7 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).call();
 
-			/* fw 부분을 수정해야함 */
+			
 			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨. */
 			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i) + ".txt");
 			OutputStream fw = new FileOutputStream(newFile);

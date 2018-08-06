@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,6 +29,7 @@ public class BugPatchCollector {
 	String gitRepositoryPath;
 	String resultDirectory;
 	String csvFile;
+	int conditionMax;
 	boolean verbose;
 	boolean help;
 
@@ -81,13 +81,13 @@ public class BugPatchCollector {
 				//Thread.sleep(10000);
 				
 				ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
-				int count = 0;
-				int total = commitHashes.size();
+//				int count = 0;
+//				int total = commitHashes.size();
 				for (TwoCommit commitHash : commitHashes) {
 //					MyExecutor myTemp = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
 //							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
 					Runnable worker = new MyExecutor(commitHash.getOldCommitHash(),
-							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
+							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository(),conditionMax);
 					executor.execute(worker);
 					myExecutors.add((MyExecutor) worker);
 				}
@@ -146,9 +146,11 @@ public class BugPatchCollector {
 			csvFile = cmd.getOptionValue("c");
 			gitRepositoryPath = cmd.getOptionValue("g");
 			resultDirectory = cmd.getOptionValue("r");
+			conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+			
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
-
+			
 		} catch (Exception e) {
 			printHelp(options);
 			return false;
@@ -171,6 +173,11 @@ public class BugPatchCollector {
 		options.addOption(Option.builder("r").longOpt("resultDirectory")
 				.desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
 				.argName("Path name to construct result files").required().build());
+		
+		options.addOption(Option.builder("M").longOpt("Maxline")
+				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines.").hasArg()
+				.argName("Max lines of patch").build());
+
 
 		// add options by using OptionBuilder
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Display detailed messages!")

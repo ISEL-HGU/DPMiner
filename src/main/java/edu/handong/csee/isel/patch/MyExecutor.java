@@ -11,6 +11,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
+import edu.handong.csee.isel.parsers.Parser;
+
 public class MyExecutor extends Thread {
 	private ArrayList<CommitStatus> commitStatusList;
 	private String oldCommitHash;
@@ -18,18 +20,20 @@ public class MyExecutor extends Thread {
 	private Git git;
 	private Repository repository;
 	private ArrayList<String> issueHashList;
+	private int conditionMax;
 
 	public ArrayList<CommitStatus> getCommitStatusList() {
 		return commitStatusList;
 	}
 
 	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
-			Repository repository) throws IOException {
+			Repository repository, int conditionMax) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
 		this.issueHashList = issueHashList;
 		this.git = git;
 		this.repository = repository;
+		this.conditionMax = conditionMax;
 	}
 
 	@Override
@@ -81,11 +85,11 @@ public class MyExecutor extends Thread {
 				for (File diff : diffFiles.keySet()){
 					if(diff == null)
 						continue;
-					System.out.println(diff);
-					System.out.println(diffFiles.get(diff));
+//					System.out.println(diff);
+//					System.out.println(diffFiles.get(diff));
 			        //System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
 			        String patch = p.getStringFromFile(diff);
-			        if(patch.equals(""))
+			        if(patch.equals("") || this.isExceedconditionMax(patch, 10))
 			        	continue;
 			        String path = diffFiles.get(diff);
 			        newCommitStatus = null;
@@ -112,6 +116,12 @@ public class MyExecutor extends Thread {
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	private boolean isExceedconditionMax(String patch, int i) {
+		Parser parser = new Parser();
+		
+		return false;
 	}
 
 
