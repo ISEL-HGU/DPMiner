@@ -88,7 +88,7 @@ public class BugPatchCollector {
 //					MyExecutor myTemp = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
 //							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
 					Runnable worker = new MyExecutor(commitHash.getOldCommitHash(),
-							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository(),conditionMax);
+							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository(),conditionMax,conditionMin);
 					executor.execute(worker);
 					myExecutors.add((MyExecutor) worker);
 				}

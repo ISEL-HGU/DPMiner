@@ -21,19 +21,21 @@ public class MyExecutor extends Thread {
 	private Repository repository;
 	private ArrayList<String> issueHashList;
 	private int conditionMax;
+	private int conditionMin;
 
 	public ArrayList<CommitStatus> getCommitStatusList() {
 		return commitStatusList;
 	}
 
 	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
-			Repository repository, int conditionMax) throws IOException {
+			Repository repository, int conditionMax, int conditionMin) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
 		this.issueHashList = issueHashList;
 		this.git = git;
 		this.repository = repository;
 		this.conditionMax = conditionMax;
+		this.conditionMin = conditionMin;
 	}
 
 	@Override
@@ -90,7 +92,7 @@ public class MyExecutor extends Thread {
 //					System.out.println(diffFiles.get(diff));
 					// System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
 					String patch = p.getStringFromFile(diff);
-					if (patch.equals("") || this.isExceedconditionMax(patch, conditionMax))
+					if (patch.equals("") || this.isExceedcondition(patch, conditionMax, conditionMin))
 						continue;
 					String path = diffFiles.get(diff);
 					newCommitStatus = null;
@@ -103,9 +105,7 @@ public class MyExecutor extends Thread {
 
 			}
 
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(newCommitStatus.toString());
 			try {
@@ -121,9 +121,9 @@ public class MyExecutor extends Thread {
 	/**
 	 * if Lines (start with '+++' or '---') exceed conditionMax, return true
 	 */
-	private boolean isExceedconditionMax(String patch, int conditionMax) {
+	private boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
 		Parser parser = new Parser();
-		if(parser.parseNumOfDiffLine(patch) > conditionMax) {
+		if(parser.parseNumOfDiffLine(patch) > conditionMax || parser.parseNumOfDiffLine(patch) < conditionMin) {
 			return true;
 		}
 		return false;
