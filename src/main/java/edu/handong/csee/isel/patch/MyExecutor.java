@@ -57,51 +57,48 @@ public class MyExecutor extends Thread {
 //			con = false;
 			if (con) {
 				commitStatusList = null;
-			}
-			else {
+			} else {
 				Patch p = new Patch(git, repository);
-				HashMap<File,String> diffFiles = null;
+				HashMap<File, String> diffFiles = null;
 				diffFiles = p.pullDiffs(oldCommitHash, newCommitHash);
-				
+
 				String project = "";
 				String shortMessage = "";
 				String commitHash = "";
 				int date = 0;
 				String author = "";
-				
+
 				project = "Hbase";
 				shortMessage = commit.getShortMessage();
 				commitHash = newCommitHash;
 				date = commit.getCommitTime();
 				author = commit.getAuthorIdent().getName();
-				
-				
+
 				System.out.println("start~!");
-				
+
 				System.out.println(shortMessage);
 				System.out.println(date);
 				System.out.println(author);
 				System.out.println(diffFiles);
-				for (File diff : diffFiles.keySet()){
-					if(diff == null)
+				for (File diff : diffFiles.keySet()) {
+					if (diff == null)
 						continue;
 //					System.out.println(diff);
 //					System.out.println(diffFiles.get(diff));
-			        //System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
-			        String patch = p.getStringFromFile(diff);
-			        if(patch.equals("") || this.isExceedconditionMax(patch, 10))
-			        	continue;
-			        String path = diffFiles.get(diff);
-			        newCommitStatus = null;
-			        newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, author, path ,patch);
-			        System.out.println(newCommitStatus);
-			        commitStatusList.add(newCommitStatus);
-			    }
+					// System.out.println("key:"+mapkey+",value:"+mapobject.get(diff));
+					String patch = p.getStringFromFile(diff);
+					if (patch.equals("") || this.isExceedconditionMax(patch, conditionMax))
+						continue;
+					String path = diffFiles.get(diff);
+					newCommitStatus = null;
+					newCommitStatus = new CommitStatus(project, shortMessage, commitHash, date, author, path, patch);
+					System.out.println(newCommitStatus);
+					commitStatusList.add(newCommitStatus);
+				}
 				System.out.println("complete.");
-				
-				//ArrayList<String> patches = p.getStringFromFiles(diffFiles);
-				
-				
+
+				// ArrayList<String> patches = p.getStringFromFiles(diffFiles);
+
 			}
 
 		} catch (
@@ -118,11 +115,13 @@ public class MyExecutor extends Thread {
 		}
 	}
 
-	private boolean isExceedconditionMax(String patch, int i) {
+	/**
+	 * if Lines (start with '+++' or '---') exceed conditionMax, return true
+	 */
+	private boolean isExceedconditionMax(String patch, int conditionMax) {
 		Parser parser = new Parser();
-		
+
 		return false;
 	}
-
 
 }
