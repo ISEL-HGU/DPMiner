@@ -1,14 +1,9 @@
 package edu.handong.csee.isel.patch;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -48,16 +43,16 @@ public class MyExecutor extends Thread {
 
 			// HashList에 있는 커밋인지 확인하는 중.
 			boolean con = true;
-//			for (String issueHash : issueHashList) {
-//
-//				if (commit.getShortMessage().contains(issueHash)) {
-////					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
-//					con = false;
-//				}
-//			}
-			con = false;
+			for (String issueHash : issueHashList) {
+
+				if (commit.getShortMessage().substring(0, 10).contains(issueHash)) {
+//					System.out.println("issue: " + issueHash + "\nshortMessage: " + commit.getShortMessage());
+					con = false;
+				}
+			}
+//			con = false;
 			if (con) {
-				newCommitStatus = null;
+				commitStatusList = null;
 			}
 			else {
 				Patch p = new Patch(git, repository);

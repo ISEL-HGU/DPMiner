@@ -1,7 +1,5 @@
 package edu.handong.csee.isel.patch;
 
-import java.util.ArrayList;
-
 public class CommitStatus {
 	public String getProject() {
 		return project;
