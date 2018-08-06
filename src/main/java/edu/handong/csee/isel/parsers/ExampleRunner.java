@@ -19,17 +19,16 @@ public class ExampleRunner {
 		
 		
 		/* convertStringAsLineList */
-		String[] newStrings = parser.convertStringAsLineList(testString);
-		for (String str : newStrings) {
-			if(parser.isStartWithMinus(str) || parser.isStartWithPlus(str))
-				System.out.println(str);
-			
-			
-//			System.out.println(str);
-
-		}
+//		String[] newStrings = parser.convertStringAsLineList(testString);
+//		for (String str : newStrings) {
+//			if(parser.isStartWithMinus(str) || parser.isStartWithPlus(str))
+//				System.out.println(str);
+////			System.out.println(str);
+//
+//		}
 		/* convertStringAsLineList */
 		
+		System.out.println(parser.parseNumOfDiffLine(testString));
 		
 		
 	}

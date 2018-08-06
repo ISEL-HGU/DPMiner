@@ -1,12 +1,12 @@
 package edu.handong.csee.isel.parsers;
 
 public class Parser {
-	String[] convertStringAsLineList(String oneLine) {
+	public String[] convertStringAsLineList(String oneLine) {
 		String[] newStrings = oneLine.split("\n");
 		return newStrings;
 	}
 
-	boolean isStartWithPlus(String str) {
+	public boolean isStartWithPlus(String str) {
 		if (str.startsWith("+")) {
 			if (str.startsWith("+++"))
 				return false;
@@ -15,12 +15,24 @@ public class Parser {
 		return false;
 	}
 
-	boolean isStartWithMinus(String str) {
+	public boolean isStartWithMinus(String str) {
 		if (str.startsWith("-")) {
 			if (str.startsWith("---"))
 				return false;
 			return true;
 		}
 		return false;
+	}
+	
+	public int parseNumOfDiffLine(String inStr) {
+		int count = 0;
+		String[] newStrings = inStr.split("\n");
+		for(String str : newStrings) {
+			if(this.isStartWithMinus(str)||this.isStartWithPlus(str)) {
+				count ++;
+			}
+		}
+		
+		return count;
 	}
 }

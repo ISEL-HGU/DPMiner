@@ -123,7 +123,9 @@ public class MyExecutor extends Thread {
 	 */
 	private boolean isExceedconditionMax(String patch, int conditionMax) {
 		Parser parser = new Parser();
-
+		if(parser.parseNumOfDiffLine(patch) > conditionMax) {
+			return true;
+		}
 		return false;
 	}
 
