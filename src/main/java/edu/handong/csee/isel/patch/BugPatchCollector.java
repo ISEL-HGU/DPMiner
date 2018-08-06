@@ -69,37 +69,35 @@ public class BugPatchCollector {
 				// (2)
 				Patch p = new Patch(gitRepositoryPath);
 				ArrayList<TwoCommit> commitHashes = p.analyze();
-				
-				
-				
+
 				// (3) apply Thread pool
 
 				/*
 				 * MyExecutor 클래스를 만들고 extends Thread 한 개의 commit Hash를 받아드려. return은
 				 * CommitStatus.
 				 */
-				
-				//Thread.sleep(10000);
-				
+
+				// Thread.sleep(10000);
+
 				ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
 //				int count = 0;
 //				int total = commitHashes.size();
 				for (TwoCommit commitHash : commitHashes) {
 //					MyExecutor myTemp = new MyExecutor(gitRepositoryPath, commitHash.getOldCommitHash(),
 //							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository());
-					Runnable worker = new MyExecutor(commitHash.getOldCommitHash(),
-							commitHash.getNewCommitHash(), issueHashList, p.getGit(), p.getRepository(),conditionMax,conditionMin);
+					Runnable worker = new MyExecutor(commitHash.getOldCommitHash(), commitHash.getNewCommitHash(),
+							issueHashList, p.getGit(), p.getRepository(), conditionMax, conditionMin);
 					executor.execute(worker);
 					myExecutors.add((MyExecutor) worker);
 				}
 				executor.shutdown();
 				while (!executor.isTerminated()) {
-				
+
 				}
-				
+
 				System.out.println("100%!!");
 				Thread.sleep(3000);
-				
+
 				ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
 				ArrayList<CommitStatus> temp = null;
 				for (MyExecutor my : myExecutors) {
@@ -147,22 +145,29 @@ public class BugPatchCollector {
 			csvFile = cmd.getOptionValue("c");
 			gitRepositoryPath = cmd.getOptionValue("g");
 			resultDirectory = cmd.getOptionValue("r");
-			
-			if(cmd.hasOption("M") || cmd.hasOption("m")) {
-				if(cmd.hasOption("M") && cmd.hasOption("m")) {
-					conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
-					conditionMin = Integer.parseInt(cmd.getOptionValue("m"));
-				}
-				else {
-					throw new Exception("");
+
+			if (cmd.hasOption("M") || cmd.hasOption("m")) {
+				try {
+					if (cmd.hasOption("M") && cmd.hasOption("m")) {
+						conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+						conditionMin = Integer.parseInt(cmd.getOptionValue("m"));
+						if (conditionMin > conditionMax) {
+							throw new Exception("Max must be bigger than min!");
+						}
+
+					} else {
+						throw new Exception("'M' and 'm' Option must be together!");
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+					printHelp(options);
+					return false;
 				}
 			}
-			
-			
-			
+
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
-			
+
 		} catch (Exception e) {
 			printHelp(options);
 			return false;
@@ -185,15 +190,14 @@ public class BugPatchCollector {
 		options.addOption(Option.builder("r").longOpt("resultDirectory")
 				.desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
 				.argName("Path name to construct result files").required().build());
-		
+
 		options.addOption(Option.builder("M").longOpt("Maxline")
 				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
 				.argName("Max lines of patch").build());
-		
-		options.addOption(Option.builder("m").longOpt("Minline")
-				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).").hasArg()
-				.argName("Min lines of patch").build());
 
+		options.addOption(Option.builder("m").longOpt("Minline")
+				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).")
+				.hasArg().argName("Min lines of patch").build());
 
 		// add options by using OptionBuilder
 		options.addOption(Option.builder("v").longOpt("verbose").desc("Display detailed messages!")
