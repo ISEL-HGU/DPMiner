@@ -176,7 +176,7 @@ public class BugPatchCollector {
 				.argName("Path name to construct result files").required().build());
 		
 		options.addOption(Option.builder("M").longOpt("Maxline")
-				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines.").hasArg()
+				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
 				.argName("Max lines of patch").build());
 
 

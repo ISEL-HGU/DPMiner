@@ -98,7 +98,6 @@ public class MyExecutor extends Thread {
 //					System.out.println(newCommitStatus);
 					commitStatusList.add(newCommitStatus);
 				}
-				System.out.println("complete.");
 
 				// ArrayList<String> patches = p.getStringFromFiles(diffFiles);
 
@@ -116,6 +115,7 @@ public class MyExecutor extends Thread {
 				e1.printStackTrace();
 			}
 		}
+		System.out.println("complete.");
 	}
 
 	/**
