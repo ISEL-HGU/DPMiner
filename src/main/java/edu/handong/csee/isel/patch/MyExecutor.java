@@ -73,7 +73,7 @@ public class MyExecutor extends Thread {
 				int date = 0;
 				String author = "";
 
-				project = "Hbase";
+				project = repository.getDirectory().getName();
 				shortMessage = commit.getShortMessage();
 				commitHash = newCommitHash;
 				date = commit.getCommitTime();
