@@ -1,13 +1,17 @@
 package edu.handong.csee.isel.githubcommitparser;
 
 public class GithubPatchCollector {
-	static String address = null;
-	static String output = null;
-	static String file = null;
-	static String printNumber = null;
+	private String address = null;
+	private String output = null;
+	private String file = null;
+	private String printNumber = null;
 
 	public GithubPatchCollector(String address, String output, String file, String printNumber) {
-
+		this.address = address;
+		this.output = output;
+		this.file = file;
+		this.printNumber = printNumber;
+		
 	}
 
 	public void run() {
