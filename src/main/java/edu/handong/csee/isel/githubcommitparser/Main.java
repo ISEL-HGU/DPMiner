@@ -55,8 +55,8 @@ public class Main {
 					co.parseAndPrintCommiContents(oneAddress, output, printNumber);
 
 					iss.issueAddress.clear();
-					co.commitAddress.clear();
-					co.commitLine.clear();
+					//co.commitAddress.clear();
+					//co.commitLine.clear();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
