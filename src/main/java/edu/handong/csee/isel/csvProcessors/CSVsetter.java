@@ -35,14 +35,13 @@ public class CSVsetter {
 
 	File newFile;
 
-	public void makeCSVfromCommits(ArrayList<CommitStatus> commits) throws IOException {
+	public void makeCSVfromCommits(ArrayList<CommitStatus> commits, String[] headers) throws IOException {
 		File folder = newFile.getParentFile();
 		if (!folder.exists()) {
 			folder.mkdirs();
 		}
 		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(newFile.getAbsolutePath()));
-				CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Project", "ShortMessage",
-						"Commit Hash", "Date", "Author", "Path","Patch"));) {
+				CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers));) {
 			for (CommitStatus commit : commits) {
 				String project = commit.getProject(); //
 				String shortMessage = commit.getShortMessage(); //
@@ -56,21 +55,6 @@ public class CSVsetter {
 				String patch = commit.getPatch();
 				
 				csvPrinter.printRecord(project, shortMessage, commitHash, dTime, author, path, patch);
-				
-//				int size = 5;
-//				String[] patchList = new String[patches.size()+5]; //
-//				patchList[0] = project;
-//				patchList[1] = shortMessage;
-//				patchList[2] = commitHash;
-//				patchList[3] = dTime;
-//				patchList[4] = author;
-//						
-//				
-//				for (String temp : patches) {
-//					patchList[size++] = temp;
-//				}
-//				/* csv 만드는 로직~. */
-//				csvPrinter.printRecord(patchList);
 
 			}
 			csvPrinter.flush();

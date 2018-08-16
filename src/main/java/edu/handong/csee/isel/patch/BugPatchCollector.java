@@ -108,7 +108,9 @@ public class BugPatchCollector {
 				// (4)
 				File newFile = new File(resultDirectory + "/result.csv");
 				CSVsetter setter = new CSVsetter(newFile);
-				setter.makeCSVfromCommits(commitIncludedInIssueHashList);
+				String[] headers = {"Project", "ShortMessage",
+									"Commit Hash", "Date", "Author", "Path","Patch"};
+				setter.makeCSVfromCommits(commitIncludedInIssueHashList,headers);
 
 				System.out.println("saved patches in \"" + resultDirectory + "\"");
 
