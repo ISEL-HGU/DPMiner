@@ -49,7 +49,6 @@ public class Main {
 			/* start main */
 
 			if (gitRepositoryPath != null) {
-// 1. .java
 // 2. when user do not put reference
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
 						resultDirectory, reference, conditionMax, conditionMin);

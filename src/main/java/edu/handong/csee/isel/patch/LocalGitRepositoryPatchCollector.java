@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import edu.handong.csee.isel.csvProcessors.CSVgetter;
 import edu.handong.csee.isel.csvProcessors.CSVsetter;
@@ -11,15 +12,15 @@ import edu.handong.csee.isel.csvProcessors.CSVsetter;
 public class LocalGitRepositoryPatchCollector {
 	String gitRepositoryPath = null;
 	String resultDirectory = null;
-	String csvFile = null;
+	String reference = null;
 	int conditionMax;
 	int conditionMin;
 
-	public LocalGitRepositoryPatchCollector(String gitRepositoryPath, String resultDirectory, String csvFile,
+	public LocalGitRepositoryPatchCollector(String gitRepositoryPath, String resultDirectory, String reference,
 			int conditionMax, int conditionMin) {
 		this.gitRepositoryPath = gitRepositoryPath;
 		this.resultDirectory = resultDirectory;
-		this.csvFile = csvFile;
+		this.reference = reference;
 		this.conditionMax = conditionMax;
 		this.conditionMin = conditionMin;
 	}
@@ -34,19 +35,24 @@ public class LocalGitRepositoryPatchCollector {
 
 			// put csvFile and return issueHashes type of ArrayList<String>
 			// (1)
-			CSVgetter getter = new CSVgetter(csvFile);
-			ArrayList<String> issueHashList = getter.getColumn(1);
+			ArrayList<String> issueHashList = null;
+			Pattern pattern = null;
+			if (reference != null) {
+				CSVgetter getter = new CSVgetter(reference);
+				issueHashList = getter.getColumn(1);
+			} else {
+				pattern = Pattern.compile("fix|bug", Pattern.CASE_INSENSITIVE);
+			}
 
 			// (2)
 			Patch p = new Patch(gitRepositoryPath);
 			ArrayList<TwoCommit> commitHashes = p.analyze();
 
 			// (3) apply Thread pool
-
 			ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
 			for (TwoCommit commitHash : commitHashes) {
 				Runnable worker = new MyExecutor(commitHash.getOldCommitHash(), commitHash.getNewCommitHash(),
-						issueHashList, p.getGit(), p.getRepository(), conditionMax, conditionMin);
+						issueHashList, p.getGit(), p.getRepository(), conditionMax, conditionMin, pattern);
 				executor.execute(worker);
 				myExecutors.add((MyExecutor) worker);
 			}

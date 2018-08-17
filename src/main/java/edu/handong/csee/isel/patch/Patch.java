@@ -109,6 +109,7 @@ public class Patch {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
 	}
+
 	public Patch(Git git, Repository repository) throws IOException, GitAPIException {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.directoryPath = repository.getDirectory().toString();
@@ -213,7 +214,7 @@ public class Patch {
 	}
 
 	public ArrayList<TwoCommit> analyze() throws IOException, GitAPIException {
-		
+
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
 		System.out.println("set size: " + set.size());
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
@@ -245,7 +246,7 @@ public class Patch {
 		ArrayList<String> stringList = new ArrayList<String>();
 		for (File file : files) {
 			String temp = this.getStringFromFile(file);
-			if(!temp.trim().equals(""))
+			if (!temp.trim().equals(""))
 				stringList.add(temp);
 		}
 		return stringList;
@@ -270,14 +271,15 @@ public class Patch {
 		return newString;
 	}
 
-	public HashMap<File,String> pullDiffs(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
+	public HashMap<File, String> pullDiffs(String oldCommitHash, String newCommitHash)
+			throws IOException, GitAPIException {
 
 		File dir = new File("temp");
 		if (!dir.exists()) {
 			if (dir.mkdirs()) {
-				System.out.println("temp 폴더 생성 성공!");
+				System.out.println("successfull to make temp!");
 			} else {
-				System.out.println("temp 폴더 생성 실패..");
+				System.out.println("fail to make temp..");
 				;
 			}
 		}
@@ -286,18 +288,30 @@ public class Patch {
 		ObjectId id = repository.resolve(newCommitHash);
 		RevCommit commit = walk.parseCommit(id);
 
-		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
-		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
+		ArrayList<String> pathesOfOldCommit = this.getPathList(oldCommitHash);
+		ArrayList<String> pathesOfNewCommit = this.getPathList(newCommitHash);
 
-		HashSet<String> paths = new HashSet<String>(pathsOfOldCommit);
-		paths.addAll(pathsOfNewCommit);
+		int i;
+		int recurN = pathesOfNewCommit.size();
+		for (i = 0; i < recurN; i++) {
+			String oldPath = pathesOfOldCommit.get(i);
+			String newPath = pathesOfOldCommit.get(i);
+			if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java")) {
+				pathesOfNewCommit.remove(i);
+				pathesOfOldCommit.remove(i);
+				recurN--;
+			}
+		}
+
+		HashSet<String> paths = new HashSet<String>(pathesOfOldCommit);
+		paths.addAll(pathesOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
 		// List<List<DiffEntry>> diffs = null;
-		
-		HashMap<File,String> diffFilesAndPath = new HashMap<File,String>();
-		
-		int i = 1;
+
+		HashMap<File, String> diffFilesAndPath = new HashMap<File, String>();
+
+		i = 1;
 		for (String filePath : pathList) {
 			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
 			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
@@ -305,7 +319,6 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).call();
 
-			
 			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨. */
 			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i) + ".txt");
 			OutputStream fw = new FileOutputStream(newFile);
@@ -317,12 +330,9 @@ public class Patch {
 			fw.flush();
 			fw.close();
 			i++;
-			System.out.println("made.. " + newFile + ", "+filePath);
+			System.out.println("made.. " + newFile + ", " + filePath);
 			diffFilesAndPath.put(newFile, filePath);
-			
-//			diffs.add(newFile);
 		}
-//		return diffs;
 		return diffFilesAndPath;
 	}
 }
