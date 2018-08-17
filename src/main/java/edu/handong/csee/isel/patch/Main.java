@@ -9,6 +9,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import edu.handong.csee.isel.githubcommitparser.GithubPatchCollector;
+
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
  * Repository) -o, directory of result file. [-r], reference relative to bug
@@ -46,6 +48,20 @@ public class Main {
 
 			/* start main */
 
+			boolean hasReference = (reference != null);
+
+			if (gitRepositoryPath != null) {
+
+				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
+						resultDirectory, reference, conditionMax, conditionMin);
+				gr.run();
+
+			} else if (githubURL != null || listOfGithubURLFile != null) {
+				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
+						String.valueOf(conditionMin));
+				gh.run();
+			}
+
 			/* end main */
 
 		}
@@ -58,7 +74,7 @@ public class Main {
 
 			CommandLine cmd = parser.parse(options, args);
 
-			String input = cmd.getOptionValue("u");
+			String input = cmd.getOptionValue("i");
 
 			try {
 				if (input.contains("github.com")) {
@@ -75,8 +91,6 @@ public class Main {
 						throw new Exception("input file not exist!");
 					}
 				}
-
-				resultDirectory = cmd.getOptionValue("o");
 
 				if (cmd.hasOption("x") || cmd.hasOption("m")) {
 					if (cmd.hasOption("x") && cmd.hasOption("m")) {
@@ -97,6 +111,8 @@ public class Main {
 				return false;
 			}
 
+			reference = cmd.getOptionValue("r");
+			resultDirectory = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
 
 		} catch (Exception e) {
