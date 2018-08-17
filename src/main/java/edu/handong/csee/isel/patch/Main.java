@@ -48,15 +48,17 @@ public class Main {
 
 			/* start main */
 
-			boolean hasReference = (reference != null);
-
 			if (gitRepositoryPath != null) {
-
+// 1. .java
+// 2. when user do not put reference
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
 						resultDirectory, reference, conditionMax, conditionMin);
 				gr.run();
 
 			} else if (githubURL != null || listOfGithubURLFile != null) {
+// 1. add min, max Option
+// 2. '.java'
+// 3. reference
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
 						String.valueOf(conditionMin));
 				gh.run();
