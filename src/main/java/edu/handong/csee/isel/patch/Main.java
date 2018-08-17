@@ -7,10 +7,21 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+/**
+ * -i, URL or URI(github.com, reference file having github URLs, Local
+ * Repository) -o, directory of result file. [-r], reference relative to bug
+ * commit. [-m], minimum printing of lines. [-x], maximum printing of lines.
+ * 
+ * If is there '-r', check that commit message have the pattern by reference to
+ * '-r' option value. Else, check that commit message have the 'bug' or 'fix'
+ * keyword.
+ * 
+ * @author imseongbin
+ */
 public class Main {
-	String gitRepositoryPath;
-	String resultDirectory;
-	String csvFile;
+	String gitRepositoryPath = null;
+	String resultDirectory = null;
+	String csvFile = null;
 	int conditionMax;
 	int conditionMin;
 	boolean help;
@@ -76,20 +87,19 @@ public class Main {
 		return true;
 	}
 
-	// Definition Stage
 	private Options createOptions() {
 		Options options = new Options();
 
-		// add options by using OptionBuilder
-		options.addOption(Option.builder("c").longOpt("csv").desc("Set a path of CSV reference relative to commits")
-				.hasArg().argName("CSV File").required().build());
+		options.addOption(Option.builder("i").longOpt("input").desc(
+				"Three input type: URL or URI(github.com, reference file having github URLs, Local " + "Repository)")
+				.hasArg().argName("URI or URL").required().build());
 
-		options.addOption(Option.builder("g").longOpt("gitRepositoryPath").desc("Set a path of a git-repository")
-				.hasArg().argName("Git-repository path name").required().build());
+		options.addOption(Option.builder("o").longOpt("result").desc("directory will have result file").hasArg()
+				.argName("directory").required().build());
 
-		options.addOption(Option.builder("r").longOpt("resultDirectory")
-				.desc("Set a directory to have result files(all patch files and a summary file).").hasArg()
-				.argName("Path name to construct result files").required().build());
+		options.addOption(Option.builder("r").longOpt("reference")
+				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
+				.argName("reference relative to bug").build());
 
 		options.addOption(Option.builder("M").longOpt("Maxline")
 				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
@@ -99,7 +109,6 @@ public class Main {
 				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).")
 				.hasArg().argName("Min lines of patch").build());
 
-		// add options by using OptionBuilder
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
 		return options;
