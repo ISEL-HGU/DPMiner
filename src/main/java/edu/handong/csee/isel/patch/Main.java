@@ -1,5 +1,7 @@
 package edu.handong.csee.isel.patch;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -20,10 +22,12 @@ import org.apache.commons.cli.Options;
  */
 public class Main {
 	String gitRepositoryPath = null;
+	String githubURL = null;
+	String listOfGithubURLFile = null;
 	String resultDirectory = null;
-	String csvFile = null;
-	int conditionMax;
-	int conditionMin;
+	String reference = null;
+	int conditionMax = 0;
+	int conditionMin = 0;
 	boolean help;
 
 	public static void main(String[] args) {
@@ -54,27 +58,43 @@ public class Main {
 
 			CommandLine cmd = parser.parse(options, args);
 
-			csvFile = cmd.getOptionValue("c");
-			gitRepositoryPath = cmd.getOptionValue("g");
-			resultDirectory = cmd.getOptionValue("r");
+			String input = cmd.getOptionValue("u");
 
-			if (cmd.hasOption("M") || cmd.hasOption("m")) {
-				try {
-					if (cmd.hasOption("M") && cmd.hasOption("m")) {
-						conditionMax = Integer.parseInt(cmd.getOptionValue("M"));
+			try {
+				if (input.contains("github.com")) {
+					githubURL = input;
+				} else {
+					File file = new File(input);
+					if (file.exists()) {
+						if (file.isDirectory()) {
+							gitRepositoryPath = input;
+						} else {
+							listOfGithubURLFile = input;
+						}
+					} else {
+						throw new Exception("input file not exist!");
+					}
+				}
+
+				resultDirectory = cmd.getOptionValue("o");
+
+				if (cmd.hasOption("x") || cmd.hasOption("m")) {
+					if (cmd.hasOption("x") && cmd.hasOption("m")) {
+						conditionMax = Integer.parseInt(cmd.getOptionValue("x"));
 						conditionMin = Integer.parseInt(cmd.getOptionValue("m"));
 						if (conditionMin > conditionMax) {
 							throw new Exception("Max must be bigger than min!");
 						}
 
 					} else {
-						throw new Exception("'M' and 'm' Option must be together!");
+						throw new Exception("'x' and 'm' Option must be together!");
 					}
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-					printHelp(options);
-					return false;
+
 				}
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				printHelp(options);
+				return false;
 			}
 
 			help = cmd.hasOption("h");
@@ -101,7 +121,7 @@ public class Main {
 				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
 				.argName("reference relative to bug").build());
 
-		options.addOption(Option.builder("M").longOpt("Maxline")
+		options.addOption(Option.builder("x").longOpt("Maxline")
 				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
 				.argName("Max lines of patch").build());
 
