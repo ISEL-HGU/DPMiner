@@ -60,7 +60,7 @@ public class Main {
 // 2. '.java'
 // 3. reference
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
-						String.valueOf(conditionMin));
+						String.valueOf(conditionMax),String.valueOf(conditionMin));
 				gh.run();
 			}
 

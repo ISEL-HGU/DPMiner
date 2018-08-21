@@ -71,7 +71,7 @@ public class CommitParser {
 		}
 	}
 
-	void parseAndPrintCommiContents(String address, String output, String printNumber) throws IOException {
+	void parseAndPrintCommiContents(String address, String output, String printNumber,String conditionMin) throws IOException {
 		String project = null;
 
 		Pattern projectPattern = Pattern.compile(".+//.+/.+/(.+)");
@@ -111,6 +111,7 @@ public class CommitParser {
 								i++;
 								String path = null;
 								int plusMinusNumber = 0;
+								//int MImm
 								for (; i < commitLine.size(); i++) {
 									if (commitLine.get(i).contains("diff --")) {
 										i--;
@@ -140,8 +141,8 @@ public class CommitParser {
 										break;
 
 								}
-								if (plusMinusNumber == Integer.parseInt(printNumber) + 2)
-									continue;
+								if (plusMinusNumber == Integer.parseInt(printNumber) + 2) continue;
+								if (plusMinusNumber < Integer.parseInt(conditionMin)+2) continue;
 								csvPrinter.printRecord(project, commitLine.get(3), commitLine.get(0), commitLine.get(2),
 										commitLine.get(1), path, line2);
 							}

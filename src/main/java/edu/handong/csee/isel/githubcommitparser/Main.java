@@ -52,8 +52,8 @@ public class Main {
 				try {
 					iss.parseIssueAddress(oneAddress);
 					co.parseCommitAddress(oneAddress);
-					co.parseAndPrintCommiContents(oneAddress, output, printNumber);
-
+					co.parseAndPrintCommiContents(oneAddress, output, printNumber); // this class need to change from GithubPatchCollector.java
+					
 					iss.issueAddress.clear();
 					//co.commitAddress.clear();
 					//co.commitLine.clear();

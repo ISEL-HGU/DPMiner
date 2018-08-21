@@ -1,16 +1,20 @@
 package edu.handong.csee.isel.githubcommitparser;
 
+import edu.handong.csee.isel.patch.LocalGitRepositoryPatchCollector;
+
 public class GithubPatchCollector {
 	private String address = null;
 	private String output = null;
 	private String file = null;
-	private String printNumber = null;
+	private String conditionMax = null;
+	private String conditionMin= null;
 
-	public GithubPatchCollector(String address, String output, String file, String printNumber) {
+	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin) {
 		this.address = address;
 		this.output = output;
 		this.file = file;
-		this.printNumber = printNumber;
+		this.conditionMax = conditionMax;
+		this.conditionMin = conditionMin;
 		
 	}
 
@@ -37,8 +41,16 @@ public class GithubPatchCollector {
 
 			try {
 				iss.parseIssueAddress(oneAddress);
+				if(iss.issueAddress.size() == 0) {
+					System.out.println("git cloning..");
+					
+					String gitRepositoryPath = GitCloneFromURL();
+					
+					new LocalGitRepositoryPatchCollector(gitRepositoryPath, output, null, conditionMax, conditionMin).run();
+					return;
+				}
 				co.parseCommitAddress(oneAddress);
-				co.parseAndPrintCommiContents(oneAddress, output, printNumber);
+				co.parseAndPrintCommiContents(oneAddress, output, conditionMax,conditionMin);
 
 				iss.issueAddress.clear();
 				co.commitAddress.clear();
@@ -50,5 +62,10 @@ public class GithubPatchCollector {
 
 		System.out.println("You provided \"" + address + "\" as the value of the option a");
 
+	}
+
+	private String GitCloneFromURL() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
