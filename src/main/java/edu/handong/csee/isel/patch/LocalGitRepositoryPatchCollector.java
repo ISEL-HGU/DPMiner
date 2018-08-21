@@ -61,7 +61,7 @@ public class LocalGitRepositoryPatchCollector {
 
 			}
 
-			Thread.sleep(3000);
+			// Thread.sleep(3000);
 
 			ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
 			ArrayList<CommitStatus> temp = null;
@@ -75,7 +75,7 @@ public class LocalGitRepositoryPatchCollector {
 			if (!newFileName.endsWith("/")) {
 				newFileName += (newFileName + "/");
 			}
-			newFileName += (new File(gitRepositoryPath).getName() + ".csv");
+			newFileName += (new File(gitRepositoryPath).toString()+ ".csv");
 			File newFile = new File(newFileName);
 			CSVsetter setter = new CSVsetter(newFile);
 			String[] headers = { "Project", "ShortMessage", "Commit Hash", "Date", "Author", "Path", "Patch" };

@@ -51,27 +51,28 @@ public class MyExecutor extends Thread {
 			RevCommit newCommit = walk.parseCommit(repository.resolve(newCommitHash));
 
 			boolean skip = true;
-
-			if (issueHashList != null) {
-				for (String issueHash : issueHashList) {
-					if (issueHash.trim().length() == 40) { // It mean commit hash length
-
-						if (newCommitHash.equals(issueHash)) {
-							skip = false;
-						}
-					} else {
-						
-						if (newCommit.getFullMessage().contains(issueHash)) {
-							skip = false;
-						}
-					}
-				}
-			} else if (pattern != null) {
-				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
-				if (matcher.find()) {
-					skip = false;
-				}
-			}
+//
+//			if (issueHashList != null) {
+//				for (String issueHash : issueHashList) {
+//					if (issueHash.trim().length() == 40) { // It mean commit hash length
+//
+//						if (newCommitHash.equals(issueHash)) {
+//							skip = false;
+//						}
+//					} else {
+//						
+//						if (newCommit.getFullMessage().contains(issueHash)) {
+//							skip = false;
+//						}
+//					}
+//				}
+//			} else if (pattern != null) {
+//				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
+//				if (matcher.find()) {
+//					skip = false;
+//				}
+//			}
+			skip = false;
 			if (skip) {
 				commitStatusList = null;
 			} else {
@@ -97,7 +98,7 @@ public class MyExecutor extends Thread {
 					if (diff == null)
 						continue;
 					String patch = p.getStringFromFile(diff);
-					if (patch.equals("") || this.isExceedcondition(patch, conditionMax, conditionMin))
+					if (patch.equals("") || (conditionMax!=0) && (conditionMin!=0) && this.isExceedcondition(patch, conditionMax, conditionMin))
 						continue;
 					String path = diffFiles.get(diff);
 					newCommitStatus = null;

@@ -49,6 +49,7 @@ public class Main {
 			/* start main */
 
 			if (gitRepositoryPath != null) {
+// 1. .java
 // 2. when user do not put reference
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
 						resultDirectory, reference, conditionMax, conditionMin);
@@ -69,7 +70,7 @@ public class Main {
 	}
 
 	private boolean parseOptions(Options options, String[] args) {
-		CommandLineParser parser = new DefaultParser();
+            		CommandLineParser parser = new DefaultParser();
 
 		try {
 
@@ -139,7 +140,7 @@ public class Main {
 				.argName("reference relative to bug").build());
 
 		options.addOption(Option.builder("x").longOpt("Maxline")
-				.desc("Set a Max lines of each result patch. Only count '+' and '-' lines.").hasArg()
+				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'").hasArg()
 				.argName("Max lines of patch").build());
 
 		options.addOption(Option.builder("m").longOpt("Minline")

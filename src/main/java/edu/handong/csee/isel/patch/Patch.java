@@ -216,21 +216,12 @@ public class Patch {
 	public ArrayList<TwoCommit> analyze() throws IOException, GitAPIException {
 
 		Set<Entry<String, ArrayList<String>>> set = this.commitHashs.entrySet();
-		System.out.println("set size: " + set.size());
 		Iterator<Entry<String, ArrayList<String>>> it = set.iterator();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// int max = 1000;
 		int count = 0;
 		ArrayList<TwoCommit> sumCommitHash = new ArrayList<TwoCommit>();
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<String>> e = (Map.Entry<String, ArrayList<String>>) it.next();
 			ArrayList<String> hashList = e.getValue();
-			System.out.println("hashList size: " + hashList.size() + ",");
 			for (int i = 0; i < hashList.size() - 1; i++) {
 				sumCommitHash.add(new TwoCommit(hashList.get(i + 1), hashList.get(i)));
 			}
@@ -319,7 +310,6 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).call();
 
-			/* temp 폴더를 만들어서 거기에 파일을 만들고, 다시 긁어오는 식으로 해야됨. */
 			File newFile = new File("temp" + File.separator + commit.getId().name() + "-" + String.valueOf(i) + ".txt");
 			OutputStream fw = new FileOutputStream(newFile);
 
