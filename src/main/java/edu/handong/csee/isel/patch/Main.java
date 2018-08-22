@@ -28,6 +28,7 @@ public class Main {
 	String listOfGithubURLFile = null;
 	String resultDirectory = null;
 	String reference = null;
+	String label = null;
 	int conditionMax = 0;
 	int conditionMin = 0;
 	boolean help;
@@ -49,28 +50,23 @@ public class Main {
 			/* start main */
 
 			if (gitRepositoryPath != null) {
-// 1. .java
-// 2. when user do not put reference
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
 						resultDirectory, reference, conditionMax, conditionMin);
 				gr.run();
 
 			} else if (githubURL != null || listOfGithubURLFile != null) {
-// 1. add min, max Option
-// 2. '.java'
-// 3. reference
+// 3. reference, mabe not need be
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
-						String.valueOf(conditionMax),String.valueOf(conditionMin));
+						String.valueOf(conditionMax), String.valueOf(conditionMin), label);
 				gh.run();
 			}
 
 			/* end main */
-
 		}
 	}
 
 	private boolean parseOptions(Options options, String[] args) {
-            		CommandLineParser parser = new DefaultParser();
+		CommandLineParser parser = new DefaultParser();
 
 		try {
 
@@ -113,6 +109,7 @@ public class Main {
 				return false;
 			}
 
+			label = cmd.getOptionValue("l");
 			reference = cmd.getOptionValue("r");
 			resultDirectory = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
@@ -139,13 +136,16 @@ public class Main {
 				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
 				.argName("reference relative to bug").build());
 
-		options.addOption(Option.builder("x").longOpt("Maxline")
-				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'").hasArg()
-				.argName("Max lines of patch").build());
+		options.addOption(Option.builder("x").longOpt("max")
+				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'")
+				.hasArg().argName("Max lines of patch").build());
 
-		options.addOption(Option.builder("m").longOpt("Minline")
+		options.addOption(Option.builder("m").longOpt("min")
 				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).")
 				.hasArg().argName("Min lines of patch").build());
+
+		options.addOption(Option.builder("l").longOpt("label").desc("Set a bug label of github").hasArg()
+				.argName("Find coincident commit with label").build());
 
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 

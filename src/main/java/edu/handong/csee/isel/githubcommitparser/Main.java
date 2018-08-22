@@ -11,7 +11,9 @@ public class Main {
 	static String address = null;
 	static String output = null;
 	static String file = null;
-	static String printNumber = null;
+	static String conditionMax = null;
+	static String conditionMin = null;
+	static String label = null;
 	boolean verbose;
 	boolean help;
 
@@ -19,7 +21,7 @@ public class Main {
 		Main my = new Main();
 		my.run(args);
 	}
-
+ 
 	private void run(String[] args) {
 		Options options = createOptions();
 
@@ -50,13 +52,13 @@ public class Main {
 				String oneAddress = fr.githubAddress.get(i);
 
 				try {
-					iss.parseIssueAddress(oneAddress);
+					iss.parseIssueAddress(oneAddress,label);
 					co.parseCommitAddress(oneAddress);
-					co.parseAndPrintCommiContents(oneAddress, output, printNumber); // this class need to change from GithubPatchCollector.java
+					co.parseAndPrintCommiContents(oneAddress, output, conditionMax, conditionMin); // this class need to change from GithubPatchCollector.java
 					
 					iss.issueAddress.clear();
-					//co.commitAddress.clear();
-					//co.commitLine.clear();
+					co.commitAddress.clear();
+					co.commitLine.clear();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -80,9 +82,10 @@ public class Main {
 			address = cmd.getOptionValue("a");
 			file = cmd.getOptionValue("f");
 			output = cmd.getOptionValue("o");
-			printNumber = cmd.getOptionValue("n");
+			conditionMax = cmd.getOptionValue("n");
 			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
+			label = cmd.getOptionValue("l");
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -104,6 +107,9 @@ public class Main {
 		Options options = new Options();
 
 		options.addOption(Option.builder("a").longOpt("address").desc("Set a address of github").hasArg()
+				.argName("Path name to project address").build());
+		
+		options.addOption(Option.builder("l").longOpt("label").desc("Set a address of github").hasArg()
 				.argName("Path name to project address").build());
 
 		options.addOption(Option.builder("f").longOpt("file").desc("Set a address of file").hasArg()

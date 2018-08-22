@@ -30,7 +30,9 @@ public class LocalGitRepositoryPatchCollector {
 
 			int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
 			ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
-
+			
+			
+			
 			Thread.sleep(3000);
 
 			// put csvFile and return issueHashes type of ArrayList<String>
@@ -75,7 +77,7 @@ public class LocalGitRepositoryPatchCollector {
 			if (!newFileName.endsWith("/")) {
 				newFileName += (newFileName + "/");
 			}
-			newFileName += (new File(gitRepositoryPath).toString()+ ".csv");
+			newFileName += (new File(gitRepositoryPath).getName()+ ".csv");
 			File newFile = new File(newFileName);
 			CSVsetter setter = new CSVsetter(newFile);
 			String[] headers = { "Project", "ShortMessage", "Commit Hash", "Date", "Author", "Path", "Patch" };

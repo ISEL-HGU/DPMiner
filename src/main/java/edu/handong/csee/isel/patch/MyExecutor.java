@@ -51,28 +51,27 @@ public class MyExecutor extends Thread {
 			RevCommit newCommit = walk.parseCommit(repository.resolve(newCommitHash));
 
 			boolean skip = true;
-//
-//			if (issueHashList != null) {
-//				for (String issueHash : issueHashList) {
-//					if (issueHash.trim().length() == 40) { // It mean commit hash length
-//
-//						if (newCommitHash.equals(issueHash)) {
-//							skip = false;
-//						}
-//					} else {
-//						
-//						if (newCommit.getFullMessage().contains(issueHash)) {
-//							skip = false;
-//						}
-//					}
-//				}
-//			} else if (pattern != null) {
-//				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
-//				if (matcher.find()) {
-//					skip = false;
-//				}
-//			}
-			skip = false;
+
+			if (issueHashList != null) {
+				for (String issueHash : issueHashList) {
+					if (issueHash.trim().length() == 40) { // It mean commit hash length
+
+						if (newCommitHash.equals(issueHash)) {
+							skip = false;
+						}
+					} else {
+						
+						if (newCommit.getFullMessage().contains(issueHash)) {
+							skip = false;
+						}
+					}
+				}
+			} else if (pattern != null) {
+				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
+				if (matcher.find()) {
+					skip = false;
+				}
+			}
 			if (skip) {
 				commitStatusList = null;
 			} else {
