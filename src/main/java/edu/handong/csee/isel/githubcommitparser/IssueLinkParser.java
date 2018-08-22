@@ -11,19 +11,32 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import org.jsoup.select.Elements;
-/*
- * 
+
+/**
+ *  Parse the issue addresses class.
+ * @author yangsujin
+ *
  */
 public class IssueLinkParser {
+	/**
+	 * Save parsing Github issues addresses.
+	 */
 	public static ArrayList<String> issueAddress = new ArrayList<String>();
 
+	/**
+	 * Parse the issue addresses of a specific label in Github repository.
+	 * @param address	Github repository address
+	 * @param label		Github repository issues label names
+	 * @author yangsujin
+	 *
+	 */
 	void parseIssueAddress(String address,String label) throws IOException{
 
 		boolean tf = true;
 		int pageNumber=1;
 		Random r = new Random();
 		if(label == null) label = "bug";
-		
+
 		while(tf) {
 			String parsingAddress = address+"/issues?page="+pageNumber+"&q=label:"+label+"+is%3Aclosed";
 
@@ -50,25 +63,20 @@ public class IssueLinkParser {
 			pageNumber++;
 
 			int randomNumber=2000+r.nextInt(3000);
-			System.out.print(randomNumber+"\r");
 			try {
 				Thread.sleep(randomNumber);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
 		}
-
-		int i=1;
-		for(String l : issueAddress) {
-			System.out.println(i+" "+l);
-			i++;
-		}
-
+		System.out.println("Success to parsing issue addresses!");
 	}
 
+	/**
+	 * Using issueAddress in another class.
+	 * @return ArrayList<String>
+	 */
 	public static ArrayList<String> getIssueAddress() {
-		// TODO Auto-generated method stub
 		return issueAddress;
 	}
 

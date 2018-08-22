@@ -19,17 +19,26 @@ import org.jsoup.nodes.Element;
 
 import org.jsoup.select.Elements;
 
+/**
+ * Parsing commit addresses and print bug commit contents to .csv file.
+ * @author yangsujin
+ *
+ */
 public class CommitParser {
-	public ArrayList<String> commitAddress = new ArrayList<String>();
-	public ArrayList<String> commitLine = new ArrayList<String>();
+	ArrayList<String> commitAddress = new ArrayList<String>();
+	ArrayList<String> commitLine = new ArrayList<String>();
 	private URL urlAddress; //URL address
 	HttpURLConnection code;
 	BufferedReader br;
 	String line;
-
 	Random r = new Random();
 	private String line2;
-	
+
+	/**
+	 * Parse commit addresses in bug issue addresses.
+	 * @param address	Github repository address
+	 * @throws IOException
+	 */
 	void parseCommitAddress(String address) throws IOException { 
 		int size = IssueLinkParser.getIssueAddress().size();
 
@@ -51,32 +60,31 @@ public class CommitParser {
 			}
 
 			int randomNumber=r.nextInt(3000);
-
-			System.out.println(randomNumber);
-
 			try {
 				Thread.sleep(randomNumber);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-
-		int i=1;
-		for(String l : commitAddress){
-			System.out.println(i+" "+l);
-			i++;
-		}
+		System.out.println("Success to parsing bug commit addresses!");
 	}
 
 
-
-	void parseAndPrintCommiContents(String address, String output ,String printNumber,String conditionMin) throws IOException {
+	/**
+	 * Parse and Print commit contents in .csv file.
+	 * @param address	Github repository address
+	 * @param output	output .csv file path
+	 * @param conditionMax		print max line number that modify in commit
+	 * @param conditionMin		print min line number that modify in commit
+	 * @throws IOException
+	 */
+	void parseAndPrintCommiContents(String address, String output ,String conditionMax,String conditionMin) throws IOException {
 		String project = null;
-		
+
 		Pattern projectPattern = Pattern.compile(".+//.+/.+/(.+)");
 		Matcher projectMatcher = projectPattern.matcher(address);
 		while(projectMatcher.find()) project = projectMatcher.group(1);
-		
+
 		String fileName = output+"/"+project+ ".csv";
 
 		try {
@@ -98,9 +106,6 @@ public class CommitParser {
 					}
 
 					if(commitLine.size()>0){
-						//if(printNumber == null) Integer.parseInt(printNumber);
-						
-						
 						commitAddressLine = parseCSVComponent(commitAddressLine);
 
 						for(int i=4; i<commitLine.size(); i++) {
@@ -114,29 +119,29 @@ public class CommitParser {
 										i--;
 										break;
 									}
-									
+
 									if(commitLine.get(i).startsWith("+++ b")) {
 										path = commitLine.get(i);
 										if(!path.endsWith(".java")) break;
 									}
-									
+
 									if(commitLine.get(i).startsWith("+") || commitLine.get(i).startsWith("-")) plusMinusNumber++;
-									
+
 									if(path!=null) {
 										Pattern pathPattern = Pattern.compile("\\+\\+\\+\\s[a-z/]+/(.+)");
 										Matcher pathMatcher = pathPattern.matcher(path);
 										while(pathMatcher.find()) path = pathMatcher.group(1);
 									}
 									if(commitLine.get(i).startsWith("From ")) break;
-									
+
 									line2 = line2.concat(commitLine.get(i));
 									line2 = line2.concat("\n");
-									
-									if(plusMinusNumber > Integer.parseInt(printNumber)+2) break;
-									
+
+									if(plusMinusNumber > Integer.parseInt(conditionMax)+2) break;
+
 								}
 								if(path != null && !path.endsWith(".java")) continue;
-								if(plusMinusNumber > Integer.parseInt(printNumber)+2) continue;
+								if(plusMinusNumber > Integer.parseInt(conditionMax)+2) continue;
 								if(plusMinusNumber < Integer.parseInt(conditionMin)+2) continue;
 								csvPrinter.printRecord(project,commitLine.get(3),commitLine.get(0),commitLine.get(2),commitLine.get(1),path,line2);
 							}
@@ -147,9 +152,6 @@ public class CommitParser {
 					e.printStackTrace();
 				}
 				int randomNumber=r.nextInt(3000);
-
-				System.out.print(randomNumber+"\r");
-
 				try {
 					Thread.sleep(randomNumber);
 				} catch (InterruptedException e) {
@@ -160,17 +162,19 @@ public class CommitParser {
 			}
 
 			csvPrinter.close();
-
 		}catch(Exception e) {
 			System.out.println("Error opening the file "+fileName);
 			e.printStackTrace();
 			System.exit(0);
 		}
-
+		System.out.println("finish~!");
 	}
 
-
-	private synchronized String parseCSVComponent(String commitAddressLine) {
+	/**
+	 * Parsing commit subject name, commit number, date and author.
+	 * @return
+	 */
+	private String parseCSVComponent(String commitAddressLine) {
 
 		Pattern subjectPattern = Pattern.compile(".+:.\\[.+\\].(.+)");
 		Matcher subjectMatcher = subjectPattern.matcher(commitLine.get(3));
@@ -187,7 +191,7 @@ public class CommitParser {
 		Pattern datePattern = Pattern.compile(".+\\s.+,\\s(.+)\\s.+");
 		Matcher dateMatcher = datePattern.matcher(commitLine.get(2));
 		while(dateMatcher.find()) commitLine.set(2, dateMatcher.group(1));
-		
+
 		return commitAddressLine;
 	}
 
