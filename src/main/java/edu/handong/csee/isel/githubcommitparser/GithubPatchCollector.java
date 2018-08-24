@@ -1,16 +1,11 @@
 package edu.handong.csee.isel.githubcommitparser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import edu.handong.csee.isel.patch.LocalGitRepositoryPatchCollector;
-
 public class GithubPatchCollector {
 	private String address = null;
-	private String output = null;
+	private String resultDirectory = null;
 	private String file = null;
 	private String conditionMax = null;
 	private String conditionMin = null;
@@ -20,7 +15,7 @@ public class GithubPatchCollector {
 	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin,
 			String label, boolean isThread) {
 		this.address = address;
-		this.output = output;
+		this.resultDirectory = output;
 		this.file = file;
 		this.conditionMax = conditionMax;
 		this.conditionMin = conditionMin;
@@ -59,7 +54,7 @@ public class GithubPatchCollector {
 
 				}
 				co.parseCommitAddress(oneAddress);
-				co.parseAndPrintCommiContents(oneAddress, output, conditionMax, conditionMin);
+				co.parseAndPrintCommiContents(oneAddress, resultDirectory, conditionMax, conditionMin);
 
 				iss.issueAddress.clear();
 				co.commitAddress.clear();
@@ -72,34 +67,7 @@ public class GithubPatchCollector {
 		for (String failAddress : failToAccess) {
 			System.out.println("There is not issue-space in" + failAddress);
 		}
-		System.out.println("You provided \"" + address + "\" as the value of the option a");
-
-	}
-
-	private String GitCloneFromURI(String URI, String importPass, String project) throws Exception {
-
-		System.out.println("importPass: " + importPass);
-		System.out.println("Project: " + project);
-		String[] command = { "git", "clone", URI };
-		executeCmd(command, importPass);
-
-		return importPass + File.separator + project;
-	}
-
-	private void executeCmd(String[] cmd, String pathOfExcetue) throws Exception {
-		ProcessBuilder pb = new ProcessBuilder(cmd);
-		pb.directory(new File(pathOfExcetue));
-		pb.redirectErrorStream(true);
-		Process process = pb.start();
-		BufferedReader stdOut = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-		String line;
-		while ((line = stdOut.readLine()) != null) {
-			System.out.println(line);
-		}
-		while ((line = stdError.readLine()) != null)
-			System.err.println("error: " + line);
-		process.waitFor();
+		System.out.println("saved patches in \"" + resultDirectory + "\"");
 
 	}
 }
