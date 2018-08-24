@@ -17,7 +17,8 @@ public class GithubPatchCollector {
 	private String label = null;
 	private boolean isThread;
 
-	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin, String label, boolean isThread) {
+	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin,
+			String label, boolean isThread) {
 		this.address = address;
 		this.output = output;
 		this.file = file;
@@ -50,25 +51,10 @@ public class GithubPatchCollector {
 			String oneAddress = fr.githubAddress.get(i);
 
 			try {
-				iss.parseIssueAddress(oneAddress,label);
+				iss.parseIssueAddress(oneAddress, label);
 				if (iss.issueAddress.size() == 0) {
 
-					System.out.println("There is not issue-space in" + oneAddress);
-					System.out.println("Do you want to git-clone and parsing it?(y,n)");
-					String yesOrNo = in.nextLine();
-					if (yesOrNo.equalsIgnoreCase("y")) {
-
-						System.out.println("git cloning..");
-						String temp[] = oneAddress.split("/");
-						String gitRepositoryPath = GitCloneFromURI(oneAddress + ".git", ".", temp[temp.length - 1]);
-
-						new LocalGitRepositoryPatchCollector(gitRepositoryPath, output, null,
-								Integer.parseInt(conditionMax), Integer.parseInt(conditionMin),isThread).run();
-					} else {
-
-						System.out.println("Fail to pull the data in " + oneAddress);
-						failToAccess.add(oneAddress);
-					}
+					failToAccess.add(oneAddress);
 					continue;
 
 				}
@@ -84,7 +70,7 @@ public class GithubPatchCollector {
 		}
 
 		for (String failAddress : failToAccess) {
-			System.out.println("Fail to access to " + failAddress);
+			System.out.println("There is not issue-space in" + failAddress);
 		}
 		System.out.println("You provided \"" + address + "\" as the value of the option a");
 
