@@ -49,10 +49,6 @@ public class Patch {
 	HashMap<String, ArrayList<String>> allPathList = new HashMap<String, ArrayList<String>>(); // <commitHash, pathList>
 	ArrayList<String> branchList = new ArrayList<String>();
 
-	public HashMap<String, ArrayList<String>> getCommitHashs() {
-		return commitHashs;
-	}
-
 	public Git getGit() {
 		return git;
 	}
@@ -130,33 +126,6 @@ public class Patch {
 		walk.dispose();
 
 		return pathList;
-	}
-
-	public void showFileDiff(String oldCommitHash, String newCommitHash) throws IOException, GitAPIException {
-
-		ArrayList<String> pathsOfOldCommit = this.getPathList(oldCommitHash);
-		ArrayList<String> pathsOfNewCommit = this.getPathList(newCommitHash);
-
-		HashSet<String> paths = new HashSet<String>(pathsOfOldCommit);
-		paths.addAll(pathsOfNewCommit);
-
-		ArrayList<String> pathList = new ArrayList<String>(paths);
-
-		for (String filePath : pathList) {
-			AbstractTreeIterator oldTreeParser = this.prepareTreeParser(repository, oldCommitHash);
-			AbstractTreeIterator newTreeParser = this.prepareTreeParser(repository, newCommitHash);
-
-			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-					.setPathFilter(PathFilter.create(filePath)).call();
-			for (DiffEntry entry : diff) {
-				// System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to:
-				// " + entry.getNewId());
-				try (DiffFormatter formatter = new DiffFormatter(System.out)) {
-					formatter.setRepository(repository);
-					formatter.format(entry);
-				}
-			}
-		}
 	}
 
 	private AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {

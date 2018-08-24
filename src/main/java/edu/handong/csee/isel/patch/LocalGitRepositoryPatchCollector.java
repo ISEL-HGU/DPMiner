@@ -15,24 +15,31 @@ public class LocalGitRepositoryPatchCollector {
 	String reference = null;
 	int conditionMax;
 	int conditionMin;
+	boolean isThread;
 
 	public LocalGitRepositoryPatchCollector(String gitRepositoryPath, String resultDirectory, String reference,
-			int conditionMax, int conditionMin) {
+			int conditionMax, int conditionMin, boolean isThread) {
 		this.gitRepositoryPath = gitRepositoryPath;
 		this.resultDirectory = resultDirectory;
 		this.reference = reference;
 		this.conditionMax = conditionMax;
 		this.conditionMin = conditionMin;
+		this.isThread = isThread;
 	}
 
 	public void run() {
 		try {
 
-			int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
-			ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
+			ExecutorService executor = null;
 
-			// put csvFile and return issueHashes type of ArrayList<String>
-			// (1)
+			if (isThread) {
+				int numOfCoresInMyCPU = Runtime.getRuntime().availableProcessors();
+				executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
+			} else {
+				executor = Executors.newFixedThreadPool(1);
+			}
+
+			// (1) put csvFile and return issueHashes type of ArrayList<String>
 			ArrayList<String> issueHashList = null;
 			Pattern pattern = null;
 			if (reference != null) {
@@ -59,8 +66,6 @@ public class LocalGitRepositoryPatchCollector {
 
 			}
 
-			// Thread.sleep(3000);
-
 			ArrayList<CommitStatus> commitIncludedInIssueHashList = new ArrayList<CommitStatus>();
 			ArrayList<CommitStatus> temp = null;
 			for (MyExecutor my : myExecutors) {
@@ -73,7 +78,7 @@ public class LocalGitRepositoryPatchCollector {
 			if (!newFileName.endsWith("/")) {
 				newFileName += ("/");
 			}
-			newFileName += (new File(gitRepositoryPath).getName()+ ".csv");
+			newFileName += (new File(gitRepositoryPath).getName() + ".csv");
 			File newFile = new File(newFileName);
 			CSVsetter setter = new CSVsetter(newFile);
 			String[] headers = { "Project", "ShortMessage", "Commit Hash", "Date", "Author", "Path", "Patch" };

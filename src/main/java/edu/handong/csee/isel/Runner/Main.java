@@ -32,6 +32,7 @@ public class Main {
 	String label = null;
 	int conditionMax = 0;
 	int conditionMin = 0;
+	boolean isThread;
 	boolean help;
 
 	public static void main(String[] args) {
@@ -50,12 +51,12 @@ public class Main {
 
 			if (gitRepositoryPath != null) {
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
-						resultDirectory, reference, conditionMax, conditionMin);
+						resultDirectory, reference, conditionMax, conditionMin, isThread);
 				gr.run();
 
 			} else if (githubURL != null || listOfGithubURLFile != null) {
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
-						String.valueOf(conditionMax), String.valueOf(conditionMin), label);
+						String.valueOf(conditionMax), String.valueOf(conditionMin), label, isThread);
 				gh.run();
 			}
 
@@ -110,6 +111,7 @@ public class Main {
 			reference = cmd.getOptionValue("r");
 			resultDirectory = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
+			isThread = cmd.hasOption("t");
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -143,6 +145,10 @@ public class Main {
 
 		options.addOption(Option.builder("l").longOpt("label").desc("Set a bug label of github").hasArg()
 				.argName("Find coincident commit with label").build());
+
+		options.addOption(Option.builder("t").longOpt("thread")
+				.desc("Using threads in your cpu, you can speed up. Only do well if input is local repository.")
+				.build());
 
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 

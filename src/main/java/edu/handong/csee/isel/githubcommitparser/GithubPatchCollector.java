@@ -15,14 +15,16 @@ public class GithubPatchCollector {
 	private String conditionMax = null;
 	private String conditionMin = null;
 	private String label = null;
+	private boolean isThread;
 
-	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin, String label) {
+	public GithubPatchCollector(String address, String output, String file, String conditionMax, String conditionMin, String label, boolean isThread) {
 		this.address = address;
 		this.output = output;
 		this.file = file;
 		this.conditionMax = conditionMax;
 		this.conditionMin = conditionMin;
 		this.label = label;
+		this.isThread = isThread;
 	}
 
 	public void run() {
@@ -61,7 +63,7 @@ public class GithubPatchCollector {
 						String gitRepositoryPath = GitCloneFromURI(oneAddress + ".git", ".", temp[temp.length - 1]);
 
 						new LocalGitRepositoryPatchCollector(gitRepositoryPath, output, null,
-								Integer.parseInt(conditionMax), Integer.parseInt(conditionMin)).run();
+								Integer.parseInt(conditionMax), Integer.parseInt(conditionMin),isThread).run();
 					} else {
 
 						System.out.println("Fail to pull the data in " + oneAddress);
