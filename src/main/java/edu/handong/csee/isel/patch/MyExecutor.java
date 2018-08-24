@@ -60,7 +60,7 @@ public class MyExecutor extends Thread {
 							skip = false;
 						}
 					} else {
-						
+
 						if (newCommit.getFullMessage().contains(issueHash)) {
 							skip = false;
 						}
@@ -89,15 +89,14 @@ public class MyExecutor extends Thread {
 				shortMessage = newCommit.getShortMessage();
 				commitHash = newCommitHash;
 				date = newCommit.getCommitTime();
-				author = newCommit.getAuthorIdent().getName();
-
-				System.out.println("start~!");
+				author = newCommit.getAuthorIdent().getName()+"<"+newCommit.getAuthorIdent().getEmailAddress()+">";
 
 				for (File diff : diffFiles.keySet()) {
 					if (diff == null)
 						continue;
 					String patch = p.getStringFromFile(diff);
-					if (patch.equals("") || (conditionMax!=0) && (conditionMin!=0) && this.isExceedcondition(patch, conditionMax, conditionMin))
+					if (patch.equals("") || (conditionMax != 0) && (conditionMin != 0)
+							&& this.isExceedcondition(patch, conditionMax, conditionMin))
 						continue;
 					String path = diffFiles.get(diff);
 					newCommitStatus = null;
@@ -106,7 +105,6 @@ public class MyExecutor extends Thread {
 				}
 
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(newCommitStatus.toString());
@@ -116,7 +114,6 @@ public class MyExecutor extends Thread {
 				e1.printStackTrace();
 			}
 		}
-		System.out.println("complete.");
 	}
 
 	/**

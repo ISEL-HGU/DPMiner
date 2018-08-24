@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.patch;
+package edu.handong.csee.isel.Runner;
 
 import java.io.File;
 
@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 import edu.handong.csee.isel.githubcommitparser.GithubPatchCollector;
+import edu.handong.csee.isel.patch.LocalGitRepositoryPatchCollector;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -47,21 +48,17 @@ public class Main {
 				return;
 			}
 
-			/* start main */
-
 			if (gitRepositoryPath != null) {
 				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
 						resultDirectory, reference, conditionMax, conditionMin);
 				gr.run();
 
 			} else if (githubURL != null || listOfGithubURLFile != null) {
-// 3. reference, mabe not need be
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
 						String.valueOf(conditionMax), String.valueOf(conditionMin), label);
 				gh.run();
 			}
 
-			/* end main */
 		}
 	}
 

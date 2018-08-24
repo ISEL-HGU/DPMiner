@@ -13,14 +13,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
@@ -32,10 +36,6 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 
 public class Patch {
 
@@ -64,7 +64,7 @@ public class Patch {
 	public void setCommitHashs(String branch) throws RevisionSyntaxException, NoHeadException, MissingObjectException,
 			IncorrectObjectTypeException, AmbiguousObjectException, GitAPIException, IOException {
 		if (branchList.isEmpty() || !branchList.contains(branch)) {
-			System.out.println("branch is not!");
+//			System.out.println("branch is not!");
 			return;
 		}
 		ArrayList<String> commitHashList = new ArrayList<String>();
@@ -91,15 +91,6 @@ public class Patch {
 		}
 	}
 
-	public ArrayList<String> getBranchList() throws GitAPIException {
-		return branchList;
-	}
-
-	public HashMap<String, ArrayList<String>> getAllPathList() { // parameter: commitHash
-		// TODO Auto-generated method stub
-		return allPathList;
-	}
-
 	public Patch(String directoryPath) throws IOException, GitAPIException {
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.directoryPath = directoryPath;
@@ -116,25 +107,6 @@ public class Patch {
 		this.directory = new File(directoryPath);
 		this.git = git;
 		this.repository = repository;
-		this.commitHashs = new HashMap<String, ArrayList<String>>();
-		this.setBranchList();
-	}
-
-	public void reset() {
-		this.directoryPath = null;
-		this.directory = null;
-		this.git = null;
-		this.repository = null;
-		this.branchList = null;
-		this.commitHashs = null;
-	}
-
-	public void set(String directoryPath) throws IOException, GitAPIException {
-		this.commitHashs = new HashMap<String, ArrayList<String>>();
-		this.directoryPath = directoryPath;
-		this.directory = new File(directoryPath);
-		this.git = Git.open(new File(directoryPath));
-		this.repository = this.git.getRepository();
 		this.commitHashs = new HashMap<String, ArrayList<String>>();
 		this.setBranchList();
 	}
@@ -177,7 +149,8 @@ public class Patch {
 			List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 					.setPathFilter(PathFilter.create(filePath)).call();
 			for (DiffEntry entry : diff) {
-				System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
+				// System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to:
+				// " + entry.getNewId());
 				try (DiffFormatter formatter = new DiffFormatter(System.out)) {
 					formatter.setRepository(repository);
 					formatter.format(entry);
@@ -263,15 +236,14 @@ public class Patch {
 	}
 
 	public HashMap<File, String> pullDiffs(String oldCommitHash, String newCommitHash)
-			throws IOException, GitAPIException {
+			throws IOException, GitAPIException, InterruptedException {
 
 		File dir = new File("temp");
 		if (!dir.exists()) {
 			if (dir.mkdirs()) {
-				System.out.println("successfull to make temp!");
+				// System.out.println("successfull to make temp!");
 			} else {
-				System.out.println("fail to make temp..");
-				;
+				// System.out.println("fail to make temp..");
 			}
 		}
 
@@ -283,14 +255,46 @@ public class Patch {
 		ArrayList<String> pathesOfNewCommit = this.getPathList(newCommitHash);
 
 		int i;
-		int recurN = pathesOfNewCommit.size();
+		int recurN = pathesOfOldCommit.size();
+
 		for (i = 0; i < recurN; i++) {
-			String oldPath = pathesOfOldCommit.get(i);
-			String newPath = pathesOfOldCommit.get(i);
-			if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java")) {
-				pathesOfNewCommit.remove(i);
-				pathesOfOldCommit.remove(i);
-				recurN--;
+			try {
+
+				String oldPath = pathesOfOldCommit.get(i);
+
+				if (oldPath.equals("/dev/null")) {
+					pathesOfOldCommit.remove(i);
+					recurN--;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					Thread.sleep(100000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+
+		recurN = pathesOfNewCommit.size();
+
+		for (i = 0; i < recurN; i++) {
+			try {
+				String newPath = pathesOfNewCommit.get(i);
+
+				if (newPath.contains("Test") || !newPath.endsWith(".java")) {
+					pathesOfNewCommit.remove(i);
+					recurN--;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					Thread.sleep(100000);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 
@@ -298,7 +302,6 @@ public class Patch {
 		paths.addAll(pathesOfNewCommit);
 
 		ArrayList<String> pathList = new ArrayList<String>(paths);
-		// List<List<DiffEntry>> diffs = null;
 
 		HashMap<File, String> diffFilesAndPath = new HashMap<File, String>();
 
@@ -320,7 +323,6 @@ public class Patch {
 			fw.flush();
 			fw.close();
 			i++;
-			System.out.println("made.. " + newFile + ", " + filePath);
 			diffFilesAndPath.put(newFile, filePath);
 		}
 		return diffFilesAndPath;

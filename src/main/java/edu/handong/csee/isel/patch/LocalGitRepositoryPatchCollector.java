@@ -41,7 +41,7 @@ public class LocalGitRepositoryPatchCollector {
 			Pattern pattern = null;
 			if (reference != null) {
 				CSVgetter getter = new CSVgetter(reference);
-				issueHashList = getter.getColumn(1);
+				issueHashList = getter.getColumn(0);
 			} else {
 				pattern = Pattern.compile("fix|bug", Pattern.CASE_INSENSITIVE);
 			}
