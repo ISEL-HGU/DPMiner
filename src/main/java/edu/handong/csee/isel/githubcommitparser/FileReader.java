@@ -23,9 +23,6 @@ public class FileReader {
 			githubAddress.add(line);
 		}
 
-		for (int i = 0; i < githubAddress.size(); i++)
-			System.out.println(githubAddress.get(i));
-
 		inputStream.close();
 	}
 
