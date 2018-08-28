@@ -12,10 +12,10 @@
 * [-l](https://github.com/HGUISEL/BugPatchCollector/issues/7) (label option)
 * [-t](https://github.com/HGUISEL/BugPatchCollector/issues/8) (Thread option)
 # Jira
-
+지라를 통해 어떻게 버그 커밋을 파싱하는지 설명
 
 # Github
-
+깃허브를 통해 ....
 
 # Input Example
 
