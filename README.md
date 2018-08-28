@@ -4,7 +4,9 @@
 * Jira
 * Github
 # Options
-* -i 
+>Required oprions 
+* [-i](https://github.com/HGUISEL/BugPatchCollector/issues/7) (Input option)
+* -o (directory of result file)
 
 # Jira
 
