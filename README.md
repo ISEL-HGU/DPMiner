@@ -1,6 +1,7 @@
 # BugPatchCollector : Bug commit mining tool
 BugPatchCollector parses bug commits and saves them as .csv files. To know the bug commit, we need to get information about the commit.
-##### BugPatchCollector uses information from two Software Archives
+
+##### BugPatchCollector uses information from two Software Archives : 
 * Jira
 * Github
 
@@ -34,5 +35,3 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 The result file consist of Project Name, Short Commit Message, Commit Number, Date, Author and Patch.
 * [CSV](https://github.com/HGUISEL/BugPatchCollector/issues/1)
 
-
-# Links
