@@ -1,1 +1,1 @@
-# BugPatchCollector : Mining bug commit written in Java
+# BugPatchCollector : Bug commit mining tool
