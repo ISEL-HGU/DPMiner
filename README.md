@@ -1,7 +1,7 @@
 # BugPatchCollector : Bug commit mining tool
-버그툴은 버그 커밋을 파싱해 csv파일로 저장한다. 버그 커밋을 알기 위해서는 커밋에 대한 정보를 얻어야 한다. 그러기 위한 방법
+BugPatchCollector parses bug commits and saves them as .csv files. To know the bug commit, we need to get information about the commit.
 
-##### BugPatchCollector can be used in two Software Archives
+##### BugPatchCollector uses information from two Software Archives
 * Jira
 * Github
 
