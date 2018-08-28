@@ -3,11 +3,11 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 
 ### BugPatchCollector uses information from two Software Archives :
 
-**Jira**
+* Jira
 지라를 통해 어떻게 버그 커밋을 파싱하는지 설명
 지라는 프로젝트의 이슈를 관리하는 페이지입니다. 지라에서 label이 버그이고 resolved된 이슈만을 가져오록 할 수 있습니다.
 
-**Github**
+* Github
 깃허브를 통해 ....
 깃허브에서도 지라와 같이 이슈를 관리 할 수 있습니다. 지라와 다르게 깃허브는 label의 이름을 사용자가 임의로 변경 할 수 있습니다. 프로그램은 기본적으로 label을 bug로 해서 관련된 commit을 파싱합니다. 그러나 
 
