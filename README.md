@@ -24,10 +24,9 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 
 
 # Input Example
-1. GitHub example
+1. Jira example
+2. GitHub example
 <pre><code> -o /Users/lamb0711/Documents/git/BugPatchCollector -i https://github.com/apache/incubator-dubbo -x 5 -m 3 -l type/bug </code></pre>
-2. Jira example
-
 
 # Output Example
 The result file consist of Project Name, Short Commit Message, Commit Number, Date, Author and Patch.
