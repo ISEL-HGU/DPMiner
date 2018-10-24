@@ -21,7 +21,7 @@ public class MyExecutor extends Thread {
 	private String newCommitHash;
 	private Git git;
 	private Repository repository;
-	private ArrayList<String> issueHashList;
+	private Pattern issuePattern;
 	private int conditionMax;
 	private int conditionMin;
 	private Pattern pattern = null;
@@ -30,11 +30,11 @@ public class MyExecutor extends Thread {
 		return commitStatusList;
 	}
 
-	public MyExecutor(String oldCommitHash, String newCommitHash, ArrayList<String> issueHashList, Git git,
+	public MyExecutor(String oldCommitHash, String newCommitHash, Pattern issuePattern, Git git,
 			Repository repository, int conditionMax, int conditionMin, Pattern pattern) throws IOException {
 		this.oldCommitHash = oldCommitHash;
 		this.newCommitHash = newCommitHash;
-		this.issueHashList = issueHashList;
+		this.issuePattern = issuePattern;
 		this.git = git;
 		this.repository = repository;
 		this.conditionMax = conditionMax;
@@ -52,11 +52,19 @@ public class MyExecutor extends Thread {
 
 			boolean skip = true;
 
-			if (issueHashList != null) {
+			Matcher m = issuePattern.matcher(newCommitHash);
+			
+			if(issuePattern != null) {
+				if(m.find()) {
+					skip = false;
+				}
+			}
+			
+			/*if (issueHashList != null) { //this implements
 				for (String issueHash : issueHashList) {
 					if (issueHash.trim().length() == 40) { // It mean commit hash length
 
-						if (newCommitHash.equals(issueHash)) {
+						if (m.find()) {
 							skip = false;
 						}
 					} else {
@@ -66,7 +74,7 @@ public class MyExecutor extends Thread {
 						}
 					}
 				}
-			} else if (pattern != null) {
+			}*/ else if (pattern != null) {
 				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
 				if (matcher.find()) {
 					skip = false;
