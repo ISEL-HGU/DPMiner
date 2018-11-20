@@ -45,7 +45,7 @@ public class IssueLinkParser {
 			Elements docLine = doc.select("a");	
 			Elements docLast = doc.select("h3");
 
-			Pattern pattern = Pattern.compile("<.+\\\"(.+)\\\".+\\\".+\\\">.+");
+			Pattern pattern = Pattern.compile("<.+\\\"(.+)/.+\\\".+\\\".+\\\">.+");
 
 			for(Element last : docLast) {
 				if(last.toString().contains("No results matched your search")) tf=false;
@@ -55,6 +55,7 @@ public class IssueLinkParser {
 			for(Element line : docLine) {
 				if(line.toString().contains("link-gray-dark v-align-middle no-underline h4 js-navigation-open")) {
 					Matcher matcher = pattern.matcher(line.toString());
+					//System.out.println(line);
 					while(matcher.find()) {
 						issueAddress.add("https://github.com/"+matcher.group(1));
 					}
@@ -69,7 +70,9 @@ public class IssueLinkParser {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Success to parsing issue addresses!");
+//		System.out.println("Success to parsing issue addresses!");
+//		for( int i=0; i<issueAddress.size(); i++)
+//			System.out.println(i+1+" "+issueAddress.get(i));
 	}
 
 	/**

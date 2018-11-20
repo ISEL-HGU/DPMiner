@@ -106,7 +106,7 @@ public class CommitParser {
 					}
 
 					if(commitLine.size()>0){
-						commitAddressLine = parseCSVComponent(commitAddressLine);
+						commitAddressLine = parseCSVComponent(commitAddressLine); 
 
 						for(int i=4; i<commitLine.size(); i++) {
 							if(commitLine.get(i).contains("diff --")) {
@@ -137,12 +137,12 @@ public class CommitParser {
 									line2 = line2.concat(commitLine.get(i));
 									line2 = line2.concat("\n");
 
-									if(plusMinusNumber > Integer.parseInt(conditionMax)+2) break;
+									if(conditionMax!=null && plusMinusNumber > Integer.parseInt(conditionMax)+2) break;
 
 								}
 								if(path != null && !path.endsWith(".java")) continue;
-								if(plusMinusNumber > Integer.parseInt(conditionMax)+2) continue;
-								if(plusMinusNumber < Integer.parseInt(conditionMin)+2) continue;
+								if(conditionMax!=null && plusMinusNumber > Integer.parseInt(conditionMax)+2) continue;
+								if(conditionMin!=null && plusMinusNumber < Integer.parseInt(conditionMin)+2) continue;
 								csvPrinter.printRecord(project,commitLine.get(3),commitLine.get(0),commitLine.get(2),commitLine.get(1),path,line2);
 							}
 						}

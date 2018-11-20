@@ -57,7 +57,11 @@ public class Main {
 			} else if (githubURL != null || listOfGithubURLFile != null) {
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
 						String.valueOf(conditionMax), String.valueOf(conditionMin), label, isThread);
+				long beforeTime = System.currentTimeMillis();
 				gh.run();
+				long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+				long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
+				System.out.println("시간차이(m) : "+secDiffTime);
 			}
 
 		}
