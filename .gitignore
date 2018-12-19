@@ -1,6 +1,7 @@
 # Compiled class file
 *.class
-
+.DS_Store
+.settings/org.eclipse.buildship.core.prefs
 # Log file
 *.log
 
