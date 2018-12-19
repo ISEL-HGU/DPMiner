@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -22,9 +22,10 @@ public class MyExecutor extends Thread {
 	private Git git;
 	private Repository repository;
 	private Pattern issuePattern;
-	private int conditionMax;
-	private int conditionMin;
+	private int conditionMax = -1;
+	private int conditionMin = -1;
 	private Pattern pattern = null;
+//	public static HashSet<String> authors = new HashSet<String>();
 
 	public ArrayList<CommitStatus> getCommitStatusList() {
 		return commitStatusList;
@@ -50,6 +51,7 @@ public class MyExecutor extends Thread {
 			RevWalk walk = new RevWalk(repository);
 			RevCommit newCommit = walk.parseCommit(repository.resolve(newCommitHash));
 
+//			authors.add(newCommit.getAuthorIdent().getName()+"<"+newCommit.getAuthorIdent().getEmailAddress()+">");
 			boolean skip = true;
 
 			
@@ -88,7 +90,7 @@ public class MyExecutor extends Thread {
 					if (diff == null)
 						continue;
 					String patch = p.getStringFromFile(diff);
-					if (patch.equals("") || (conditionMax != 0) && (conditionMin != 0)
+					if (patch.equals("") || (conditionMax != -1) && (conditionMin != -1)
 							&& this.isExceedcondition(patch, conditionMax, conditionMin))
 						continue;
 					String path = diffFiles.get(diff);
@@ -114,7 +116,8 @@ public class MyExecutor extends Thread {
 	 */
 	private boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
 		Parser parser = new Parser();
-		if (parser.parseNumOfDiffLine(patch) > conditionMax || parser.parseNumOfDiffLine(patch) < conditionMin) {
+		int line_count = parser.parseNumOfDiffLine(patch);
+		if (line_count > conditionMax || line_count < conditionMin) {
 			return true;
 		}
 		return false;

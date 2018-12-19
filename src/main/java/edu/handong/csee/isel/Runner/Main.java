@@ -11,6 +11,7 @@ import org.apache.commons.cli.Options;
 
 import edu.handong.csee.isel.githubcommitparser.GithubPatchCollector;
 import edu.handong.csee.isel.patch.LocalGitRepositoryPatchCollector;
+import edu.handong.csee.isel.patch.MyExecutor;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -60,13 +61,14 @@ public class Main {
 			} else if (githubURL != null || listOfGithubURLFile != null) {
 				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
 						String.valueOf(conditionMax), String.valueOf(conditionMin), label, isThread);
-				long beforeTime = System.currentTimeMillis();
 				gh.run();
-				long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
-				long secDiffTime = (afterTime - beforeTime)/1000; //두 시간에 차 계산
 			}
 			long end = System.currentTimeMillis();
 			System.out.println( "실행 시간 : " + ( end - start )/1000.0 );
+//			for(String author : MyExecutor.authors) {
+//				System.out.println(author);
+//			}
+//			System.out.println("총 기여한 사람의 수: "+MyExecutor.authors.size());
 
 		}
 	}

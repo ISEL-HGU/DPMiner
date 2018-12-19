@@ -34,12 +34,12 @@ public class CSVgetter {
 	public ArrayList<String> getColumn(int n) throws IOException {
 		ArrayList<String> list = new ArrayList<String>();
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(reader);
-		boolean first = true;
+//		boolean first = true;
 		for (CSVRecord record : records) {
-			if(first) {
-				first = false;
-				continue;
-			}
+//			if(first) {
+//				first = false;
+//				continue;
+//			}
 			list.add(record.get(n));
 		}
 		return list;
@@ -59,8 +59,9 @@ public class CSVgetter {
 		return list;
 	}
 	
+	/* reference parsing */
 	public static void main(String[] args) throws IOException {
-		File f = new File("/Users/imseongbin/Desktop/ASF_JIRA.csv");
+		File f = new File("/Users/imseongbin/Desktop/JIRA_brooklyn.csv");
 		CSVgetter getter = new CSVgetter(f.getAbsolutePath());
 		
 		ArrayList<String> keys = getter.getColumn(1);
@@ -68,7 +69,7 @@ public class CSVgetter {
 //		for(String key: keys)
 //			System.out.println(key);
 		
-		File newFile = new File("/Users/imseongbin/Desktop/hbase_ref.csv");
+		File newFile = new File("/Users/imseongbin/Desktop/brooklyn_ref.csv");
 		
 		File folder = newFile.getParentFile();
 		if (!folder.exists()) {
