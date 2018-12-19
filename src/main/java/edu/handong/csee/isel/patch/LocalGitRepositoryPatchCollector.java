@@ -42,9 +42,19 @@ public class LocalGitRepositoryPatchCollector {
 			// (1) put csvFile and return issueHashes type of ArrayList<String>
 			ArrayList<String> issueHashList = null;
 			Pattern pattern = null;
+			Pattern issuePattern = null;
+			StringBuffer sbIssues = new StringBuffer();
 			if (reference != null) {
 				CSVgetter getter = new CSVgetter(reference);
 				issueHashList = getter.getColumn(0);
+				for(String issue : issueHashList) {
+//					System.out.println(issue);
+					sbIssues.append(issue+"|");
+				}
+				sbIssues.deleteCharAt(sbIssues.length()-1);
+//				System.out.println(sbIssues);
+				issuePattern = Pattern.compile(sbIssues.toString());
+				
 			} else {
 				pattern = Pattern.compile("fix|bug", Pattern.CASE_INSENSITIVE);
 			}
@@ -57,7 +67,7 @@ public class LocalGitRepositoryPatchCollector {
 			ArrayList<MyExecutor> myExecutors = new ArrayList<MyExecutor>();
 			for (TwoCommit commitHash : commitHashes) {
 				Runnable worker = new MyExecutor(commitHash.getOldCommitHash(), commitHash.getNewCommitHash(),
-						issueHashList, p.getGit(), p.getRepository(), conditionMax, conditionMin, pattern);
+						issuePattern, p.getGit(), p.getRepository(), conditionMax, conditionMin, pattern);
 				executor.execute(worker);
 				myExecutors.add((MyExecutor) worker);
 			}
