@@ -52,29 +52,14 @@ public class MyExecutor extends Thread {
 
 			boolean skip = true;
 
-			Matcher m = issuePattern.matcher(newCommitHash);
 			
 			if(issuePattern != null) {
+//				Matcher m = issuePattern.matcher(newCommitHash);
+				Matcher m = issuePattern.matcher(newCommit.getFullMessage());
 				if(m.find()) {
 					skip = false;
 				}
-			}
-			
-			/*if (issueHashList != null) { //this implements
-				for (String issueHash : issueHashList) {
-					if (issueHash.trim().length() == 40) { // It mean commit hash length
-
-						if (m.find()) {
-							skip = false;
-						}
-					} else {
-
-						if (newCommit.getFullMessage().contains(issueHash)) {
-							skip = false;
-						}
-					}
-				}
-			}*/ else if (pattern != null) {
+			} else if (pattern != null) {
 				Matcher matcher = pattern.matcher(newCommit.getFullMessage());
 				if (matcher.find()) {
 					skip = false;

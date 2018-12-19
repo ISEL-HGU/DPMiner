@@ -48,9 +48,11 @@ public class LocalGitRepositoryPatchCollector {
 				CSVgetter getter = new CSVgetter(reference);
 				issueHashList = getter.getColumn(0);
 				for(String issue : issueHashList) {
+//					System.out.println(issue);
 					sbIssues.append(issue+"|");
 				}
 				sbIssues.deleteCharAt(sbIssues.length()-1);
+//				System.out.println(sbIssues);
 				issuePattern = Pattern.compile(sbIssues.toString());
 				
 			} else {
