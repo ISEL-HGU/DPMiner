@@ -80,6 +80,8 @@ public class Parser {
             System.out.println(authors.size());
 
             walk.dispose();
+            
+            List<String> list;
         }
 	}
 }
