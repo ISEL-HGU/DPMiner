@@ -81,7 +81,7 @@ public class Parser {
 
             walk.dispose();
             
-            List<String> list;
+           // List<String> list;
         }
 	}
 }
