@@ -33,6 +33,14 @@ public class MainOfCommitUnitMetrics {
 			
 			// TODO show the number of files in the path
 			
+			//주소를 받아와
+			//커밋을 모두 저장
+			CommitParser co = new CommitParser(gitRepositoryPath,resultDirectory);
+			
+			
+			//커밋하나 하나를 꺼내며 메트릭 count
+			//arff파일프린트 
+			
 			if(verbose) {
 				
 				// TODO list all files in the path
