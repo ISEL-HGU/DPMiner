@@ -114,13 +114,42 @@ public class MyExecutor extends Thread {
 	/**
 	 * if Lines (start with '+++' or '---') exceed conditionMax, return true
 	 */
-	private boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
-		Parser parser = new Parser();
-		int line_count = parser.parseNumOfDiffLine(patch);
+	private static boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
+		int line_count = parseNumOfDiffLine(patch);
 		if (line_count > conditionMax || line_count < conditionMin) {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isStartWithPlus(String str) {
+		if (str.startsWith("+")) {
+			if (str.startsWith("+++"))
+				return false;
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isStartWithMinus(String str) {
+		if (str.startsWith("-")) {
+			if (str.startsWith("---"))
+				return false;
+			return true;
+		}
+		return false;
+	}
+	
+	public static int parseNumOfDiffLine(String inStr) {
+		int count = 0;
+		String[] newStrings = inStr.split("\n");
+		for(String str : newStrings) {
+			if(isStartWithMinus(str)||isStartWithPlus(str)) {
+				count ++;
+			}
+		}
+		
+		return count;
 	}
 
 }

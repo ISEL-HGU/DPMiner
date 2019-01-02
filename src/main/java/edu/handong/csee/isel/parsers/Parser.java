@@ -41,7 +41,6 @@ public class Parser {
 		for(String str : newStrings) {
 			if(this.isStartWithMinus(str)||this.isStartWithPlus(str)) {
 				count ++;
-//				System.out.println("!@#$ "+str);
 			}
 		}
 		
