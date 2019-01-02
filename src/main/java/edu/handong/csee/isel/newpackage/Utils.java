@@ -112,7 +112,7 @@ public class Utils {
         return diffList;
     }
 	
-	private static boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
+	public static boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
 		int line_count = parseNumOfDiffLine(patch);
 		if (line_count > conditionMax || line_count < conditionMin) {
 			return true;

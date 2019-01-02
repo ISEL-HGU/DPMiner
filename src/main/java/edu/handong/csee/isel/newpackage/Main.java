@@ -1,5 +1,6 @@
 package edu.handong.csee.isel.newpackage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -54,6 +56,19 @@ public class Main {
 		                .setNewTree(Utils.prepareTreeParser(repo, parent.getId().name()))
 		                .call();
 				
+				for(DiffEntry diff : diffs) {
+					String patch = null;
+					if((patch = passConditions(diff,repo,min,max))==null) // it cannot pass on conditions
+						continue;
+					
+					diff.getNewPath();
+					diff.getOldPath();
+					diff.getOldId();
+					diff.getNewId();
+					//patch
+					commit.getAuthorIdent();
+					parent.getAuthorIdent();
+				}
 				
 				
 				
@@ -67,5 +82,33 @@ public class Main {
 
 	}
 
+	public static String passConditions(DiffEntry diff,Repository repository,int min,int max) throws IOException {
+		
+		String patch = null;
+		switch(diff.getChangeType().ordinal()) {
+        case 0: //ADD
+        	break;
+        case 1: //MODIFY
+        	if(!diff.getNewPath().endsWith(".java"))
+        		break;
+        	
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+    		try (DiffFormatter formatter = new DiffFormatter(output)) {
+    			formatter.setRepository(repository);
+    			formatter.format(diff);
+    		}
+    		output.flush();
+    		output.close();
+    		patch = output.toString("UTF-8");
+    		if (patch.equals("") || (max != -1) && (min != -1)
+					&& Utils.isExceedcondition(patch, max, min))
+    			return null;
+    		
+        case 2: //DELETE
+        	break;
+        }
+		
+		return patch;
+	}
 	
 }
