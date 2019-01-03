@@ -30,8 +30,8 @@ public class MainOfCommitUnitMetrics {
 			
 			//주소를 받아와
 			//커밋을 모두 저장
-			CommitCollector co = new CommitCollector(gitRepositoryPath,resultDirectory);
-			
+			CommitCollector commitCollector = new CommitCollector(gitRepositoryPath,resultDirectory);
+			commitCollector.countCommitMetrics();
 			
 			//커밋하나 하나를 꺼내며 메트릭 count
 			//arff파일프린트 
@@ -54,7 +54,6 @@ public class MainOfCommitUnitMetrics {
 
 			gitRepositoryPath = cmd.getOptionValue("i");
 			resultDirectory = cmd.getOptionValue("o");
-			verbose = cmd.hasOption("v");
 			help = cmd.hasOption("h");
 
 		} catch (Exception e) {
@@ -75,7 +74,7 @@ public class MainOfCommitUnitMetrics {
 				.hasArg().argName("URI or URL").required().build());
 
 		options.addOption(Option.builder("o").longOpt("result").desc("directory will have result file").hasArg()
-				.argName("directory").required().build());
+				.argName("directory").build());
 		
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
