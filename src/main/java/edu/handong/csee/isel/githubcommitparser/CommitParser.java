@@ -49,13 +49,13 @@ public class CommitParser {
 
 			Elements docLine = doc.select("div.commit-meta a");
 
-			Pattern pattern = Pattern.compile("<.+=\"(/.+/.+/.+/.+)\".+=\".+\">.+<.+>");
+			Pattern pattern = Pattern.compile("<.+=\"/.+/.+/.+/(.+)\".+=\".+\">.+<.+>");
 
 			for(Element line : docLine){
 				//System.out.println(line);
 				Matcher matcher = pattern.matcher(line.toString());
 				while(matcher.find()) {
-					commitAddress.add("https://github.com"+matcher.group(1)+".patch");
+					commitAddress.add(matcher.group(1));
 				}
 			}
 
@@ -67,6 +67,10 @@ public class CommitParser {
 			}
 		}
 		System.out.println("Success to parsing bug commit addresses!");
+		
+		for(int i = 0; i < commitAddress.size(); i++) {
+			System.out.println(i+1+commitAddress.get(i));
+		}
 	}
 
 

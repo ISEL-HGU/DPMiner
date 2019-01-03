@@ -75,13 +75,13 @@ public class Parser {
             
             for(String author : authors) {
                 System.out.println(author);
-            }
+            } 
             System.out.println(count);
             System.out.println(authors.size());
 
             walk.dispose();
             
-            List<String> list;
+           // List<String> list;
         }
 	}
 }
