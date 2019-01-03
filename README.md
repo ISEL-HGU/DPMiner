@@ -33,3 +33,4 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 The result file consist of Project Name, Short Commit Message, Commit Number, Date, Author and Patch.
 * [CSV](https://github.com/HGUISEL/BugPatchCollector/issues/1)
 
+It is develop branch
