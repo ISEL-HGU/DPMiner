@@ -3,8 +3,11 @@ package edu.handong.csee.isel.newpackage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -19,6 +22,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 
 public class Main {
 
+	// TODO: change reference instruction
 	public static void main(String[] args)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		// 1. 3가지 방법으로 commit list를 가져온다.
@@ -27,9 +31,17 @@ public class Main {
 		// 3.
 
 //		final String REMOTE_URL = "https://github.com/apache/zookeeper.git";
-		final String REMOTE_URL = "https://github.com/HGUISEL/BugPatchCollector.git";
-		int min = 0;
-		int max = 5;
+//		final String REMOTE_URL = "https://github.com/HGUISEL/BugPatchCollector.git";
+		final String REMOTE_URL = "https://github.com/apache/zookeeper.git";
+		final String reference = "/Users/imseongbin/Desktop/zookeeperhelp.csv";
+		final HashSet<String> keywords = Utils.parseReference(reference);
+		
+//		for(String keyword : keywords)
+//			System.out.println(keyword);
+		
+		
+		final int min = 0;
+		final int max = 5;
 		
 		Git git = Utils.gitClone(REMOTE_URL);
 		Repository repo = git.getRepository();
@@ -42,14 +54,23 @@ public class Main {
 				walk.markStart(commit);
 			}
 		}
-
+		
+		Pattern p = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
+		int count = 0;
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
-
-//				List<DiffEntry> diffs = Utils.listDiff(repo, git,
-//                        commit.getId().name(),
-//                        parent.getId().name(),min,max);
+				
+				Matcher m = null;
+				if(parent.getShortMessage().length()>20)
+					m = p.matcher(parent.getShortMessage().substring(0, 20)); // check if have keyword in Short message
+				else
+					m = p.matcher(parent.getShortMessage()); // check if have keyword in Short message
+				if(!m.find())
+					continue;
+				String key = m.group(1);
+				if(!keywords.contains(key))
+					continue;
 				
 				final List<DiffEntry> diffs = git.diff()
 		                .setOldTree(Utils.prepareTreeParser(repo, commit.getId().name()))
@@ -58,9 +79,16 @@ public class Main {
 				
 				for(DiffEntry diff : diffs) {
 					String patch = null;
-					if((patch = passConditions(diff,repo,min,max))==null) // it cannot pass on conditions
+					if((patch = passConditions(diff,repo,min,max))==null) // if cannot pass on conditions
 						continue;
 					
+					
+					
+					System.out.println(commit.getShortMessage());
+					System.out.println(parent.getShortMessage());
+					count++;
+					
+					/*
 					diff.getNewPath();
 					diff.getOldPath();
 					diff.getOldId();
@@ -68,18 +96,14 @@ public class Main {
 					//patch
 					commit.getAuthorIdent();
 					parent.getAuthorIdent();
+					*/
 				}
-				
-				
-				
-				
 
 			} catch (ArrayIndexOutOfBoundsException e) {
 				break;
 			}
-
 		}
-
+		System.out.println(count);
 	}
 
 	public static String passConditions(DiffEntry diff,Repository repository,int min,int max) throws IOException {
@@ -89,7 +113,7 @@ public class Main {
         case 0: //ADD
         	break;
         case 1: //MODIFY
-        	if(!diff.getNewPath().endsWith(".java"))
+        	if(!diff.getNewPath().endsWith(".java")) // only .java format
         		break;
         	
             ByteArrayOutputStream output = new ByteArrayOutputStream();

@@ -2,12 +2,18 @@ package edu.handong.csee.isel.newpackage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
@@ -149,4 +155,22 @@ public class Utils {
 		
 		return count;
 	}
+
+	public static HashSet<String> parseReference(String reference) throws IOException {
+		HashSet<String> keywords = new HashSet<String>();
+		File CSV = new File(reference);
+		Reader reader = new FileReader(CSV);
+		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(reader);
+		boolean first = true;
+		
+		for (CSVRecord record : records) {
+			if(first) {
+				first = false;
+				continue;
+			}
+			keywords.add(record.get(1));
+		}
+		return keywords;
+	}
+	
 }
