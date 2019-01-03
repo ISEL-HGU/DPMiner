@@ -64,59 +64,6 @@ public class Utils {
             return treeParser;
         }
     }
-
-	private static ArrayList<String> getPathList(RevCommit commit, Repository repository) throws IOException {
-		ArrayList<String> pathList = new ArrayList<String>();
-
-		RevWalk walk = new RevWalk(repository);
-		RevTree tree = commit.getTree();
-		TreeWalk treeWalk = new TreeWalk(repository);
-		treeWalk.addTree(tree);
-		treeWalk.setRecursive(true);
-		while (treeWalk.next()) {
-			pathList.add(treeWalk.getPathString());
-			// System.out.println(" found: " + treeWalk.getPathString());
-		}
-
-		walk.dispose();
-		return pathList;
-	}
-	public static ArrayList<DiffEntry> listDiff(Repository repository, Git git, String oldCommit, String newCommit, int min, int max) throws GitAPIException, IOException {
-        final List<DiffEntry> diffs = git.diff()
-                .setOldTree(prepareTreeParser(repository, oldCommit))
-                .setNewTree(prepareTreeParser(repository, newCommit))
-                .call();
-
-        ArrayList<DiffEntry> diffList = new ArrayList<>();
-        for (DiffEntry diff : diffs) {
-            
-            switch(diff.getChangeType().ordinal()) {
-            case 0: //ADD
-            	continue;
-            case 1: //MODIFY
-            	if(!diff.getNewPath().endsWith(".java"))
-            		continue;
-            	
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-        		try (DiffFormatter formatter = new DiffFormatter(output)) {
-        			formatter.setRepository(repository);
-        			formatter.format(diff);
-        		}
-        		output.flush();
-        		output.close();
-        		String patch = output.toString("UTF-8");
-        		if (patch.equals("") || (max != -1) && (min != -1)
-						&& isExceedcondition(patch, max, min))
-					continue;
-        		diffList.add(diff);
-        		
-            case 2: //DELETE
-            	continue;
-            }
-            
-        }
-        return diffList;
-    }
 	
 	public static boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
 		int line_count = parseNumOfDiffLine(patch);
@@ -171,6 +118,11 @@ public class Utils {
 			keywords.add(record.get(1));
 		}
 		return keywords;
+	}
+
+	public static HashSet<String> parseGithubIssues(String uRL) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

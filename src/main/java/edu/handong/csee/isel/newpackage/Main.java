@@ -25,25 +25,23 @@ public class Main {
 	// TODO: change reference instruction
 	public static void main(String[] args)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		// 1. 3가지 방법으로 commit list를 가져온다.
-		// - git fetch로 가져옴
-		// 2. keywords를 가져온다.
-		// 3.
-
-//		final String REMOTE_URL = "https://github.com/apache/zookeeper.git";
-//		final String REMOTE_URL = "https://github.com/HGUISEL/BugPatchCollector.git";
-		final String REMOTE_URL = "https://github.com/apache/zookeeper.git";
+		// 1. Jira on
+		// 2. Github issuePages
+		// 3. commit name
+		
+		final String URL = "https://github.com/apache/zookeeper";
+		final String REMOTE_URI = URL+".git";
 		final String reference = "/Users/imseongbin/Desktop/zookeeperhelp.csv";
 		final HashSet<String> keywords = Utils.parseReference(reference);
-		
-//		for(String keyword : keywords)
-//			System.out.println(keyword);
-		
-		
+		final HashSet<String> keyHashes = Utils.parseGithubIssues(URL);
 		final int min = 0;
 		final int max = 5;
 		
-		Git git = Utils.gitClone(REMOTE_URL);
+		boolean jira = true;
+		boolean issuePages = false;
+		boolean commitName = false;
+		
+		Git git = Utils.gitClone(REMOTE_URI);
 		Repository repo = git.getRepository();
 		RevWalk walk = new RevWalk(repo);
 
@@ -55,22 +53,32 @@ public class Main {
 			}
 		}
 		
-		Pattern p = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
+		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
+		Pattern bugMessagePattern = Pattern.compile("fix|bug");
 		int count = 0;
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
 				
-				Matcher m = null;
-				if(parent.getShortMessage().length()>20)
-					m = p.matcher(parent.getShortMessage().substring(0, 20)); // check if have keyword in Short message
-				else
-					m = p.matcher(parent.getShortMessage()); // check if have keyword in Short message
-				if(!m.find())
-					continue;
-				String key = m.group(1);
-				if(!keywords.contains(key))
-					continue;
+				if(jira) {
+					Matcher m = null;
+					if(parent.getShortMessage().length()>20)
+						m = keyPattern.matcher(parent.getShortMessage().substring(0, 20)); // check if have keyword in Short message
+					else
+						m = keyPattern.matcher(parent.getShortMessage()); // check if have keyword in Short message
+					if(!m.find())
+						continue;
+					String key = m.group(1);
+					if(!keywords.contains(key))
+						continue;
+				} else if(issuePages) {
+					if(!keyHashes.contains(parent.getId().name()))
+						continue;
+				} else if(commitName) {
+					Matcher m = bugMessagePattern.matcher(parent.name());
+					if(!m.find())
+						continue;
+				}
 				
 				final List<DiffEntry> diffs = git.diff()
 		                .setOldTree(Utils.prepareTreeParser(repo, commit.getId().name()))
@@ -83,9 +91,9 @@ public class Main {
 						continue;
 					
 					
-					
 					System.out.println(commit.getShortMessage());
 					System.out.println(parent.getShortMessage());
+					System.out.println("** ** **");
 					count++;
 					
 					/*
@@ -97,6 +105,7 @@ public class Main {
 					commit.getAuthorIdent();
 					parent.getAuthorIdent();
 					*/
+					
 				}
 
 			} catch (ArrayIndexOutOfBoundsException e) {
@@ -105,7 +114,15 @@ public class Main {
 		}
 		System.out.println(count);
 	}
-
+/**
+ * 
+ * @param diff
+ * @param repository
+ * @param min
+ * @param max
+ * @return if cannot pass conditions, return null. else, return patch
+ * @throws IOException
+ */
 	public static String passConditions(DiffEntry diff,Repository repository,int min,int max) throws IOException {
 		
 		String patch = null;
