@@ -1,5 +1,5 @@
 package edu.handong.csee.isel.commitUnitMetrics;
 
-public class CommitMetricCollector {
+public class MetricCollector {
 
 }

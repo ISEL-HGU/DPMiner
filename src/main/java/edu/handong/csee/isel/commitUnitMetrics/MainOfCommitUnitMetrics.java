@@ -28,14 +28,9 @@ public class MainOfCommitUnitMetrics {
 				return;
 			}
 			
-			// path is required (necessary) data so no need to have a branch.
-			System.out.println("You provided \"" + gitRepositoryPath + "\" as the value of the option p");
-			
-			// TODO show the number of files in the path
-			
 			//주소를 받아와
 			//커밋을 모두 저장
-			CommitParser co = new CommitParser(gitRepositoryPath,resultDirectory);
+			CommitCollector co = new CommitCollector(gitRepositoryPath,resultDirectory);
 			
 			
 			//커밋하나 하나를 꺼내며 메트릭 count

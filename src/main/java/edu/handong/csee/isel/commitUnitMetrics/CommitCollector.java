@@ -8,11 +8,11 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-public class CommitParser {
+public class CommitCollector {
 	String inputPath;
 	String outputPath;
 	
-	public CommitParser(String gitRepositoryPath,String resultDirectory) {
+	public CommitCollector(String gitRepositoryPath,String resultDirectory) {
 		this.inputPath = gitRepositoryPath;
 		this.outputPath = resultDirectory;
 	}
