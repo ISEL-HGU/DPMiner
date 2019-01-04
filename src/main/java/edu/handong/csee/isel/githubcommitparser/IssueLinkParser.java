@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import org.jsoup.select.Elements;
 
 /**
@@ -30,7 +29,7 @@ public class IssueLinkParser {
 	 * @author yangsujin
 	 *
 	 */
-	void parseIssueAddress(String address,String label) throws IOException{
+	public void parseIssueAddress(String address,String label) throws IOException{
 
 		boolean tf = true;
 		int pageNumber=1;

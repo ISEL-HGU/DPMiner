@@ -9,10 +9,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.csee.isel.githubcommitparser.GithubPatchCollector;
-import edu.handong.csee.isel.patch.LocalGitRepositoryPatchCollector;
-import edu.handong.csee.isel.patch.MyExecutor;
-
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
  * Repository) -o, directory of result file. [-r], reference relative to bug
@@ -49,7 +45,8 @@ public class Main {
 				printHelp(options);
 				return;
 			}
-			
+			/* Main */
+			/*
 			long start = System.currentTimeMillis();
 			System.out.println("start: "+start/1000.0); //will be removed
 			
@@ -65,10 +62,12 @@ public class Main {
 			}
 			long end = System.currentTimeMillis();
 			System.out.println( "실행 시간 : " + ( end - start )/1000.0 );
+			
 //			for(String author : MyExecutor.authors) {
 //				System.out.println(author);
 //			}
 //			System.out.println("총 기여한 사람의 수: "+MyExecutor.authors.size());
+ * */
 
 		}
 	}
