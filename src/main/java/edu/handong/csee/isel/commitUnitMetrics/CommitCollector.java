@@ -44,17 +44,21 @@ public class CommitCollector {
 	            AbstractTreeIterator oldTreeParser = Utils.prepareTreeParser(repo, parent.getId().name().toString());
 	            AbstractTreeIterator newTreeParser = Utils.prepareTreeParser(repo, commit.getId().name().toString());
 				
-	            List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser).setPathFilter(PathFilter.create("README.md")).call();
+	            List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser)
+	            		.setNewTree(newTreeParser)
+	            		.setPathFilter(PathFilter.create("README.md"))
+	            		.call();
 	            
 	            for(DiffEntry entry : diff) {
                     System.out.println("Entry: " + entry + ", from: " + entry.getOldId() + ", to: " + entry.getNewId());
                     try (DiffFormatter formatter = new DiffFormatter(System.out)) {
                         formatter.setRepository(repo);
                         formatter.format(entry);
+                        
                     }
 	            }
-				i++;
-				if( i == 2) break;
+	            
+	            
 			}
 			
 		} catch (IOException e) {
