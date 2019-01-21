@@ -29,7 +29,7 @@ public class Main {
 	ParseType type;
 	int conditionMax = -1;
 	int conditionMin = -1;
-	boolean isThread;
+//	boolean isThread;
 	boolean help;
 
 	public static void main(String[] args) {
@@ -96,7 +96,7 @@ public class Main {
 			reference = cmd.getOptionValue("r");
 			resultDirectory = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
-			isThread = cmd.hasOption("t");
+//			isThread = cmd.hasOption("t");
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -131,9 +131,9 @@ public class Main {
 		options.addOption(Option.builder("l").longOpt("label").desc("Set a bug label of github").hasArg()
 				.argName("Find coincident commit with label").build());
 
-		options.addOption(Option.builder("t").longOpt("thread")
-				.desc("Using threads in your cpu, you can speed up. Only do well if input is local repository.")
-				.build());
+//		options.addOption(Option.builder("t").longOpt("thread")
+//				.desc("Using threads in your cpu, you can speed up. Only do well if input is local repository.")
+//				.build());
 
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
