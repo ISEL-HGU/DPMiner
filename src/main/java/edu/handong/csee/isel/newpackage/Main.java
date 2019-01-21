@@ -32,6 +32,8 @@ public class Main {
 		/* input */
 		final String URL = "https://github.com/apache/zookeeper";
 //		final String URL = "https://github.com/zxing/zxing";
+//		final String URL = "https://github.com/square/okhttp";
+//		final String URL = "https://github.com/HGUISEL/BugPatchCollector";
 		final String REMOTE_URI = URL + ".git";
 		final String projectName = Utils.getProjectName(REMOTE_URI);
 		final String reference = "/Users/imseongbin/Desktop/zookeeperhelp.csv";
@@ -54,6 +56,7 @@ public class Main {
 			if (issuePages)
 				keyHashes = Utils.parseGithubIssues(URL, label);
 		} catch (NoIssuePagesException e) {
+			System.out.println("야호!");
 			issuePages = false;
 			commitName = true;
 		}
@@ -72,31 +75,34 @@ public class Main {
 		}
 
 		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
-		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved|solution");
+		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved", Pattern.CASE_INSENSITIVE);
 
 		/* start */
 		int count = 0;
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
+				
+//				System.out.println("parent: "+parent.getShortMessage());
+//				System.out.println("commit: "+commit.getShortMessage());
 
 				if (jira) {
 					Matcher m = null;
-					if (parent.getShortMessage().length() > 20)
-						m = keyPattern.matcher(parent.getShortMessage().substring(0, 20)); // check if have keyword in
+					if (commit.getShortMessage().length() > 20)
+						m = keyPattern.matcher(commit.getShortMessage().substring(0, 20)); // check if have keyword in
 																							// Short message
 					else
-						m = keyPattern.matcher(parent.getShortMessage()); // check if have keyword in Short message
+						m = keyPattern.matcher(commit.getShortMessage()); // check if have keyword in Short message
 					if (!m.find())
 						continue;
 					String key = m.group(1);
 					if (!keywords.contains(key))
 						continue;
 				} else if (issuePages) {
-					if (!keyHashes.contains(parent.getId().name()))
+					if (!keyHashes.contains(commit.getId().name()))
 						continue;
 				} else if (commitName) {
-					Matcher m = bugMessagePattern.matcher(parent.name());
+					Matcher m = bugMessagePattern.matcher(commit.getFullMessage());
 					if (!m.find())
 						continue;
 				}
