@@ -12,7 +12,7 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 커밋을 할때는 수정된 모든 소스파일이 한 커밋에 저장이 됩니다. 즉 버그 커밋안에서도 버그가 있는 소스파일과 의미없이 추가한 소스파일이 있을 수 있습니다. 그러므로 -x와 -m옵션을 통해 사용자가 임의로 수정된 라인의 갯수를 조절해 출력할 수 있습니다.
 # Options
 >Must required options 
-* [-i](https://github.com/HGUISEL/BugPatchCollector/issues/7) (Input Option)
+* [-i](https://github.com/HGUISEL/BugPatchCollector/issues/4) (Input Option)
 * -o (Directory Path of Result File Option)
 >The other options
 * [-r](https://github.com/HGUISEL/BugPatchCollector/issues/5) (Reference Option)
@@ -25,9 +25,9 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 
 # Input Example
 1. Jira example
-<pre><code> -o /Users/lamb0711/Documents/git/BugPatchCollector </code></pre>
+<pre><code> -i https://github.com/apache/zookeeper -r "reference/file/path" -o "output/path" </code></pre>
 2. GitHub example
-<pre><code> -o /Users/lamb0711/Documents/git/BugPatchCollector -i https://github.com/apache/incubator-dubbo -x 5 -m 3 -l type/bug </code></pre>
+<pre><code> -o /Users/lamb0711/Documents/git/BugPatchCollector -i https://github.com/apache/incubator-dubbo [-x 5 -m 3] [-l type/bug] </code></pre>
 
 # Output Example
 The result file consist of Project Name, Short Commit Message, Commit Number, Date, Author and Patch.
