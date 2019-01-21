@@ -35,10 +35,7 @@ public class Parser {
 	final int max;
 	ParseType type;
 
-	public Parser(String URL, String outPath, String reference, ParseType type, int min, int max, String label) { // TODO:
-																													// add
-		// enumerate
-
+	public Parser(String URL, String outPath, String reference, ParseType type, int min, int max, String label) {
 		this.URL = URL;
 		this.REMOTE_URI = URL + ".git";
 		if (!outPath.endsWith(File.separator))
@@ -186,7 +183,7 @@ public class Parser {
 			output.flush();
 			output.close();
 			patch = output.toString("UTF-8");
-			if (patch.equals("") || (max != -1) && (min != -1) && Utils.isExceedcondition(patch, max, min))
+			if (patch.equals("") || (max != -1) && (min != -1) && Utils.isExceededcondition(patch, max, min))
 				return null;
 
 		case 2: // DELETE

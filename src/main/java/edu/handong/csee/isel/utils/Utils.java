@@ -60,12 +60,12 @@ public class Utils {
 		}
 	}
 
-	public static boolean isExceedcondition(String patch, int conditionMax, int conditionMin) {
+	public static boolean isExceededcondition(String patch, int conditionMax, int conditionMin) {
 		int line_count = parseNumOfDiffLine(patch);
-		if (line_count > conditionMax || line_count < conditionMin) {
-			return true;
+		if (line_count < conditionMax && line_count > conditionMin) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	private static boolean isStartWithPlus(String str) {
