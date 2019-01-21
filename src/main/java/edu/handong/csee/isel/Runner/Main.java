@@ -48,7 +48,7 @@ public class Main {
 
 			try {
 
-				Parser parser = new Parser(input, resultDirectory, reference, type, conditionMax, conditionMin, label);
+				Parser parser = new Parser(input, resultDirectory, reference, type, conditionMin, conditionMax, label);
 				parser.parse();
 
 			} catch (Exception e) {
@@ -81,7 +81,7 @@ public class Main {
 							throw new Exception("Max must be bigger than min!");
 						}
 					} else {
-						throw new Exception("'x' and 'm' Option must be together!");
+						throw new Exception("'x' and 'm' Option must be used together!");
 					}
 
 				}
