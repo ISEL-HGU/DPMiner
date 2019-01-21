@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.newpackage;
+package edu.handong.csee.isel.parser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,54 +17,79 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
-public class Main {
+import edu.handong.csee.isel.utils.CSVmaker;
+import edu.handong.csee.isel.utils.NoIssuePagesException;
+import edu.handong.csee.isel.utils.Utils;
 
-	// TODO: change reference instruction
-	public static void main(String[] args) throws Exception {
-		// 1. Jira on
-		// 2. Github issuePages
-		// 3. commit name
+public class Parser {
 
-		boolean jira = false;
-		boolean issuePages = true;
-		boolean commitName = false;
+	final String URL;
+	final String REMOTE_URI;
+	final String projectName;
+	final String reference;
+	final String label;
+	final String outPath;
+	final String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
 
-		/* input */
-		final String URL = "https://github.com/apache/zookeeper";
-//		final String URL = "https://github.com/zxing/zxing";
-//		final String URL = "https://github.com/square/okhttp";
-//		final String URL = "https://github.com/HGUISEL/BugPatchCollector";
-		final String REMOTE_URI = URL + ".git";
-		final String projectName = Utils.getProjectName(REMOTE_URI);
-		final String reference = "/Users/imseongbin/Desktop/zookeeperhelp.csv";
-		final String label = null;
-		final String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
-		String outPath = "/Users/imseongbin/Desktop";
+	final int min;
+	final int max;
+	ParseType type;
 
+	public Parser(String URL, String outPath, String reference, ParseType type, int min, int max, String label) { // TODO:
+																													// add
+		// enumerate
+
+		this.URL = URL;
+		this.REMOTE_URI = URL + ".git";
 		if (!outPath.endsWith(File.separator))
 			outPath += File.separator;
-		final int min = -1;
-		final int max = -1;
+		this.outPath = outPath;
+		this.reference = reference;
+		this.type = type;
+		this.min = min;
+		this.max = max;
+		this.label = label;
+		this.projectName = Utils.getProjectName(REMOTE_URI);
+	}
+
+	Parser(String URL, String outPath, String reference, ParseType type, int min, int max) {
+		this(URL, outPath, reference, type, min, max, null);
+	}
+
+	Parser(String URL, String outPath, String reference, ParseType type, String label) {
+		this(URL, outPath, reference, type, -1, -1, label);
+	}
+
+	Parser(String URL, String outPath, String reference, ParseType type) {
+		this(URL, outPath, reference, type, -1, -1, null);
+	}
+
+	// TODO: change reference instruction
+	public void parse() throws Exception {
 
 		/* settings */
 		HashSet<String> keywords = null;
-		if (jira)
-			keywords = Utils.parseReference(reference);
 		HashSet<String> keyHashes = null;
 
-		try {
-			if (issuePages)
+		switch (type) {
+		case Jira:
+			keywords = Utils.parseReference(reference);
+			break;
+		case GitHub:
+			try {
 				keyHashes = Utils.parseGithubIssues(URL, label);
-		} catch (NoIssuePagesException e) {
-			System.out.println("야호!");
-			issuePages = false;
-			commitName = true;
+			} catch (NoIssuePagesException e) {
+				type = ParseType.Keywords;
+			}
+			break;
+		default:
+			break;
 		}
 
 		Git git = Utils.gitClone(REMOTE_URI);
 		Repository repo = git.getRepository();
 		RevWalk walk = new RevWalk(repo);
-		CSVmaker printer = new CSVmaker(new File(outPath + projectName + ".csv"), headers);
+		CSVmaker writer = new CSVmaker(new File(outPath + projectName + ".csv"), headers);
 
 		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
 			if (entry.getKey().contains("refs/heads/master")) { // only master
@@ -82,11 +107,9 @@ public class Main {
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
-				
-//				System.out.println("parent: "+parent.getShortMessage());
-//				System.out.println("commit: "+commit.getShortMessage());
 
-				if (jira) {
+				switch (type) {
+				case Jira:
 					Matcher m = null;
 					if (commit.getShortMessage().length() > 20)
 						m = keyPattern.matcher(commit.getShortMessage().substring(0, 20)); // check if have keyword in
@@ -98,29 +121,34 @@ public class Main {
 					String key = m.group(1);
 					if (!keywords.contains(key))
 						continue;
-				} else if (issuePages) {
+					break;
+
+				case GitHub:
 					if (!keyHashes.contains(commit.getId().name()))
 						continue;
-				} else if (commitName) {
-					Matcher m = bugMessagePattern.matcher(commit.getFullMessage());
+					break;
+
+				case Keywords:
+					m = bugMessagePattern.matcher(commit.getFullMessage());
 					if (!m.find())
 						continue;
+					break;
 				}
 
 				/* TODO: remove indentations of diffs */
 				final List<DiffEntry> diffs = git.diff()
-						.setOldTree(Utils.prepareTreeParser(repo, commit.getId().name()))
-						.setNewTree(Utils.prepareTreeParser(repo, parent.getId().name())).call();
+						.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
+						.setNewTree(Utils.prepareTreeParser(repo, commit.getId().name())).call();
 
 				for (DiffEntry diff : diffs) {
 
 					String patch = null;
 					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
 						continue;
-					Data data = new Data(projectName, parent.name(), parent.getShortMessage(),
-							parent.getAuthorIdent().getWhen(), parent.getAuthorIdent().getName(), patch);
-					printer.write(data);
-					count++;
+					Data data = new Data(projectName, commit.name(), commit.getShortMessage(),
+							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
+					writer.write(data);
+//					count++;
 
 				}
 

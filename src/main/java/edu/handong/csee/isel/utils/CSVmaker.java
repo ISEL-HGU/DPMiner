@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.newpackage;
+package edu.handong.csee.isel.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +11,8 @@ import java.util.Locale;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+
+import edu.handong.csee.isel.parser.Data;
 
 public class CSVmaker {
 	File file;

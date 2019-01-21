@@ -1,13 +1,14 @@
 package edu.handong.csee.isel.Runner;
 
-import java.io.File;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+
+import edu.handong.csee.isel.parser.ParseType;
+import edu.handong.csee.isel.parser.Parser;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -21,14 +22,13 @@ import org.apache.commons.cli.Options;
  * @author imseongbin
  */
 public class Main {
-	String gitRepositoryPath = null;
-	String githubURL = null;
-	String listOfGithubURLFile = null;
+	String input;
 	String resultDirectory = null;
 	String reference = null;
 	String label = null;
-	int conditionMax = 0;
-	int conditionMin = 0;
+	ParseType type;
+	int conditionMax = -1;
+	int conditionMin = -1;
 	boolean isThread;
 	boolean help;
 
@@ -45,8 +45,16 @@ public class Main {
 				printHelp(options);
 				return;
 			}
-			
-			
+
+			try {
+
+				Parser parser = new Parser(input, resultDirectory, reference, type, conditionMax, conditionMin, label);
+				parser.parse();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
 
 		}
 	}
@@ -58,23 +66,12 @@ public class Main {
 
 			CommandLine cmd = parser.parse(options, args);
 
-			String input = cmd.getOptionValue("i");
-
 			try {
-				if (input.contains("github.com")) {
-					githubURL = input;
-				} else {
-					File file = new File(input);
-					if (file.exists()) {
-						if (file.isDirectory()) {
-							gitRepositoryPath = input;
-						} else {
-							listOfGithubURLFile = input;
-						}
-					} else {
-						throw new Exception("input file not exist!");
-					}
-				}
+
+				if (cmd.hasOption("r"))
+					type = ParseType.Jira;
+				else
+					type = ParseType.GitHub;
 
 				if (cmd.hasOption("x") || cmd.hasOption("m")) {
 					if (cmd.hasOption("x") && cmd.hasOption("m")) {
@@ -83,7 +80,6 @@ public class Main {
 						if (conditionMin > conditionMax) {
 							throw new Exception("Max must be bigger than min!");
 						}
-
 					} else {
 						throw new Exception("'x' and 'm' Option must be together!");
 					}
@@ -95,6 +91,7 @@ public class Main {
 				return false;
 			}
 
+			input = cmd.getOptionValue("i");
 			label = cmd.getOptionValue("l");
 			reference = cmd.getOptionValue("r");
 			resultDirectory = cmd.getOptionValue("o");
