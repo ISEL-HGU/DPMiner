@@ -36,6 +36,7 @@ public class Utils {
 		}
 
 		repositoriesDir.mkdirs();
+		System.out.println("cloning..");
 		return Git.cloneRepository().setURI(REMOTE_URI).setDirectory(repositoriesDir)
 //				  .setBranch("refs/heads/master") // only master
 				.setCloneAllBranches(true).call();

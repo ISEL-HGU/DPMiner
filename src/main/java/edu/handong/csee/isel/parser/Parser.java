@@ -68,6 +68,19 @@ public class Parser {
 		HashSet<String> keywords = null;
 		HashSet<String> keyHashes = null;
 
+		Git git = Utils.gitClone(REMOTE_URI);
+		Repository repo = git.getRepository();
+		RevWalk walk = new RevWalk(repo);
+		CSVmaker writer = new CSVmaker(new File(outPath + projectName + ".csv"), headers);
+
+		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
+			if (entry.getKey().contains("refs/heads/master")) { // only master
+				Ref ref = entry.getValue();
+				RevCommit commit = walk.parseCommit(ref.getObjectId());
+				walk.markStart(commit);
+			}
+		}
+
 		switch (type) {
 		case Jira:
 			keywords = Utils.parseReference(reference);
@@ -81,19 +94,6 @@ public class Parser {
 			break;
 		default:
 			break;
-		}
-
-		Git git = Utils.gitClone(REMOTE_URI);
-		Repository repo = git.getRepository();
-		RevWalk walk = new RevWalk(repo);
-		CSVmaker writer = new CSVmaker(new File(outPath + projectName + ".csv"), headers);
-
-		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
-			if (entry.getKey().contains("refs/heads/master")) { // only master
-				Ref ref = entry.getValue();
-				RevCommit commit = walk.parseCommit(ref.getObjectId());
-				walk.markStart(commit);
-			}
 		}
 
 		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
