@@ -25,10 +25,11 @@ public class Main {
 		// 2. Github issuePages
 		// 3. commit name
 
-		boolean jira = true;
-		boolean issuePages = false;
+		boolean jira = false;
+		boolean issuePages = true;
 		boolean commitName = false;
 
+		/* input */
 		final String URL = "https://github.com/apache/zookeeper";
 //		final String URL = "https://github.com/zxing/zxing";
 		final String REMOTE_URI = URL + ".git";
@@ -37,17 +38,25 @@ public class Main {
 		final String label = null;
 		final String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
 		String outPath = "/Users/imseongbin/Desktop";
+
 		if (!outPath.endsWith(File.separator))
 			outPath += File.separator;
+		final int min = -1;
+		final int max = -1;
 
+		/* settings */
 		HashSet<String> keywords = null;
-		if(jira)
+		if (jira)
 			keywords = Utils.parseReference(reference);
 		HashSet<String> keyHashes = null;
-		if (issuePages)
-			keyHashes = Utils.parseGithubIssues(URL, label);
-		final int min = 0;
-		final int max = 5;
+
+		try {
+			if (issuePages)
+				keyHashes = Utils.parseGithubIssues(URL, label);
+		} catch (NoIssuePagesException e) {
+			issuePages = false;
+			commitName = true;
+		}
 
 		Git git = Utils.gitClone(REMOTE_URI);
 		Repository repo = git.getRepository();
@@ -63,7 +72,9 @@ public class Main {
 		}
 
 		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
-		Pattern bugMessagePattern = Pattern.compile("fix|bug");
+		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved|solution");
+
+		/* start */
 		int count = 0;
 		for (RevCommit commit : walk) {
 			try {
@@ -96,6 +107,7 @@ public class Main {
 						.setNewTree(Utils.prepareTreeParser(repo, parent.getId().name())).call();
 
 				for (DiffEntry diff : diffs) {
+
 					String patch = null;
 					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
 						continue;
@@ -110,7 +122,7 @@ public class Main {
 				break;
 			}
 		}
-		System.out.println(count);
+//		System.out.println(count);
 	}
 
 	/**

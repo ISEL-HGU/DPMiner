@@ -45,29 +45,8 @@ public class Main {
 				printHelp(options);
 				return;
 			}
-			/* Main */
-			/*
-			long start = System.currentTimeMillis();
-			System.out.println("start: "+start/1000.0); //will be removed
 			
-			if (gitRepositoryPath != null) {
-				LocalGitRepositoryPatchCollector gr = new LocalGitRepositoryPatchCollector(gitRepositoryPath,
-						resultDirectory, reference, conditionMax, conditionMin, isThread);
-				gr.run();
-
-			} else if (githubURL != null || listOfGithubURLFile != null) {
-				GithubPatchCollector gh = new GithubPatchCollector(githubURL, resultDirectory, listOfGithubURLFile,
-						String.valueOf(conditionMax), String.valueOf(conditionMin), label, isThread);
-				gh.run();
-			}
-			long end = System.currentTimeMillis();
-			System.out.println( "실행 시간 : " + ( end - start )/1000.0 );
 			
-//			for(String author : MyExecutor.authors) {
-//				System.out.println(author);
-//			}
-//			System.out.println("총 기여한 사람의 수: "+MyExecutor.authors.size());
- * */
 
 		}
 	}

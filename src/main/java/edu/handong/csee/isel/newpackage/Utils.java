@@ -28,7 +28,7 @@ import edu.handong.csee.isel.githubcommitparser.IssueLinkParser;
 public class Utils {
 	public static Git gitClone(String REMOTE_URI)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-		
+
 		File repositoriesDir = new File("repositories" + File.separator + getProjectName(REMOTE_URI));
 
 		if (repositoriesDir.exists()) {
@@ -115,16 +115,20 @@ public class Utils {
 		return keywords;
 	}
 
-	public static HashSet<String> parseGithubIssues(String URL, String label) throws Exception {
+	public static HashSet<String> parseGithubIssues(String URL, String label) throws NoIssuePagesException {
 		IssueLinkParser iss = new IssueLinkParser();
 		CommitParser co = new CommitParser();
 
-		iss.parseIssueAddress(URL, label);
-		if (IssueLinkParser.issueAddress.size() == 0) {
-			throw new Exception("There is not issue-space in " + URL);
+		try {
+			iss.parseIssueAddress(URL, label);
+			if (IssueLinkParser.issueAddress.size() == 0) {
+				throw new Exception("");
+			}
+			// CommitParser돌림
+			co.parseCommitAddress(URL);
+		} catch (Exception e) {
+			throw new NoIssuePagesException("There is not issue-space in " + URL);
 		}
-		// CommitParser돌림
-		co.parseCommitAddress(URL);
 
 		return co.getCommitAddress();
 	}
@@ -134,6 +138,6 @@ public class Utils {
 		Matcher m = p.matcher(URI);
 		m.find();
 		return m.group(1);
-		
+
 	}
 }
