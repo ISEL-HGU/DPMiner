@@ -77,5 +77,4 @@ public class CommitParser {
 		return commitAddress;
 	}
 
-
 }

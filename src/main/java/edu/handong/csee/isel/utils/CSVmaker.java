@@ -17,20 +17,22 @@ import edu.handong.csee.isel.parser.Data;
 public class CSVmaker {
 	File file;
 	CSVPrinter printer;
-	public CSVmaker(File file,String[] headers) throws IOException {
+
+	public CSVmaker(File file, String[] headers) throws IOException {
 		this.file = file;
 
 		BufferedWriter writer = Files.newBufferedWriter(Paths.get(file.getAbsolutePath()));
 		printer = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers));
 	}
-	
+
 	// {"Project","fix-commit","fix-shortMessage","fix-date","fix-author","patch"}
-	
+
 	public void write(Data data) throws IOException {
-		printer.printRecord(data.project, data.fix_commit, data.fix_shortMessage, convertCalendar(data.fix_date), data.fix_author, data.patch);
+		printer.printRecord(data.project, data.fix_commit, data.fix_shortMessage, convertCalendar(data.fix_date),
+				data.fix_author, data.patch);
 		printer.flush();
 	}
-	
+
 	public String convertCalendar(Date date) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.KOREA);
 		String dTime = formatter.format(date);
