@@ -7,45 +7,44 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-
 public class MainOfCommitUnitMetrics {
 	String gitRepositoryPath = null;
 	String resultDirectory = null;
 	boolean verbose;
 	boolean help;
-	
-	public static void main(String[]args) {
+
+	public static void main(String[] args) {
 		MainOfCommitUnitMetrics my = new MainOfCommitUnitMetrics();
 		my.run(args);
 	}
-	
+
 	private void run(String[] args) {
 		Options options = createOptions();
-		
-		if(parseOptions(options, args)){
-			if (help){
+
+		if (parseOptions(options, args)) {
+			if (help) {
 				printHelp(options);
 				return;
 			}
-			
+
 			// path is required (necessary) data so no need to have a branch.
 			System.out.println("You provided \"" + gitRepositoryPath + "\" as the value of the option p");
-			
+
 			// TODO show the number of files in the path
-			
-			//주소를 받아와
-			//커밋을 모두 저장
-			CommitParser co = new CommitParser(gitRepositoryPath,resultDirectory);
-			
-			
-			//커밋하나 하나를 꺼내며 메트릭 count
-			//arff파일프린트 
-			
-			if(verbose) {
-				
+
+			// 주소를 받아와
+			// 커밋을 모두 저장
+			CommitParser co = new CommitParser(gitRepositoryPath, resultDirectory);
+
+			// 커밋하나 하나를 꺼내며 메트릭 count
+			// arff파일프린트
+
+			if (verbose) {
+
 				// TODO list all files in the path
-				
-				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
+
+				System.out
+						.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}
 		}
 	}
@@ -81,12 +80,12 @@ public class MainOfCommitUnitMetrics {
 
 		options.addOption(Option.builder("o").longOpt("result").desc("directory will have result file").hasArg()
 				.argName("directory").required().build());
-		
+
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
 		return options;
 	}
-	
+
 	private void printHelp(Options options) {
 		// automatically generate the help statement
 		HelpFormatter formatter = new HelpFormatter();
