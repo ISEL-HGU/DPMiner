@@ -22,8 +22,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
-import edu.handong.csee.isel.githubcommitparser.CommitParser;
-import edu.handong.csee.isel.githubcommitparser.IssueLinkParser;
+import edu.handong.csee.isel.githubparser.CommitParser;
+import edu.handong.csee.isel.githubparser.IssueLinkParser;
 
 public class Utils {
 	public static Git gitClone(String REMOTE_URI)

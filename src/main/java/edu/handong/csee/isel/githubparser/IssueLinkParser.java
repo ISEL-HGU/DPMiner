@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.githubcommitparser;
+package edu.handong.csee.isel.githubparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
