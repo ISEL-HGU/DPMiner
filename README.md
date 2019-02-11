@@ -35,8 +35,10 @@ The result file consist of Project Name, Short Commit Message, Commit Number, Da
 * [CSV](https://github.com/HGUISEL/BugPatchCollector/issues/1)
 
 # How to build: Gradle
-<pre><code> ./gradlew distZip </code></pre>
+<pre><code> $ ./gradlew distZip </code></pre>
 or
-<pre><code> gradle distZip </code></pre>
+<pre><code> $ gradle distZip </code></pre>
 After the command, unzip "build/distributions/BugPatchCollector.zip"<br>
-The executable file is in build/distributions/BugPatchCollector/bin
+The executable file is in build/distributions/BugPatchCollector/bin<br>
+If you have trouble to build using gradlew, enter
+<pre><code>$ gradle wrap</code></pre>
