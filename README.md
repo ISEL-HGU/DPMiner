@@ -39,6 +39,6 @@ The result file consist of Project Name, Short Commit Message, Commit Number, Da
 or
 <pre><code> $ gradle distZip </code></pre>
 After the command, unzip "build/distributions/BugPatchCollector.zip"<br>
-The executable file is in build/distributions/BugPatchCollector/bin<br>
+The executable file is in build/distributions/BugPatchCollector/bin<br><br>
 If you have trouble to build using gradlew, enter
 <pre><code>$ gradle wrap</code></pre>
