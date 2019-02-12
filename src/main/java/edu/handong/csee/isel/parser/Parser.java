@@ -132,7 +132,6 @@ public class Parser {
 					break;
 				}
 
-				/* TODO: remove indentations of diffs */
 				final List<DiffEntry> diffs = git.diff()
 						.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
 						.setNewTree(Utils.prepareTreeParser(repo, commit.getId().name())).call();

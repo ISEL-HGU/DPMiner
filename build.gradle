@@ -42,6 +42,9 @@ dependencies {
     
     // https://mvnrepository.com/artifact/commons-cli/commons-cli
 	compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+	
+	// https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.core
+	compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.16.0'
 }
 
 // In this section you declare where to find the dependencies of your project
