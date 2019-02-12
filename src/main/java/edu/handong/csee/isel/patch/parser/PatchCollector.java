@@ -29,13 +29,14 @@ public class PatchCollector {
 	final String reference;
 	final String label;
 	final String outPath;
-	final String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
+	final static String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
 
 	final int min;
 	final int max;
 	PatchParseType type;
 
-	public PatchCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max, String label) {
+	public PatchCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max,
+			String label) {
 		this.URL = URL;
 		this.REMOTE_URI = URL + ".git";
 		if (!outPath.endsWith(File.separator))
@@ -62,7 +63,7 @@ public class PatchCollector {
 	}
 
 	// TODO: change reference instruction
-	public void parse() throws Exception {
+	public void collect() throws Exception {
 
 		/* settings */
 		HashSet<String> keywords = null;
@@ -139,7 +140,7 @@ public class PatchCollector {
 				for (DiffEntry diff : diffs) {
 
 					String patch = null;
-					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
+					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions (min,max)
 						continue;
 					Patch data = new Patch(projectName, commit.name(), commit.getShortMessage(),
 							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);

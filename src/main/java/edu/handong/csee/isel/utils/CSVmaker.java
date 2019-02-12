@@ -28,6 +28,7 @@ public class CSVmaker {
 
 	/**
 	 * {"Project","fix-commit","fix-shortMessage","fix-date","fix-author","patch"}
+	 * 
 	 * @param data
 	 * @throws IOException
 	 */
@@ -36,14 +37,17 @@ public class CSVmaker {
 				data.fix_author, data.patch);
 		printer.flush();
 	}
-	
+
 	/**
-	 * {"BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI", "numLinePrefix","content"}
+	 * {"BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI",
+	 * "numLinePrefix","content"}
+	 * 
 	 * @param bi
 	 * @throws IOException
 	 */
 	public void write(BIChange bi) throws IOException {
-		printer.printRecord(bi.BIShal1, bi.BIpath, bi.Fixpath, bi.FixShal1,bi.numLineBIC,bi.numLinePreFix,bi.content);
+		printer.printRecord(bi.BIShal1, bi.BIpath, bi.Fixpath, bi.FixShal1, bi.numLineBIC, bi.numLinePreFix,
+				bi.content);
 		printer.flush();
 	}
 
