@@ -11,6 +11,7 @@ plugins {
     id 'java-library'
 }
 
+
 apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.Runner.Main"
 
