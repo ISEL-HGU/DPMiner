@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.Runner;
+package edu.handong.csee.isel.bic;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +18,11 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
-import edu.handong.csee.isel.utils.BIChange;
-import edu.handong.csee.isel.utils.Blamer;
 import edu.handong.csee.isel.utils.CSVmaker;
 import edu.handong.csee.isel.utils.Utils;
 
-public class Test {
+// TODO: reference commit list
+public class BICCollector {
 
 	final static String[] headers = { "BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI", "numLinePrefix",
 			"content" };

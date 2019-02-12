@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.Runner;
+package edu.handong.csee.isel.runner;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -7,8 +7,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.csee.isel.parser.ParseType;
-import edu.handong.csee.isel.parser.Parser;
+import edu.handong.csee.isel.patch.parser.PatchCollector;
+import edu.handong.csee.isel.patch.parser.PatchParseType;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -26,7 +26,7 @@ public class Main {
 	String resultDirectory = null;
 	String reference = null;
 	String label = null;
-	ParseType type;
+	PatchParseType type;
 	int conditionMax = -1;
 	int conditionMin = -1;
 //	boolean isThread;
@@ -48,7 +48,7 @@ public class Main {
 
 			try {
 
-				Parser parser = new Parser(input, resultDirectory, reference, type, conditionMin, conditionMax, label);
+				PatchCollector parser = new PatchCollector(input, resultDirectory, reference, type, conditionMin, conditionMax, label);
 				parser.parse();
 
 			} catch (Exception e) {
@@ -69,9 +69,9 @@ public class Main {
 			try {
 
 				if (cmd.hasOption("r"))
-					type = ParseType.Jira;
+					type = PatchParseType.Jira;
 				else
-					type = ParseType.GitHub;
+					type = PatchParseType.GitHub;
 
 				if (cmd.hasOption("x") || cmd.hasOption("m")) {
 					if (cmd.hasOption("x") && cmd.hasOption("m")) {

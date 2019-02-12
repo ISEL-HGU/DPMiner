@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.Runner;
+package edu.handong.csee.isel.bic;
 
 import java.io.File;
 import java.io.IOException;

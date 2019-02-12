@@ -12,7 +12,8 @@ import java.util.Locale;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import edu.handong.csee.isel.parser.Data;
+import edu.handong.csee.isel.bic.BIChange;
+import edu.handong.csee.isel.patch.parser.Patch;
 
 public class CSVmaker {
 	File file;
@@ -30,7 +31,7 @@ public class CSVmaker {
 	 * @param data
 	 * @throws IOException
 	 */
-	public void write(Data data) throws IOException {
+	public void write(Patch data) throws IOException {
 		printer.printRecord(data.project, data.fix_commit, data.fix_shortMessage, convertCalendar(data.fix_date),
 				data.fix_author, data.patch);
 		printer.flush();

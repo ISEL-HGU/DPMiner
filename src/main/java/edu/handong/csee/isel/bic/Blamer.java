@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.utils;
+package edu.handong.csee.isel.bic;
 
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -6,6 +6,8 @@ import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+
+import edu.handong.csee.isel.utils.Utils;
 
 public class Blamer {
 	BlameCommand blamer;

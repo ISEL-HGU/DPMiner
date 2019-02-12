@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.utils;
+package edu.handong.csee.isel.bic;
 
 public class BIChange {
 	public String BIShal1;
