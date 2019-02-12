@@ -2,6 +2,8 @@ package edu.handong.csee.isel.commitUnitMetrics;
 
 import java.io.IOException;
 
+import org.eclipse.jgit.diff.DiffAlgorithm;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -30,5 +32,8 @@ public class Utils {
             return treeParser;
         }
     }
+	
+	static public DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
+	static public RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
 
 }
