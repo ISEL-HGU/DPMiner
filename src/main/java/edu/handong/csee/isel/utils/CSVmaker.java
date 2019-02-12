@@ -25,11 +25,24 @@ public class CSVmaker {
 		printer = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(headers));
 	}
 
-	// {"Project","fix-commit","fix-shortMessage","fix-date","fix-author","patch"}
-
+	/**
+	 * {"Project","fix-commit","fix-shortMessage","fix-date","fix-author","patch"}
+	 * @param data
+	 * @throws IOException
+	 */
 	public void write(Data data) throws IOException {
 		printer.printRecord(data.project, data.fix_commit, data.fix_shortMessage, convertCalendar(data.fix_date),
 				data.fix_author, data.patch);
+		printer.flush();
+	}
+	
+	/**
+	 * {"BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI", "numLinePrefix","content"}
+	 * @param bi
+	 * @throws IOException
+	 */
+	public void write(BIChange bi) throws IOException {
+		printer.printRecord(bi.BIShal1, bi.BIpath, bi.Fixpath, bi.FixShal1,bi.numLineBIC,bi.numLinePreFix,bi.content);
 		printer.flush();
 	}
 

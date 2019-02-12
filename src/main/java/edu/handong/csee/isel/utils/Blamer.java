@@ -12,7 +12,7 @@ public class Blamer {
 	ObjectId commitID;
 	BlameResult blame;
 	String path;
-	
+		
 	public Blamer(Repository repo,ObjectId id, String filePath) throws GitAPIException {
 		this.commitID = id;
 		this.path = filePath;
@@ -37,6 +37,7 @@ public class Blamer {
 	public OneLine blameOneLine(int numLine) {
 		RevCommit commit = blame.getSourceCommit(numLine);
 		String path = blame.getSourcePath(numLine);
-		return new OneLine(commit,path,numLine);
+		int numNewLine = blame.getSourceLine(numLine);
+		return new OneLine(commit,path,numNewLine);
 	}
 }
