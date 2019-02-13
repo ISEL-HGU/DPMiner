@@ -22,6 +22,7 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 * -x (Max lines of Modified line Option, including x'th line)
 * -m (Min lines of Modified line Option, including m'th line)
 * -h (Help Option)
+* [-b](https://github.com/HGUISEL/BugPatchCollector/issues/16) (Bug Introducing Changes)
 
 
 # Input Example
