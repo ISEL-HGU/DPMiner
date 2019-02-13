@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -47,12 +46,11 @@ import edu.handong.csee.isel.patch.parser.githubparser.IssueLinkParser;
 import edu.handong.csee.isel.patch.parser.githubparser.NoIssuePagesException;
 
 public class Utils {
-	
 
 	static public DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
 	static public RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
 
-	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
+	static public EditList getEditListFromDiff(Git git, String oldSha1, String newSha1, String path) {
 
 		Repository repo = git.getRepository();
 
@@ -60,7 +58,6 @@ public class Utils {
 		try {
 			oldId = repo.resolve(oldSha1 + "^{tree}:");
 			ObjectId newId = repo.resolve(newSha1 + "^{tree}");
-
 
 			ObjectReader reader = repo.newObjectReader();
 
@@ -74,11 +71,8 @@ public class Utils {
 			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, newId);
 
-			List<DiffEntry> diffs= git.diff()
-					.setPathFilter(FollowFilter.create(path, diffConfig))
-					.setNewTree(newTreeIter)
-					.setOldTree(oldTreeIter)
-					.call();
+			List<DiffEntry> diffs = git.diff().setPathFilter(FollowFilter.create(path, diffConfig))
+					.setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			DiffFormatter df = new DiffFormatter(out);
@@ -86,11 +80,11 @@ public class Utils {
 			df.setDiffComparator(diffComparator);
 			df.setRepository(repo);
 
-			for(DiffEntry entry:diffs){
+			for (DiffEntry entry : diffs) {
 
 				df.format(entry);
-				FileHeader fileHeader = df.toFileHeader( entry );
-				if(!fileHeader.getNewPath().equals(path))
+				FileHeader fileHeader = df.toFileHeader(entry);
+				if (!fileHeader.getNewPath().equals(path))
 					continue;
 
 				df.close();
@@ -99,18 +93,17 @@ public class Utils {
 
 			df.close();
 
-		} catch (IndexOutOfBoundsException e){
+		} catch (IndexOutOfBoundsException e) {
 
-		}
-		catch (RevisionSyntaxException | IOException | GitAPIException e) {
+		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 
 		return null;
 	}
-	
+
 	public static String removeComments(String code) {
-		
+
 		JavaASTParser codeAST = new JavaASTParser(code);
 		@SuppressWarnings("unchecked")
 		List<Comment> lstComments = codeAST.cUnit.getCommentList();
@@ -172,7 +165,7 @@ public class Utils {
 		}
 
 	}
-	
+
 	public static Git gitClone(String REMOTE_URI)
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
@@ -289,5 +282,4 @@ public class Utils {
 
 	}
 
-	
 }

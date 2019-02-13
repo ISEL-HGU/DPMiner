@@ -46,7 +46,8 @@ public class BICCollector {
 	final static String[] headers = { "BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI", "numLinePrefix",
 			"content" };
 
-	public BICCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max, String label) {
+	public BICCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max,
+			String label) {
 		this.URL = URL;
 		this.REMOTE_URI = URL + ".git";
 		if (!outPath.endsWith(File.separator))
@@ -63,7 +64,8 @@ public class BICCollector {
 			hasChangedLineRange = false;
 		this.label = label;
 	}
-	//TODO:
+
+	// TODO:
 	// 1.select particular commits
 	// 2.add reference type(JIRA, GitHub, Keywords)
 	public void collect() throws InvalidRemoteException, TransportException, GitAPIException, IOException {
@@ -107,7 +109,7 @@ public class BICCollector {
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
-				
+
 				switch (type) {
 				case Jira:
 					Matcher m = null;
@@ -175,7 +177,7 @@ public class BICCollector {
 						}
 						// blame old file
 						Blamer blamer = new Blamer(repo, parent.getId(), oldPath);
-						System.out.println(numTotalLine +": "+ hasChangedLineRange + " " + commit.getId().name());
+						System.out.println(numTotalLine + ": " + hasChangedLineRange + " " + commit.getId().name());
 						for (int numLine : removedLineList) {
 							Blamer.OneLine blamed = blamer.blameOneLine(numLine);
 							BIChange bi = new BIChange(blamed.commit.getId().name(), blamed.path, newPath,

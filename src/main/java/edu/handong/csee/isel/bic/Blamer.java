@@ -14,32 +14,34 @@ public class Blamer {
 	ObjectId commitID;
 	BlameResult blame;
 	String path;
-		
-	public Blamer(Repository repo,ObjectId id, String filePath) throws GitAPIException {
+
+	public Blamer(Repository repo, ObjectId id, String filePath) throws GitAPIException {
 		this.commitID = id;
 		this.path = filePath;
 		blamer = new BlameCommand(repo);
 		commitID = id;
 		blamer.setStartCommit(commitID);
 		blamer.setFilePath(path);
-		blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator).setFollowFileRenames(true).call();
+		blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator)
+				.setFollowFileRenames(true).call();
 	}
-	
+
 	public static class OneLine {
 		public OneLine(RevCommit commit, String path, int numLine) {
 			this.commit = commit;
 			this.path = path;
 			this.num = numLine;
 		}
+
 		public RevCommit commit;
 		public String path;
 		public int num;
 	}
-	
+
 	public OneLine blameOneLine(int numLine) {
 		RevCommit commit = blame.getSourceCommit(numLine);
 		String path = blame.getSourcePath(numLine);
 		int numNewLine = blame.getSourceLine(numLine);
-		return new OneLine(commit,path,numNewLine);
+		return new OneLine(commit, path, numNewLine);
 	}
 }

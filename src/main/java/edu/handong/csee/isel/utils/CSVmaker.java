@@ -29,12 +29,12 @@ public class CSVmaker {
 	/**
 	 * {"Project","fix-commit","fix-shortMessage","fix-date","fix-author","patch"}
 	 * 
-	 * @param data
+	 * @param patch
 	 * @throws IOException
 	 */
-	public void write(Patch data) throws IOException {
-		printer.printRecord(data.project, data.fix_commit, data.fix_shortMessage, convertCalendar(data.fix_date),
-				data.fix_author, data.patch);
+	public void write(Patch patch) throws IOException {
+		printer.printRecord(patch.project, patch.fix_commit, patch.fix_shortMessage, convertCalendar(patch.fix_date),
+				patch.fix_author, patch.patch);
 		printer.flush();
 	}
 

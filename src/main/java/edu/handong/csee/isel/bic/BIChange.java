@@ -8,6 +8,7 @@ public class BIChange {
 	public int numLineBIC;
 	public int numLinePreFix;
 	public String content;
+
 	public BIChange(String bIShal1, String oldPath, String newPath, String fixShal1, int numLineBIC, int numLinePreFix,
 			String content) {
 		super();
@@ -19,6 +20,7 @@ public class BIChange {
 		this.numLinePreFix = numLinePreFix;
 		this.content = content;
 	}
+
 	@Override
 	public String toString() {
 		return "BIShal1=" + BIShal1 + ", BIpath=" + BIpath + ", Fixpath=" + Fixpath + ", FixShal1=" + FixShal1

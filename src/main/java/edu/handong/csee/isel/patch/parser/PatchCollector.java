@@ -140,7 +140,8 @@ public class PatchCollector {
 				for (DiffEntry diff : diffs) {
 
 					String patch = null;
-					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions (min,max)
+					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
+																				// (min,max)
 						continue;
 					Patch data = new Patch(projectName, commit.name(), commit.getShortMessage(),
 							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
