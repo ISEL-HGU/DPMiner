@@ -26,6 +26,7 @@ import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
@@ -170,16 +171,23 @@ public class Utils {
 			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 
 		File repositoriesDir = new File("repositories" + File.separator + getProjectName(REMOTE_URI));
-
+		Git git = null;
 		if (repositoriesDir.exists()) {
-			return Git.open(repositoriesDir);
-		}
-
-		repositoriesDir.mkdirs();
-		System.out.println("cloning..");
-		return Git.cloneRepository().setURI(REMOTE_URI).setDirectory(repositoriesDir)
+			try {
+				git = Git.open(repositoriesDir);
+			} catch(RepositoryNotFoundException e) {
+				if(repositoriesDir.delete()) {
+					return gitClone(REMOTE_URI);
+				}
+			}
+		} else {
+			repositoriesDir.mkdirs();
+			System.out.println("cloning..");
+			git = Git.cloneRepository().setURI(REMOTE_URI).setDirectory(repositoriesDir)
 //				  .setBranch("refs/heads/master") // only master
-				.setCloneAllBranches(true).call();
+					.setCloneAllBranches(true).call();
+		}
+		return git;
 	}
 
 	public static AbstractTreeIterator prepareTreeParser(Repository repository, String objectId) throws IOException {
@@ -275,9 +283,11 @@ public class Utils {
 	}
 
 	public static String getProjectName(String URI) {
-		Pattern p = Pattern.compile(".*/(\\w+)\\.git");
+
+		Pattern p = Pattern.compile(".*/(.+)\\.git");
 		Matcher m = p.matcher(URI);
 		m.find();
+//		System.out.println(m.group(1));
 		return m.group(1);
 
 	}

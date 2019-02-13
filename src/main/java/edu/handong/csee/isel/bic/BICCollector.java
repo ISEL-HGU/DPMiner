@@ -77,7 +77,7 @@ public class BICCollector {
 		Git git = Utils.gitClone(REMOTE_URI);
 		Repository repo = git.getRepository();
 		RevWalk walk = new RevWalk(repo);
-		CSVmaker writer = new CSVmaker(new File(outPath + projectName + ".csv"), headers);
+		CSVmaker writer = new CSVmaker(new File(outPath + "BIC_" + projectName + ".csv"), headers);
 
 		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
 			if (entry.getKey().contains("refs/heads/master")) { // only master
@@ -177,7 +177,7 @@ public class BICCollector {
 						}
 						// blame old file
 						Blamer blamer = new Blamer(repo, parent.getId(), oldPath);
-						System.out.println(numTotalLine + ": " + hasChangedLineRange + " " + commit.getId().name());
+//						System.out.println(numTotalLine + ": " + hasChangedLineRange + " " + commit.getId().name());
 						for (int numLine : removedLineList) {
 							Blamer.OneLine blamed = blamer.blameOneLine(numLine);
 							BIChange bi = new BIChange(blamed.commit.getId().name(), blamed.path, newPath,
