@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.parser;
+package edu.handong.csee.isel.patch.parser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,11 +17,11 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
+import edu.handong.csee.isel.patch.parser.githubparser.NoIssuePagesException;
 import edu.handong.csee.isel.utils.CSVmaker;
-import edu.handong.csee.isel.utils.NoIssuePagesException;
 import edu.handong.csee.isel.utils.Utils;
 
-public class Parser {
+public class PatchCollector {
 
 	final String URL;
 	final String REMOTE_URI;
@@ -29,13 +29,14 @@ public class Parser {
 	final String reference;
 	final String label;
 	final String outPath;
-	final String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
+	final static String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };
 
 	final int min;
 	final int max;
-	ParseType type;
+	PatchParseType type;
 
-	public Parser(String URL, String outPath, String reference, ParseType type, int min, int max, String label) {
+	public PatchCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max,
+			String label) {
 		this.URL = URL;
 		this.REMOTE_URI = URL + ".git";
 		if (!outPath.endsWith(File.separator))
@@ -49,20 +50,20 @@ public class Parser {
 		this.projectName = Utils.getProjectName(REMOTE_URI);
 	}
 
-	Parser(String URL, String outPath, String reference, ParseType type, int min, int max) {
+	PatchCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max) {
 		this(URL, outPath, reference, type, min, max, null);
 	}
 
-	Parser(String URL, String outPath, String reference, ParseType type, String label) {
+	PatchCollector(String URL, String outPath, String reference, PatchParseType type, String label) {
 		this(URL, outPath, reference, type, -1, -1, label);
 	}
 
-	Parser(String URL, String outPath, String reference, ParseType type) {
+	PatchCollector(String URL, String outPath, String reference, PatchParseType type) {
 		this(URL, outPath, reference, type, -1, -1, null);
 	}
 
 	// TODO: change reference instruction
-	public void parse() throws Exception {
+	public void collect() throws Exception {
 
 		/* settings */
 		HashSet<String> keywords = null;
@@ -89,7 +90,7 @@ public class Parser {
 			try {
 				keyHashes = Utils.parseGithubIssues(URL, label);
 			} catch (NoIssuePagesException e) {
-				type = ParseType.Keywords;
+				type = PatchParseType.Keywords;
 			}
 			break;
 		default:
@@ -132,7 +133,6 @@ public class Parser {
 					break;
 				}
 
-				/* TODO: remove indentations of diffs */
 				final List<DiffEntry> diffs = git.diff()
 						.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
 						.setNewTree(Utils.prepareTreeParser(repo, commit.getId().name())).call();
@@ -141,8 +141,9 @@ public class Parser {
 
 					String patch = null;
 					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
+																				// (min,max)
 						continue;
-					Data data = new Data(projectName, commit.name(), commit.getShortMessage(),
+					Patch data = new Patch(projectName, commit.name(), commit.getShortMessage(),
 							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
 					writer.write(data);
 //					count++;

@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.parser;
+package edu.handong.csee.isel.patch.parser;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import java.util.Date;
 // Fix-Date
 // Fix-Author
 // Patch
-public class Data {
+public class Patch {
 	public String project;
 	public String fix_commit;
 	public String fix_shortMessage;
@@ -16,7 +16,7 @@ public class Data {
 	public String fix_author;
 	public String patch;
 
-	public Data(String project, String fix_commit, String fix_shortMessage, Date fix_date, String fix_author,
+	public Patch(String project, String fix_commit, String fix_shortMessage, Date fix_date, String fix_author,
 			String patch) {
 		super();
 		this.project = project;

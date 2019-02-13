@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.Runner;
+package edu.handong.csee.isel.runner;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -7,8 +7,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.csee.isel.parser.ParseType;
-import edu.handong.csee.isel.parser.Parser;
+import edu.handong.csee.isel.bic.BICCollector;
+import edu.handong.csee.isel.patch.parser.PatchCollector;
+import edu.handong.csee.isel.patch.parser.PatchParseType;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -26,11 +27,12 @@ public class Main {
 	String resultDirectory = null;
 	String reference = null;
 	String label = null;
-	ParseType type;
+	PatchParseType type;
 	int conditionMax = -1;
 	int conditionMin = -1;
 //	boolean isThread;
 	boolean help;
+	boolean isBI;
 
 	public static void main(String[] args) {
 		Main bc = new Main();
@@ -48,8 +50,15 @@ public class Main {
 
 			try {
 
-				Parser parser = new Parser(input, resultDirectory, reference, type, conditionMin, conditionMax, label);
-				parser.parse();
+				if (isBI) {
+					BICCollector collector = new BICCollector(input, resultDirectory, reference, type, conditionMin,
+							conditionMax, label);
+					collector.collect();
+				} else {
+					PatchCollector collector = new PatchCollector(input, resultDirectory, reference, type, conditionMin,
+							conditionMax, label);
+					collector.collect();
+				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -69,9 +78,9 @@ public class Main {
 			try {
 
 				if (cmd.hasOption("r"))
-					type = ParseType.Jira;
+					type = PatchParseType.Jira;
 				else
-					type = ParseType.GitHub;
+					type = PatchParseType.GitHub;
 
 				if (cmd.hasOption("x") || cmd.hasOption("m")) {
 					if (cmd.hasOption("x") && cmd.hasOption("m")) {
@@ -97,6 +106,7 @@ public class Main {
 			resultDirectory = cmd.getOptionValue("o");
 			help = cmd.hasOption("h");
 //			isThread = cmd.hasOption("t");
+			isBI = cmd.hasOption("b");
 
 		} catch (Exception e) {
 			printHelp(options);
@@ -134,6 +144,9 @@ public class Main {
 //		options.addOption(Option.builder("t").longOpt("thread")
 //				.desc("Using threads in your cpu, you can speed up. Only do well if input is local repository.")
 //				.build());
+
+		options.addOption(Option.builder("b").longOpt("bugIntroducingChange")
+				.desc("If you want to get bug introducing changes, add this option").build());
 
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
