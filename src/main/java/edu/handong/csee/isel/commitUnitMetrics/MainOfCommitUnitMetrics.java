@@ -28,18 +28,11 @@ public class MainOfCommitUnitMetrics {
 				return;
 			}
 			
-			//주소를 받아와
-			//커밋을 모두 저장
 			CommitCollector commitCollector = new CommitCollector(gitRepositoryPath,resultDirectory);
 			commitCollector.countCommitMetrics();
-			
-			//커밋하나 하나를 꺼내며 메트릭 count
-			//arff파일프린트 
+			//commitCollector.makeCsvFile();
 			
 			if(verbose) {
-				
-				// TODO list all files in the path
-				
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}
 		}

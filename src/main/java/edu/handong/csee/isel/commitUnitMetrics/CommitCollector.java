@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -28,6 +29,8 @@ public class CommitCollector {
 
 	void countCommitMetrics() {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		MetricVariable metricVariable = new MetricVariable();
+		MetricParser MetricParser = new MetricParser();
 
 		try {
 			git = Git.open(new File(inputPath));
@@ -51,26 +54,21 @@ public class CommitCollector {
 						// .setPathFilter(PathFilter.create("README.md")) //원하는 소스파일만 본다.
 						.call();
 
-				// diff.size(); //수정된 파일 개수
+				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
 
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일
-
-					System.out.println(i); // test : commit number
-					System.out.println("PPPPPP " + commit.getParentCount());// tests : parent number
-
 					try (DiffFormatter formatter = new DiffFormatter(byteStream)) { // 소스파일 내용
 						formatter.setRepository(repo);
 						formatter.format(entry);
 						String diffContent = byteStream.toString(); // 한 소스파일 diff 내용을 저장
-
-						System.out.println(byteStream.toString().length());
-						collect(diffContent);
-
+						
+						MetricParser.computeLine(diffContent);
+						
 						byteStream.reset();
 					}
 				}
 
-				if (i == 5)
+				if (i == 1)
 					break; // 커밋 5개까지 본다.
 				i++;
 			}
@@ -86,9 +84,8 @@ public class CommitCollector {
 		}
 
 	}
-
-	void collect(String diffContent) {
-		System.out.println("-------------------------------------------------------------");
-		System.out.println(diffContent);
+	
+	void makeCsvFile() {
+		
 	}
 }
