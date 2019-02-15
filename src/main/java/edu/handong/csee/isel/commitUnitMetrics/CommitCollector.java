@@ -31,6 +31,7 @@ public class CommitCollector {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MetricVariable metricVariable = new MetricVariable();
 		MetricParser MetricParser = new MetricParser();
+		ArrayList<MetricVariable> metricVariables = new ArrayList<MetricVariable>();
 
 		try {
 			git = Git.open(new File(inputPath));
@@ -40,7 +41,8 @@ public class CommitCollector {
 			int i = 1;
 
 			for (RevCommit commit : initialCommits) {// 커밋
-
+				MetricParser.resetValues();
+				
 				if (commit.getParentCount() == 0)
 					break;
 				RevCommit parent = commit.getParent(0);
@@ -54,6 +56,7 @@ public class CommitCollector {
 						// .setPathFilter(PathFilter.create("README.md")) //원하는 소스파일만 본다.
 						.call();
 
+				MetricParser.computeParsonIdent(commit.getAuthorIdent().toString());// 커밋한 사람. 
 				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
 
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일

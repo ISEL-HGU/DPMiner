@@ -20,10 +20,21 @@ public class MetricParser {
 			else if(line.startsWith("@@")) distributionOfModifiedLines++;
 		}
 		
+		metricVariable.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
 		metricVariable.setNumOfAddLines(numOfAddLines);
 		metricVariable.setNumOfDeleteLines(numOfDeleteLines);
-		metricVariable.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
 		metricVariable.setDistributionOfModifiedLines(distributionOfModifiedLines);
+	}
+	
+	public void resetValues() {
+		metricVariable.setNumOfModifyLines(0);
+		metricVariable.setNumOfAddLines(0);
+		metricVariable.setNumOfDeleteLines(0);
+		metricVariable.setDistributionOfModifiedLines(0);
+	}
+	
+	public void computeParsonIdent(String personIdent) {
+		
 	}
 
 }
