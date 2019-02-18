@@ -2,14 +2,16 @@ package edu.handong.csee.isel.commitUnitMetrics;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MetricParser {
-	MetricVariable metricVariable = new MetricVariable();
 	
-	public void computeLine(String diffContent) {
-		int numOfDeleteLines = 0;
-		int numOfAddLines = 0;
-		int distributionOfModifiedLines = 0;
+	public void computeLine(String commitHash,String diffContent) {
+		MetricVariable metricVariable = CommitCollector.metricVariables.get(commitHash);
+		int numOfDeleteLines = metricVariable.getNumOfDeleteLines();
+		int numOfAddLines = metricVariable.getNumOfAddLines();
+		int distributionOfModifiedLines = metricVariable.getDistributionOfModifiedLines();
 		
 		List<String> diffLines = Arrays.asList(diffContent.split("\\n"));
 		
@@ -19,22 +21,19 @@ public class MetricParser {
 			else if(line.startsWith("+")) numOfAddLines++;
 			else if(line.startsWith("@@")) distributionOfModifiedLines++;
 		}
-		
 		metricVariable.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
 		metricVariable.setNumOfAddLines(numOfAddLines);
 		metricVariable.setNumOfDeleteLines(numOfDeleteLines);
 		metricVariable.setDistributionOfModifiedLines(distributionOfModifiedLines);
 	}
 	
-	public void resetValues() {
-		metricVariable.setNumOfModifyLines(0);
-		metricVariable.setNumOfAddLines(0);
-		metricVariable.setNumOfDeleteLines(0);
-		metricVariable.setDistributionOfModifiedLines(0);
-	}
-	
-	public void computeParsonIdent(String personIdent) {
-		
+	public void computeParsonIdent(String commitHash, String personIdent) {
+		Pattern pattern = Pattern.compile(".+\\[(.+),.+,.+\\]");
+		Matcher matcher = pattern.matcher(personIdent);
+		while(matcher.find()) {
+			MetricVariable metricVariable = CommitCollector.metricVariables.get(commitHash);
+			metricVariable.setCommitAuthor(matcher.group(1));
+		}
 	}
 
 }
