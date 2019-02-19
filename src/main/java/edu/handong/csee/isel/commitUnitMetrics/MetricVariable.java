@@ -8,6 +8,7 @@ public class MetricVariable {
 	int numOfDeleteLines;
 	int numOfAddLines;
 	int distributionOfModifiedLines;
+	int numOfDirectories;
 	
 	public MetricVariable() {
 		this.commitHash = null;
@@ -17,6 +18,7 @@ public class MetricVariable {
 		this.numOfDeleteLines = 0;
 		this.numOfAddLines = 0;
 		this.distributionOfModifiedLines = 0;
+		this.numOfDirectories = 0;
 	}
 	
 	public String getCommitHash() {
@@ -61,6 +63,11 @@ public class MetricVariable {
 	public void setDistributionOfModifiedLines(int distributionOfModifiedLines) {
 		this.distributionOfModifiedLines = distributionOfModifiedLines;
 	}
-	
+	public int getNumOfDirectories() {
+		return numOfDirectories;
+	}
+	public void setNumOfDirectories(int numOfDirectories) {
+		this.numOfDirectories = numOfDirectories;
+	}
 	
 }

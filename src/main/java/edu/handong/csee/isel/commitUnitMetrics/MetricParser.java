@@ -2,6 +2,7 @@ package edu.handong.csee.isel.commitUnitMetrics;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,12 +29,30 @@ public class MetricParser {
 	}
 	
 	public void computeParsonIdent(String commitHash, String personIdent) {
+		MetricVariable metricVariable = CommitCollector.metricVariables.get(commitHash);
 		Pattern pattern = Pattern.compile(".+\\[(.+),.+,.+\\]");
 		Matcher matcher = pattern.matcher(personIdent);
 		while(matcher.find()) {
-			MetricVariable metricVariable = CommitCollector.metricVariables.get(commitHash);
 			metricVariable.setCommitAuthor(matcher.group(1));
 		}
+	}
+	
+	public void computeDirectory(String commitHash, TreeSet<String> rawPathOfDirectory) {
+		MetricVariable metricVariable = CommitCollector.metricVariables.get(commitHash);
+		TreeSet<String> pathOfDirectory = new TreeSet<String>();
+		Pattern pattern = Pattern.compile("(.+)/.+\\..+");
+		
+		for(String line : rawPathOfDirectory) {
+			if(!line.contains("/")) {
+				pathOfDirectory.add(line);
+				break;
+			}
+			Matcher matcher = pattern.matcher(line);
+			while(matcher.find()) {
+				pathOfDirectory.add(matcher.group(1));
+			}
+		}
+		metricVariable.setNumOfDirectories(pathOfDirectory.size());
 	}
 
 }

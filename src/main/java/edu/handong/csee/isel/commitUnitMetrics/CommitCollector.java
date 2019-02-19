@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -34,7 +35,7 @@ public class CommitCollector {
 	void countCommitMetrics() {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MetricVariable metricVariable = new MetricVariable();
-		MetricParser MetricParser = new MetricParser();
+		MetricParser metricParser = new MetricParser();
 		
 
 		try {
@@ -45,9 +46,12 @@ public class CommitCollector {
 			int i = 1;
 
 			for (RevCommit commit : initialCommits) {// 커밋
-				metricVariable = new MetricVariable();
+				TreeSet<String> pathOfDirectory = new TreeSet<String>();
 				String commitHash = commit.getName();
+				
+				metricVariable = new MetricVariable();
 				metricVariables.put(commitHash, metricVariable);
+				
 				
 				if (commit.getParentCount() == 0)
 					break;
@@ -62,25 +66,30 @@ public class CommitCollector {
 						// .setPathFilter(PathFilter.create("README.md")) //원하는 소스파일만 본다.
 						.call();
 				
-				MetricParser.computeParsonIdent(commitHash,commit.getAuthorIdent().toString());// 커밋한 사람
+				metricParser.computeParsonIdent(commitHash,commit.getAuthorIdent().toString());// 커밋한 사람
 				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
 
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일
+	
 					try (DiffFormatter formatter = new DiffFormatter(byteStream)) { // 소스파일 내용
 						formatter.setRepository(repo);
 						formatter.format(entry);
 						String diffContent = byteStream.toString(); // 한 소스파일 diff 내용을 저장
 						
-						MetricParser.computeLine(commitHash,diffContent);
-						
+						metricParser.computeLine(commitHash,diffContent);
+						pathOfDirectory.add(entry.getNewPath().toString());
+							
 						byteStream.reset();
 					}
 				}
-				if (i == 10)
+				metricParser.computeDirectory(commitHash, pathOfDirectory);
+				if (i == 20)
 					break; // 커밋 5개까지 본다.
 				i++;
+				System.out.println("\n");
 			}
 			byteStream.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NoHeadException e) {
@@ -97,11 +106,10 @@ public class CommitCollector {
 		BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new FileWriter(outputPath+"/zxing.csv"));
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Commit Hash","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","Modify Files","AuthorID"));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Commit Hash","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","Modify Files","AuthorID","Directories"));
 			for(String keyName : metricVariables.keySet()) {
 				MetricVariable metric = metricVariables.get(keyName);
-				csvPrinter.printRecord(metric.getCommitHash(),metric.getNumOfModifyLines(),metric.getNumOfAddLines(),metric.getNumOfDeleteLines(),metric.getDistributionOfModifiedLines(),metric.getNumOfModifyFiles(),metric.getCommitAuthor());
-				
+				csvPrinter.printRecord(keyName,metric.getNumOfModifyLines(),metric.getNumOfAddLines(),metric.getNumOfDeleteLines(),metric.getDistributionOfModifiedLines(),metric.getNumOfModifyFiles(),metric.getCommitAuthor(),metric.getNumOfDirectories());
 			}
 			csvPrinter.close();
 			writer.close();
