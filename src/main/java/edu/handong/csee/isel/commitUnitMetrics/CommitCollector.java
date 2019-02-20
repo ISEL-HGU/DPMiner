@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
@@ -26,6 +27,7 @@ public class CommitCollector {
 	private Git git;
 	private Repository repo;
 	static HashMap<String,MetricVariable> metricVariables = new HashMap<String,MetricVariable>();
+	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 
 	public CommitCollector(String gitRepositoryPath, String resultDirectory) {
 		this.inputPath = gitRepositoryPath;
@@ -36,25 +38,24 @@ public class CommitCollector {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MetricVariable metricVariable = new MetricVariable();
 		MetricParser metricParser = new MetricParser();
-		
+		int count = 0;
 
 		try {
 			git = Git.open(new File(inputPath));
 			Iterable<RevCommit> initialCommits = git.log().call();
 			repo = git.getRepository();
 
-			int i = 1;
-
-			for (RevCommit commit : initialCommits) {// 커밋
-				TreeSet<String> pathOfDirectory = new TreeSet<String>();
-				String commitHash = commit.getName();
-				
-				metricVariable = new MetricVariable();
-				metricVariables.put(commitHash, metricVariable);
-				
-				
-				if (commit.getParentCount() == 0)
-					break;
+			for (RevCommit initialCommit : initialCommits) {
+				commits.add(count,initialCommit);
+				count++;
+			}
+			//arryaList index 0 = 3492 번째 커밋 
+			//arrayList index 3491 = 1 번째 커밋 
+			
+			int i = 0;
+			for (int commitIndex = commits.size()-1; commitIndex > -1; commitIndex--) {// 커밋
+				RevCommit commit = commits.get(commitIndex);
+				if (commit.getParentCount() == 0) continue;
 				RevCommit parent = commit.getParent(0);
 				if (parent == null)
 					continue;
@@ -65,10 +66,18 @@ public class CommitCollector {
 				List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
 						// .setPathFilter(PathFilter.create("README.md")) //원하는 소스파일만 본다.
 						.call();
+				String commitHash = commit.getName();
+			
+				System.out.println(commitHash);
+				
+				metricVariable = new MetricVariable();
+				metricVariables.put(commitHash, metricVariable);
 				
 				metricParser.computeParsonIdent(commitHash,commit.getAuthorIdent().toString());// 커밋한 사람
 				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
-
+				
+				TreeSet<String> pathOfDirectory = new TreeSet<String>();
+				
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일
 	
 					try (DiffFormatter formatter = new DiffFormatter(byteStream)) { // 소스파일 내용
@@ -83,8 +92,8 @@ public class CommitCollector {
 					}
 				}
 				metricParser.computeDirectory(commitHash, pathOfDirectory);
-				if (i == 20)
-					break; // 커밋 5개까지 본다.
+//				if (i == 12)
+//					break; // 커밋 5개까지 본다.
 				i++;
 				System.out.println("\n");
 			}
