@@ -27,6 +27,7 @@ public class CommitCollector {
 	private Git git;
 	private Repository repo;
 	static HashMap<String,MetricVariable> metricVariables = new HashMap<String,MetricVariable>();
+	static HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 
 	public CommitCollector(String gitRepositoryPath, String resultDirectory) {
@@ -37,6 +38,7 @@ public class CommitCollector {
 	void countCommitMetrics() {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MetricVariable metricVariable = new MetricVariable();
+		
 		MetricParser metricParser = new MetricParser();
 		int count = 0;
 
@@ -73,6 +75,8 @@ public class CommitCollector {
 				metricVariable = new MetricVariable();
 				metricVariables.put(commitHash, metricVariable);
 				
+				//SourceFileInfo = new SourceFileInfo();
+				
 				metricParser.computeParsonIdent(commitHash,commit.getAuthorIdent().toString());// 커밋한 사람
 				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
 				
@@ -92,8 +96,8 @@ public class CommitCollector {
 					}
 				}
 				metricParser.computeDirectory(commitHash, pathOfDirectory);
-//				if (i == 12)
-//					break; // 커밋 5개까지 본다.
+				if (i == 12)
+					break; // 커밋 5개까지 본다.
 				i++;
 				System.out.println("\n");
 			}

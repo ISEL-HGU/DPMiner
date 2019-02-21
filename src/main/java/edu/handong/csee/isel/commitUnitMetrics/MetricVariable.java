@@ -9,6 +9,10 @@ public class MetricVariable {
 	int numOfAddLines;
 	int distributionOfModifiedLines;
 	int numOfDirectories;
+	int sumOfSourceRevision;
+	int avgOfSourceRevision;
+	int sumOfDeveloper;
+	int avgOfDeveloper;
 	
 	public MetricVariable() {
 		this.commitHash = null;
@@ -68,6 +72,38 @@ public class MetricVariable {
 	}
 	public void setNumOfDirectories(int numOfDirectories) {
 		this.numOfDirectories = numOfDirectories;
+	}
+
+	public int getSumOfSourceRevision() {
+		return sumOfSourceRevision;
+	}
+
+	public void setSumOfSourceRevision(int sumOfSourceRevision) {
+		this.sumOfSourceRevision = sumOfSourceRevision;
+	}
+
+	public int getAvgOfSourceRevision() {
+		return avgOfSourceRevision;
+	}
+
+	public void setAvgOfSourceRevision(int avgOfSourceRevision) {
+		this.avgOfSourceRevision = avgOfSourceRevision;
+	}
+
+	public int getSumOfDeveloper() {
+		return sumOfDeveloper;
+	}
+
+	public void setSumOfDeveloper(int sumOfDeveloper) {
+		this.sumOfDeveloper = sumOfDeveloper;
+	}
+
+	public int getAvgOfDeveloper() {
+		return avgOfDeveloper;
+	}
+
+	public void setAvgOfDeveloper(int avgOfDeveloper) {
+		this.avgOfDeveloper = avgOfDeveloper;
 	}
 	
 }
