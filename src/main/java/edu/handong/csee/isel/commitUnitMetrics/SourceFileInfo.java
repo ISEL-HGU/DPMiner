@@ -13,10 +13,10 @@ public class SourceFileInfo {
 		this.numOfModify = 0;
 		this.modifiedDate = null;
 	}
-	public TreeSet<String> getDeveloperRemoveDuplicate() {
+	public TreeSet<String> getDeveloper() {
 		return developer;
 	}
-	public void setDeveloperRemoveDuplicate(String developer) {
+	public void setDeveloper(String developer) {
 		this.developer.add(developer);
 	}
 	public int getNumOfModify() {

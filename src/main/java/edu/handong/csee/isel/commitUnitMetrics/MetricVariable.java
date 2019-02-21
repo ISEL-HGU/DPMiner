@@ -23,6 +23,8 @@ public class MetricVariable {
 		this.numOfAddLines = 0;
 		this.distributionOfModifiedLines = 0;
 		this.numOfDirectories = 0;
+		this.sumOfSourceRevision = 0;
+		this.sumOfDeveloper = 0;
 	}
 	
 	public String getCommitHash() {
@@ -79,7 +81,7 @@ public class MetricVariable {
 	}
 
 	public void setSumOfSourceRevision(int sumOfSourceRevision) {
-		this.sumOfSourceRevision = sumOfSourceRevision;
+		this.sumOfSourceRevision = this.sumOfSourceRevision + sumOfSourceRevision;
 	}
 
 	public int getAvgOfSourceRevision() {
@@ -95,7 +97,7 @@ public class MetricVariable {
 	}
 
 	public void setSumOfDeveloper(int sumOfDeveloper) {
-		this.sumOfDeveloper = sumOfDeveloper;
+		this.sumOfDeveloper = this.sumOfDeveloper + sumOfDeveloper;
 	}
 
 	public int getAvgOfDeveloper() {

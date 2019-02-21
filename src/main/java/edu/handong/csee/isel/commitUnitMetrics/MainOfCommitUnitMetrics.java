@@ -27,9 +27,9 @@ public class MainOfCommitUnitMetrics {
 				printHelp(options);
 				return;
 			}
-			
+			System.out.println(gitRepositoryPath);
 			CommitCollector commitCollector = new CommitCollector(gitRepositoryPath,resultDirectory);
-			commitCollector.countCommitMetrics();
+			//commitCollector.countCommitMetrics();
 			//commitCollector.saveResultToCsvFile();
 			
 			if(verbose) {
