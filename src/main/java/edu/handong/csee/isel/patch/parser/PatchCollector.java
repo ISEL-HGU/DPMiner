@@ -149,6 +149,8 @@ public class PatchCollector {
 					patches.add(patch);
 					int numLines = Utils.parseNumOfDiffLine(patch);
 					patchSize += numLines;
+					if (isPatchSize && patchSize > max)
+						break;
 				}
 
 				if (isPatchSize && (patchSize < min || patchSize > max))
