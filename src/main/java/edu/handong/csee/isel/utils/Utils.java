@@ -235,7 +235,7 @@ public class Utils {
 		return false;
 	}
 
-	private static int parseNumOfDiffLine(String inStr) {
+	public static int parseNumOfDiffLine(String inStr) {
 		int count = 0;
 		String[] newStrings = inStr.split("\n");
 		for (String str : newStrings) {

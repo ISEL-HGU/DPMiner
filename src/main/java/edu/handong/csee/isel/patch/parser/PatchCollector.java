@@ -3,6 +3,7 @@ package edu.handong.csee.isel.patch.parser;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class PatchCollector {
 	final int min;
 	final int max;
 	PatchParseType type;
+	final boolean isPatchSize;
 
 	public PatchCollector(String URL, String outPath, String reference, PatchParseType type, int min, int max,
 			String label) {
@@ -46,6 +48,7 @@ public class PatchCollector {
 		this.type = type;
 		this.min = min;
 		this.max = max;
+		this.isPatchSize = (min != -1 && max != -1);
 		this.label = label;
 		this.projectName = Utils.getProjectName(REMOTE_URI);
 	}
@@ -101,7 +104,7 @@ public class PatchCollector {
 		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved", Pattern.CASE_INSENSITIVE);
 
 		/* start */
-		int count = 0;
+//		int count = 0;
 		for (RevCommit commit : walk) {
 			try {
 				RevCommit parent = commit.getParent(0);
@@ -136,13 +139,23 @@ public class PatchCollector {
 				final List<DiffEntry> diffs = git.diff()
 						.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
 						.setNewTree(Utils.prepareTreeParser(repo, commit.getId().name())).call();
+				int patchSize = 0;
+				ArrayList<String> patches = new ArrayList<String>();
 
 				for (DiffEntry diff : diffs) {
-
-					String patch = null;
-					if ((patch = passConditions(diff, repo, min, max)) == null) // if cannot pass on conditions
-																				// (min,max)
+					String patch = getPatch(diff, repo);
+					if (patch == null)
 						continue;
+					patches.add(patch);
+					int numLines = Utils.parseNumOfDiffLine(patch);
+					patchSize += numLines;
+				}
+
+				if (isPatchSize && (patchSize < min || patchSize > max))
+					continue;
+
+				for (String patch : patches) {
+
 					Patch data = new Patch(projectName, commit.name(), commit.getShortMessage(),
 							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
 					writer.write(data);
@@ -157,39 +170,20 @@ public class PatchCollector {
 //		System.out.println(count);
 	}
 
-	/**
-	 * 
-	 * @param diff
-	 * @param repository
-	 * @param min
-	 * @param max
-	 * @return if cannot pass conditions, return null. else, return patch
-	 * @throws IOException
-	 */
-	public static String passConditions(DiffEntry diff, Repository repository, int min, int max) throws IOException {
+	public static String getPatch(DiffEntry diff, Repository repository) throws IOException {
 
 		String patch = null;
-		switch (diff.getChangeType().ordinal()) {
-		case 0: // ADD
-			break;
-		case 1: // MODIFY
-			if (!diff.getNewPath().endsWith(".java")) // only .java format
-				break;
+		if (!diff.getNewPath().endsWith(".java")) // only .java format
+			return null;
 
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			try (DiffFormatter formatter = new DiffFormatter(output)) {
-				formatter.setRepository(repository);
-				formatter.format(diff);
-			}
-			output.flush();
-			output.close();
-			patch = output.toString("UTF-8");
-			if (patch.equals("") || (max != -1) && (min != -1) && Utils.isExceededcondition(patch, max, min))
-				return null;
-
-		case 2: // DELETE
-			break;
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try (DiffFormatter formatter = new DiffFormatter(output)) {
+			formatter.setRepository(repository);
+			formatter.format(diff);
 		}
+		output.flush();
+		output.close();
+		patch = output.toString("UTF-8");
 
 		return patch;
 	}
