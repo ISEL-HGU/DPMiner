@@ -149,7 +149,7 @@ public class PatchCollector {
 					patches.add(patch);
 					int numLines = Utils.parseNumOfDiffLine(patch);
 					patchSize += numLines;
-					if (isPatchSize && patchSize > max)
+					if (isPatchSize && patchSize > max) // for speed
 						break;
 				}
 
