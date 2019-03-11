@@ -59,7 +59,10 @@ public class MetricParser {
 			}
 			Matcher matcher = pattern.matcher(line);
 			while(matcher.find()) {
+				if(!matcher.group(1).contains("/dev/null") && !matcher.group(1).contains("test")) {
 				pathOfDirectory.add(matcher.group(1));
+				System.out.println(matcher.group(1));
+				}
 			}
 		}
 		metricVariable.setNumOfDirectories(pathOfDirectory.size());
@@ -79,7 +82,7 @@ public class MetricParser {
 				aSourceFileInfo = sourceFileInfo.get(matcher.group(1));
 			}
 			
-			aSourceFileInfo.setNumOfModify(1);
+			aSourceFileInfo.setNumOfModify();
 			aSourceFileInfo.setDeveloper(authorId);
 			
 			metricVariable.setSumOfSourceRevision(aSourceFileInfo.getNumOfModify());
@@ -88,8 +91,8 @@ public class MetricParser {
 		}
 		
 		
-		System.out.println(sourceFileName);
-		System.out.println(authorId);
+//		System.out.println(sourceFileName);
+//		System.out.println(authorId);
 	}
 
 }

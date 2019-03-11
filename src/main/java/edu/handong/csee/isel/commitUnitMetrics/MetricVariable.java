@@ -13,10 +13,20 @@ public class MetricVariable {
 	int avgOfSourceRevision;
 	int sumOfDeveloper;
 	int avgOfDeveloper;
+	String commitDate;
 	
+	public String getCommitDate() {
+		return commitDate;
+	}
+
+	public void setCommitDate(String commitDate) {
+		this.commitDate = commitDate;
+	}
+
 	public MetricVariable() {
 		this.commitHash = null;
 		this.commitAuthor = null;
+		this.commitDate = null;
 		this.numOfModifyFiles = 0;
 		this.numOfModifyLines = 0;
 		this.numOfDeleteLines = 0;

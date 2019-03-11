@@ -22,7 +22,7 @@ public class SourceFileInfo {
 	public int getNumOfModify() {
 		return numOfModify;
 	}
-	public void setNumOfModify(int numOfModify) {
+	public void setNumOfModify() {
 		this.numOfModify++;
 	}
 	public String getModifiedDate() {

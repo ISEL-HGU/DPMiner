@@ -27,11 +27,11 @@ public class MainOfCommitUnitMetrics {
 				printHelp(options);
 				return;
 			}
-			System.out.println(gitRepositoryPath);
-			CommitCollector commitCollector = new CommitCollector(gitRepositoryPath,resultDirectory);
-			//commitCollector.countCommitMetrics();
-			//commitCollector.saveResultToCsvFile();
 			
+			CommitCollector commitCollector = new CommitCollector(gitRepositoryPath,resultDirectory);
+			commitCollector.countCommitMetrics();
+			commitCollector.saveResultToCsvFile();
+
 			if(verbose) {
 				System.out.println("Your program is terminated. (This message is shown because you turned on -v option!");
 			}

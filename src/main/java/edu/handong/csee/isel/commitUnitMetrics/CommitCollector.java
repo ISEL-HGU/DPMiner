@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -68,25 +70,25 @@ public class CommitCollector {
 				AbstractTreeIterator newTreeParser = Utils.prepareTreeParser(repo, commit.getId().name().toString());
 
 				List<DiffEntry> diff = git.diff().setOldTree(oldTreeParser).setNewTree(newTreeParser)
-						//.setPathFilter(PathFilter.create("README.md")) //원하는 소스파일만 본다.
+						//.setPathFilter(PathFilter.create("java")) //원하는 소스파일만 본다.
 						.call();
 				String commitHash = commit.getName();
 
 				System.out.println(commitHash);
-
+//test 디렉토리 제거 아님 옵션으로 
 				metricVariable = new MetricVariable();
 				metricVariables.put(commitHash, metricVariable);
 
 				authorId = metricParser.computeParsonIdent(commit.getAuthorIdent().toString());// 커밋한 사람
 				metricVariable.setCommitAuthor(authorId);
 				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
+				metricVariable.setCommitDate(commit.getAuthorIdent().getWhen().toString());
 
 				TreeSet<String> pathOfDirectory = new TreeSet<String>();
-				
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일
 					String sourcePath = entry.getNewPath().toString();
 					
-					if(!sourcePath.contains(".md")) {
+					if(!sourcePath.contains(".md")&&sourcePath.contains(".java")) {
 						try (DiffFormatter formatter = new DiffFormatter(byteStream)) { // 소스파일 내용
 							formatter.setRepository(repo);
 							formatter.format(entry);
@@ -95,13 +97,13 @@ public class CommitCollector {
 							metricParser.computeLine(commitHash,diffContent);
 							metricParser.computeSourceInfo(commitHash, entry.getNewPath().toString(), authorId);
 							pathOfDirectory.add(entry.getNewPath().toString());
-
+							
 							byteStream.reset();
 						}
 					}
 				}
 				metricParser.computeDirectory(commitHash, pathOfDirectory);
-				if (i == 15)
+				if (i == 50)
 					break; // 커밋 5개까지 본다.
 				i++;
 				System.out.println("\n");
@@ -121,13 +123,19 @@ public class CommitCollector {
 	}
 
 	void saveResultToCsvFile() {
+		String projectName = null;
 		BufferedWriter writer;
+		Pattern pattern = Pattern.compile(".+/(.+)");
+		Matcher matcher = pattern.matcher(inputPath);
+		while(matcher.find()) {
+			projectName = matcher.group(1);
+		}
 		try {
-			writer = new BufferedWriter(new FileWriter(outputPath+"/zxing.csv"));
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Commit Hash","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","Modify Files","AuthorID","Directories","SumOfSourceRevision","SumOfDeveloper"));
+			writer = new BufferedWriter(new FileWriter(outputPath+"/"+projectName+".csv"));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Commit Hash","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","Modify Files","AuthorID","Directories","SumOfSourceRevision","SumOfDeveloper","CommitDate"));
 			for(String keyName : metricVariables.keySet()) {
 				MetricVariable metric = metricVariables.get(keyName);
-				csvPrinter.printRecord(keyName,metric.getNumOfModifyLines(),metric.getNumOfAddLines(),metric.getNumOfDeleteLines(),metric.getDistributionOfModifiedLines(),metric.getNumOfModifyFiles(),metric.getCommitAuthor(),metric.getNumOfDirectories(),metric.getSumOfSourceRevision(),metric.getSumOfDeveloper());
+				csvPrinter.printRecord(keyName,metric.getNumOfModifyLines(),metric.getNumOfAddLines(),metric.getNumOfDeleteLines(),metric.getDistributionOfModifiedLines(),metric.getNumOfModifyFiles(),metric.getCommitAuthor(),metric.getNumOfDirectories(),metric.getSumOfSourceRevision(),metric.getSumOfDeveloper(),metric.getCommitDate());
 			}
 			csvPrinter.close();
 			writer.close();
