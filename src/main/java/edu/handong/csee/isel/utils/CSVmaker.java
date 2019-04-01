@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import edu.handong.csee.isel.bic.BIChange;
+import edu.handong.csee.isel.discriminator.BI_D;
 import edu.handong.csee.isel.patch.parser.Patch;
 
 public class CSVmaker {
@@ -48,6 +49,10 @@ public class CSVmaker {
 	public void write(BIChange bi) throws IOException {
 		printer.printRecord(bi.BIShal1, bi.BIpath, bi.Fixpath, bi.FixShal1, bi.numLineBIC, bi.numLinePreFix,
 				bi.content);
+		printer.flush();
+	}
+	public void write(BI_D bi) throws IOException {
+		printer.printRecord(bi.id,bi.date);
 		printer.flush();
 	}
 
