@@ -73,15 +73,15 @@ public class CommitCollector {
 						//.setPathFilter(PathFilter.create("java")) //원하는 소스파일만 본다.
 						.call();
 				String commitHash = commit.getName();
+				int NumOfModifyFiles = 0;
 
-				System.out.println(commitHash);
+				//System.out.println(commitHash);
 //test 디렉토리 제거 아님 옵션으로 
 				metricVariable = new MetricVariable();
 				metricVariables.put(commitHash, metricVariable);
 
 				authorId = metricParser.computeParsonIdent(commit.getAuthorIdent().toString());// 커밋한 사람
 				metricVariable.setCommitAuthor(authorId);
-				metricVariable.setNumOfModifyFiles(diff.size());// 수정된 파일 개수
 				metricVariable.setCommitDate(commit.getAuthorIdent().getWhen().toString());
 
 				TreeSet<String> pathOfDirectory = new TreeSet<String>();
@@ -97,16 +97,18 @@ public class CommitCollector {
 							metricParser.computeLine(commitHash,diffContent);
 							metricParser.computeSourceInfo(commitHash, entry.getNewPath().toString(), authorId);
 							pathOfDirectory.add(entry.getNewPath().toString());
+							NumOfModifyFiles++;
 							
 							byteStream.reset();
 						}
 					}
 				}
 				metricParser.computeDirectory(commitHash, pathOfDirectory);
-				if (i == 50)
-					break; // 커밋 5개까지 본다.
-				i++;
-				System.out.println("\n");
+				metricVariable.setNumOfModifyFiles(NumOfModifyFiles);// 수정된 파일 개수
+//				if (i == 50)
+//					break; // 커밋 5개까지 본다.
+//				i++;
+				//System.out.println("\n");
 			}
 			byteStream.close();
 
