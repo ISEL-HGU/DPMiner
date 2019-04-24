@@ -13,16 +13,16 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
 public class Main {
-	static String csv1 = "/Users/imseongbin/Desktop/zxing.csv";
-	static String csv2 = "/Users/imseongbin/Desktop/BID_zxing.csv";
-	static String new_csv = "/Users/imseongbin/Desktop/new.csv";
+	static String csv1 = "/Users/imseongbin/Desktop/files/BIC_okhttp.csv";
+	static String csv2 = "/Users/imseongbin/Desktop/files/MET_okhttp.csv";
+	static String new_csv = "/Users/imseongbin/Desktop/NEW_okhttp.csv";
 
 	public static void main(String[] args) throws IOException {
 
-		// 1. crawl CSV 2
+		// 1. crawl CSV 2 -> BIC
 		HashSet<String> set = getRecordBy(csv2, 0);
 
-		// 2. crawl CSV 1
+		// 2. crawl CSV 1 -> Metrics
 		Reader in = new FileReader(csv1);
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(in);
 		int col_size;
