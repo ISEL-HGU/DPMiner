@@ -235,7 +235,7 @@ public class Utils {
 		return false;
 	}
 
-	private static int parseNumOfDiffLine(String inStr) {
+	public static int parseNumOfDiffLine(String inStr) {
 		int count = 0;
 		String[] newStrings = inStr.split("\n");
 		for (String str : newStrings) {
@@ -273,7 +273,7 @@ public class Utils {
 			if (IssueLinkParser.issueAddress.size() == 0) {
 				throw new Exception("");
 			}
-			// CommitParser돌림
+			// run CommitParser
 			co.parseCommitAddress(URL);
 		} catch (Exception e) {
 			throw new NoIssuePagesException("There is not issue-space in " + URL);
