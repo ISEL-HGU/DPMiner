@@ -85,15 +85,16 @@ public class CommitCollector {
 				metricVariable.setCommitDate(commit.getAuthorIdent().getWhen().toString());
 
 				TreeSet<String> pathOfDirectory = new TreeSet<String>();
+				
 				for (DiffEntry entry : diff) {// 커밋안에 있는 소스파일
 					String sourcePath = entry.getNewPath().toString();
 					
-					if(!sourcePath.contains(".md")&&sourcePath.contains(".java")) {
+					if(sourcePath.contains(".java")&&!sourcePath.contains("/test/")&&!sourcePath.contains("/tests/")) {
 						try (DiffFormatter formatter = new DiffFormatter(byteStream)) { // 소스파일 내용
 							formatter.setRepository(repo);
 							formatter.format(entry);
+						
 							String diffContent = byteStream.toString(); // 한 소스파일 diff 내용을 저장
-
 							metricParser.computeLine(commitHash,diffContent);
 							metricParser.computeSourceInfo(commitHash, entry.getNewPath().toString(), authorId);
 							pathOfDirectory.add(entry.getNewPath().toString());
@@ -105,10 +106,9 @@ public class CommitCollector {
 				}
 				metricParser.computeDirectory(commitHash, pathOfDirectory);
 				metricVariable.setNumOfModifyFiles(NumOfModifyFiles);// 수정된 파일 개수
-//				if (i == 50)
-//					break; // 커밋 5개까지 본다.
+//				if (i == 300)
+//					break; // 커밋 50개까지 본다.
 //				i++;
-				//System.out.println("\n");
 			}
 			byteStream.close();
 
@@ -125,6 +125,8 @@ public class CommitCollector {
 	}
 
 	void saveResultToCsvFile() {
+		
+		
 		String projectName = null;
 		BufferedWriter writer;
 		Pattern pattern = Pattern.compile(".+/(.+)");

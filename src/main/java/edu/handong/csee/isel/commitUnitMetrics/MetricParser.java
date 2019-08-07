@@ -37,14 +37,14 @@ public class MetricParser {
 			String name = matcher.group(1);
 			if(name.contains("%") && name.contains(".com")){
 				int num = name.indexOf("%");
-				return name.substring(0,num).toUpperCase();
+				return name.substring(0,num);
 			}else if(name.contains("@")) {
 				int num = name.indexOf("@");
 				return name.substring(0,num).toUpperCase();
 			}
-			return name.toUpperCase();
+			return name;
 		}
-		return personIdent.toUpperCase();
+		return personIdent;
 	}
 	
 	public void computeDirectory(String commitHash, TreeSet<String> rawPathOfDirectory) {
