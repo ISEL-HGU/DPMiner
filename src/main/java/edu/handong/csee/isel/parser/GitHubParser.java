@@ -1,4 +1,4 @@
-package edu.handong.csee.second.parser;
+package edu.handong.csee.isel.parser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,10 +23,10 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import edu.handong.csee.isel.bic.BIChange;
 import edu.handong.csee.isel.bic.Blamer;
-import edu.handong.csee.isel.patch.parser.Patch;
+import edu.handong.csee.isel.patch.Patch;
+import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.CSVmaker;
 import edu.handong.csee.isel.utils.Utils;
-import edu.handong.csee.second.runner.Input;
 
 public class GitHubParser extends Parser {
 	final HashSet<String> keyHashes; // bug commit id

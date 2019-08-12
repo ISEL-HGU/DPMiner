@@ -1,4 +1,4 @@
-package edu.handong.csee.second.patch;
+package edu.handong.csee.isel.patch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,10 +13,9 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.patch.parser.Patch;
+import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.CSVmaker;
 import edu.handong.csee.isel.utils.Utils;
-import edu.handong.csee.second.runner.Input;
 
 public class BPatch {
 //	final static String[] headers = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author", "patch" };

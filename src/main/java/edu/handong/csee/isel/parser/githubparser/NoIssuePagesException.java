@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.patch.parser.githubparser;
+package edu.handong.csee.isel.parser.githubparser;
 
 public class NoIssuePagesException extends Exception {
 	String message;

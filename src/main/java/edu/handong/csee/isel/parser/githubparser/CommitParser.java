@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.patch.parser.githubparser;
+package edu.handong.csee.isel.parser.githubparser;
 
 import java.io.BufferedReader;
 import java.io.IOException;

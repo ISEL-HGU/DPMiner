@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.patch.parser;
+package edu.handong.csee.isel.patch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,7 +18,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
-import edu.handong.csee.isel.patch.parser.githubparser.NoIssuePagesException;
+import edu.handong.csee.isel.parser.githubparser.NoIssuePagesException;
 import edu.handong.csee.isel.utils.CSVmaker;
 import edu.handong.csee.isel.utils.Utils;
 

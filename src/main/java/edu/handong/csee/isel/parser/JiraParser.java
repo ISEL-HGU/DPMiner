@@ -1,7 +1,9 @@
-package edu.handong.csee.second.parser;
+package edu.handong.csee.isel.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,29 +13,29 @@ import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import edu.handong.csee.isel.bic.BIC;
 import edu.handong.csee.isel.bic.BIChange;
-import edu.handong.csee.isel.patch.parser.Patch;
+import edu.handong.csee.isel.patch.BPatch;
+import edu.handong.csee.isel.patch.Patch;
+import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.CSVmaker;
-import edu.handong.csee.second.bic.BIC;
-import edu.handong.csee.second.patch.BPatch;
-import edu.handong.csee.second.runner.Input;
+import edu.handong.csee.isel.utils.Utils;
 
-public class NoParser extends Parser {
-
+public class JiraParser extends Parser {
+	HashSet<String> keywords = null; // unique Jira issue id
 	final static String[] Patchheaders = { "Project", "fix-commit", "fix-shortMessage", "fix-date", "fix-author",
 			"patch" };
 	final static String[] BICheaders = { "BIShal1", "BIpath", "fixPath", "fixShal1", "numLineBI", "numLinePrefix",
 			"content" };
 
-	public NoParser(Input input) {
+	public JiraParser(Input input) {
 		super(input);
-
 	}
 
-	public void parse() throws InvalidRemoteException, TransportException, GitAPIException, IOException {
-
+	public void parse(String reference)
+			throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		super.parse();
-		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved", Pattern.CASE_INSENSITIVE);
+		keywords = Utils.parseReference(reference);
 		CSVmaker writer;
 		final Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
 		if (input.isBI) {
@@ -41,8 +43,16 @@ public class NoParser extends Parser {
 			for (RevCommit commit : walk) {
 				try {
 					RevCommit parent = commit.getParent(0);
-					Matcher m = bugMessagePattern.matcher(commit.getFullMessage());
+					Matcher m = null;
+					if (commit.getShortMessage().length() > 20)
+						m = keyPattern.matcher(commit.getShortMessage().substring(0, 20)); // check if have keyword in
+																							// // Short message
+					else
+						m = keyPattern.matcher(commit.getShortMessage()); // check if have keyword in Short message
 					if (!m.find())
+						continue;
+					String key = m.group(1);
+					if (!keywords.contains(key))
 						continue;
 
 					List<BIChange> bics = BIC.collect(parent, commit, input);
@@ -60,8 +70,16 @@ public class NoParser extends Parser {
 			for (RevCommit commit : walk) {
 				try {
 					RevCommit parent = commit.getParent(0);
-					Matcher m = bugMessagePattern.matcher(commit.getFullMessage());
+					Matcher m = null;
+					if (commit.getShortMessage().length() > 20)
+						m = keyPattern.matcher(commit.getShortMessage().substring(0, 20)); // check if have keyword in
+																							// Short message
+					else
+						m = keyPattern.matcher(commit.getShortMessage()); // check if have keyword in Short message
 					if (!m.find())
+						continue;
+					String key = m.group(1);
+					if (!keywords.contains(key))
 						continue;
 
 					List<String> patches = BPatch.collect(parent, commit, input);

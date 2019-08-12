@@ -42,9 +42,9 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import edu.handong.csee.isel.bic.JavaASTParser;
-import edu.handong.csee.isel.patch.parser.githubparser.CommitParser;
-import edu.handong.csee.isel.patch.parser.githubparser.IssueLinkParser;
-import edu.handong.csee.isel.patch.parser.githubparser.NoIssuePagesException;
+import edu.handong.csee.isel.parser.githubparser.CommitParser;
+import edu.handong.csee.isel.parser.githubparser.IssueLinkParser;
+import edu.handong.csee.isel.parser.githubparser.NoIssuePagesException;
 
 public class Utils {
 

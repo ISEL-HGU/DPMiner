@@ -1,4 +1,4 @@
-package edu.handong.csee.second.parser;
+package edu.handong.csee.isel.parser;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,8 +12,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 
+import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.Utils;
-import edu.handong.csee.second.runner.Input;
 
 public class Parser {
 	Input input;

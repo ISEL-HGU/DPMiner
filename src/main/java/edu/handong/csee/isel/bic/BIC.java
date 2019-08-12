@@ -1,4 +1,4 @@
-package edu.handong.csee.second.bic;
+package edu.handong.csee.isel.bic;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,10 +15,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
-import edu.handong.csee.isel.bic.BIChange;
-import edu.handong.csee.isel.bic.Blamer;
+import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.Utils;
-import edu.handong.csee.second.runner.Input;
 
 public class BIC {
 
