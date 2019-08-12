@@ -11,6 +11,8 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 
 커밋을 할때는 수정된 모든 소스파일이 한 커밋에 저장이 됩니다. 즉 버그 커밋안에서도 버그가 있는 소스파일과 의미없이 추가한 소스파일이 있을 수 있습니다. 그러므로 -x와 -m옵션을 통해 사용자가 임의로 수정된 라인의 갯수를 조절해 출력할 수 있습니다. 예를 들어 '-m 5 -x 10'으로 하면 Change가 5~10 안에 포함되는 경우에만 수집합니다.
 
+-b 옵션을 넣으면 Bug Itroducing Change를 타겟을 수집합니다. Jira와 GitHub에서 Patch를 수집할 때오 마찬가지 -b옵션만 추가해주면 되고, 똑같이 -m와 -x옵션을 넣을 수 있습니다. 이 경우에는 fix Change의 수정된 라인을 기준을 처리합니다.
+
 # Options
 >Must required options 
 * [-i](https://github.com/HGUISEL/BugPatchCollector/issues/4) (Input Option)
