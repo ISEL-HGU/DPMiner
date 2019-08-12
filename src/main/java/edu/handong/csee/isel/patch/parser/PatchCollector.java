@@ -101,7 +101,7 @@ public class PatchCollector {
 		}
 
 		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
-		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved", Pattern.CASE_INSENSITIVE);
+		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved", Pattern.CASE_INSENSITIVE);
 
 		/* start */
 //		int count = 0;
@@ -161,15 +161,12 @@ public class PatchCollector {
 					Patch data = new Patch(projectName, commit.name(), commit.getShortMessage(),
 							commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
 					writer.write(data);
-//					count++;
-
 				}
 
 			} catch (ArrayIndexOutOfBoundsException e) {
 				break;
 			}
 		}
-//		System.out.println(count);
 	}
 
 	public static String getPatch(DiffEntry diff, Repository repository) throws IOException {

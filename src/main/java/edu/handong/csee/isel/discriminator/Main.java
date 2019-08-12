@@ -81,7 +81,7 @@ public class Main {
 		}
 
 		Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
-		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved|solved", Pattern.CASE_INSENSITIVE);
+		Pattern bugMessagePattern = Pattern.compile("fix|bug|resolved", Pattern.CASE_INSENSITIVE);
 
 		/* start */
 		for (RevCommit commit : walk) {

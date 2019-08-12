@@ -1,4 +1,6 @@
-package edu.handong.csee.isel.runner;
+package edu.handong.csee.second.runner;
+
+import java.util.HashSet;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -7,9 +9,13 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.csee.isel.bic.BICCollector;
-import edu.handong.csee.isel.patch.parser.PatchCollector;
-import edu.handong.csee.isel.patch.parser.PatchParseType;
+import edu.handong.csee.isel.jira.crawler.JiraBugIssueCrawler;
+import edu.handong.csee.isel.patch.parser.githubparser.NoIssuePagesException;
+import edu.handong.csee.isel.utils.Utils;
+import edu.handong.csee.second.parser.GitHubParser;
+import edu.handong.csee.second.parser.JiraParser;
+import edu.handong.csee.second.parser.NoParser;
+import edu.handong.csee.second.parser.Parser;
 
 /**
  * -i, URL or URI(github.com, reference file having github URLs, Local
@@ -17,22 +23,14 @@ import edu.handong.csee.isel.patch.parser.PatchParseType;
  * commit. [-m], minimum printing of lines. [-x], maximum printing of lines.
  * 
  * If is there '-r', check that commit message have the pattern by reference to
- * '-r' option value. Else, check that commit message have the 'bug' or 'fix'
+ * '-r' option value. Else, check that commit message have the 'bug', 'fix' or resolved
  * keyword.
  * 
  * @author imseongbin
  */
 public class Main {
-	String input;
-	String resultDirectory = null;
-	String reference = null;
-	String label = null;
-	PatchParseType type;
-	int conditionMax = -1;
-	int conditionMin = -1;
-//	boolean isThread;
 	boolean help;
-	boolean isBI;
+	Input input;
 
 	public static void main(String[] args) {
 		Main bc = new Main();
@@ -49,20 +47,51 @@ public class Main {
 			}
 
 			try {
-
-				if (isBI) {
-					BICCollector collector = new BICCollector(input, resultDirectory, reference, type, conditionMin,
-							conditionMax, label);
-					collector.collect();
-				} else {
-					PatchCollector collector = new PatchCollector(input, resultDirectory, reference, type, conditionMin,
-							conditionMax, label);
-					collector.collect();
+				HashSet<String> keyHashes = null; // bug commit id
+				Parser parser = null;
+				
+				if(input.repository == Repository.GitHub) { // No or too small bug issues
+					try {
+						keyHashes = Utils.parseGithubIssues(input.url, input.label);
+						if(keyHashes.size() < 10) { // too small
+							input.repository = Repository.No;
+						}
+					} catch (NoIssuePagesException e) {
+						
+						input.repository = Repository.No;
+					}
 				}
-
+				
+				switch(input.repository) {
+					case Jira: {
+						parser = new JiraParser(input);
+						break;
+					}
+					
+					case GitHub: {
+						parser = new GitHubParser(input,keyHashes);
+						break;
+					}
+						
+					case No: {
+						parser = new NoParser(input);
+						break;
+					}
+				}
+				
+//				Parser parser = input.repository == Repository.Jira ? new JiraParser(input) : new GitHubParser(input);
+				if(parser instanceof JiraParser) {
+//					System.out.println("Here!!");
+					((JiraParser) parser).parse(input.reference);
+				}
+				if(parser instanceof GitHubParser) {
+					((GitHubParser) parser).parse();
+				}
+				
+				
+//				System.out.println("Exit!");
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println(e.getMessage());
 			}
 
 		}
@@ -70,17 +99,26 @@ public class Main {
 
 	private boolean parseOptions(Options options, String[] args) {
 		CommandLineParser parser = new DefaultParser();
-
+		
+		String url;
+		String resultDirectory = null;
+		String reference = null;
+		String label = null;
+		Repository repository;
+		int conditionMax = 500;
+		int conditionMin = 0;
+		boolean isBI;
+		
 		try {
 
 			CommandLine cmd = parser.parse(options, args);
 
 			try {
 
-				if (cmd.hasOption("r"))
-					type = PatchParseType.Jira;
+				if (cmd.hasOption("j"))
+					repository = Repository.Jira;
 				else
-					type = PatchParseType.GitHub;
+					repository = Repository.GitHub;
 
 				if (cmd.hasOption("x") || cmd.hasOption("m")) {
 					if (cmd.hasOption("x") && cmd.hasOption("m")) {
@@ -100,15 +138,25 @@ public class Main {
 				return false;
 			}
 
-			input = cmd.getOptionValue("i");
+			if(cmd.hasOption("j") ^ cmd.hasOption("k")) {
+				System.out.println("'j' options must be used with 'k'");
+				throw new Exception();
+			} else if(cmd.hasOption("j")) {
+				String jiraURL = cmd.getOptionValue("j");
+				String projectKey = cmd.getOptionValue("k");
+				JiraBugIssueCrawler crawler = new JiraBugIssueCrawler(jiraURL,projectKey);
+				reference = crawler.getJiraBugs().getAbsolutePath();
+			}
+			
+			url = cmd.getOptionValue("i");
 			label = cmd.getOptionValue("l");
-			reference = cmd.getOptionValue("r");
 			resultDirectory = cmd.getOptionValue("o");
-			help = cmd.hasOption("h");
-//			isThread = cmd.hasOption("t");
 			isBI = cmd.hasOption("b");
-
+			help = cmd.hasOption("h");
+			
+			input = new Input(url, resultDirectory, reference, label, repository, conditionMin, conditionMax, isBI);
 		} catch (Exception e) {
+			e.printStackTrace();
 			printHelp(options);
 			return false;
 		}
@@ -126,16 +174,16 @@ public class Main {
 		options.addOption(Option.builder("o").longOpt("result").desc("directory will have result file").hasArg()
 				.argName("directory").required().build());
 
-		options.addOption(Option.builder("r").longOpt("reference")
-				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
-				.argName("reference relative to bug").build());
+//		options.addOption(Option.builder("r").longOpt("reference")
+//				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
+//				.argName("reference relative to bug").build());
 
 		options.addOption(Option.builder("x").longOpt("max")
-				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'")
+				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'. (default: 500)")
 				.hasArg().argName("Max lines of patch").build());
 
 		options.addOption(Option.builder("m").longOpt("min")
-				.desc("Set a Min lines of each result patch. This Option need to be used with 'M' Option(MaxLine).")
+				.desc("Set a Min lines of each result patch. This Option need to be used with 'x' Option. (default: 0)")
 				.hasArg().argName("Min lines of patch").build());
 
 		options.addOption(Option.builder("l").longOpt("label").desc("Set a bug label of github").hasArg()
@@ -148,6 +196,14 @@ public class Main {
 		options.addOption(Option.builder("b").longOpt("bugIntroducingChange")
 				.desc("If you want to get bug introducing changes, add this option").build());
 
+		options.addOption(Option.builder("j").longOpt("jira")
+				.desc("Jira issues URL (example: issues.apache.org)")
+				.hasArg().argName("Jira project URL").build());
+		
+		options.addOption(Option.builder("k").longOpt("min")
+				.desc("Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
+				.hasArg().argName("Project Key").build());
+		
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
 		return options;

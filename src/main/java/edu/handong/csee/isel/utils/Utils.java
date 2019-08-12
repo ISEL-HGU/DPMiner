@@ -252,14 +252,10 @@ public class Utils {
 		File CSV = new File(reference);
 		Reader reader = new FileReader(CSV);
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(reader);
-		boolean first = true;
 
 		for (CSVRecord record : records) {
-			if (first) {
-				first = false;
-				continue;
-			}
-			keywords.add(record.get(1));
+			keywords.add(record.get(0));
+//			System.out.println(record.get(0));
 		}
 		return keywords;
 	}
