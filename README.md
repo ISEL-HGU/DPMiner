@@ -18,9 +18,7 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 * [-i](https://github.com/HGUISEL/BugPatchCollector/issues/4) (Input Option)
 * -o (Directory Path of Result File Option)
 >The other options
-* ~~[-r](https://github.com/HGUISEL/BugPatchCollector/issues/5) (Reference Option)~~
 * [-l](https://github.com/HGUISEL/BugPatchCollector/issues/7) (Label Option, default:bug)
-* ~~[-t](https://github.com/HGUISEL/BugPatchCollector/issues/8) (Thread Option)~~
 * -x (Max lines of Modified line Option, including x'th line)
 * -m (Min lines of Modified line Option, including m'th line)
 * -h (Help Option)
