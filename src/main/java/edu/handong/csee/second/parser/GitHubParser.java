@@ -37,7 +37,7 @@ public class GitHubParser extends Parser {
 
 	public GitHubParser(Input input, HashSet<String> keyHashes) {
 		super(input);
-		for(String key : keyHashes)
+		for (String key : keyHashes)
 			System.out.println(key);
 		this.keyHashes = keyHashes;
 	}
@@ -50,10 +50,10 @@ public class GitHubParser extends Parser {
 		int max = input.conditionMax;
 		int min = input.conditionMin;
 		String projectName = input.projectName;
-		
-		if(input.isBI) { 
+
+		if (input.isBI) {
 			writer = new CSVmaker(new File(input.outPath + "BIC_" + input.projectName + ".csv"), BICheaders);
-			
+
 			for (RevCommit commit : walk) {
 				try {
 					RevCommit parent = commit.getParent(0);
@@ -89,7 +89,8 @@ public class GitHubParser extends Parser {
 							EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
 
 							for (Edit edit : editList) {
-								numTotalLine += (edit.getEndA() - edit.getBeginA()) + (edit.getEndB() - edit.getBeginB());
+								numTotalLine += (edit.getEndA() - edit.getBeginA())
+										+ (edit.getEndB() - edit.getBeginB());
 
 								for (int i = edit.getBeginA(); i < edit.getEndA(); i++)
 									removedLineList.add(i);
@@ -122,7 +123,7 @@ public class GitHubParser extends Parser {
 					break; // last parent commit does not exist
 				}
 			}
-			
+
 		} else {
 			writer = new CSVmaker(new File(input.outPath + "BPatch_" + input.projectName + ".csv"), Patchheaders);
 			for (RevCommit commit : walk) {
@@ -131,7 +132,6 @@ public class GitHubParser extends Parser {
 
 					if (!keyHashes.contains(commit.getId().name()))
 						continue;
-					
 
 					final List<DiffEntry> diffs = git.diff()
 							.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
@@ -165,8 +165,7 @@ public class GitHubParser extends Parser {
 				}
 			}
 		}
-		
-		
+
 	}
 
 	public static String getPatch(DiffEntry diff, Repository repository) throws IOException {
