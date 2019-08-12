@@ -51,7 +51,6 @@ public class JiraParser extends Parser {
 						m = keyPattern.matcher(commit.getShortMessage()); // check if have keyword in Short message
 					if (!m.find())
 						continue;
-//					System.out.println(commit.getId()); //
 					String key = m.group(1);
 					if (!keywords.contains(key))
 						continue;
@@ -86,18 +85,14 @@ public class JiraParser extends Parser {
 					List<String> patches = BPatch.collect(parent, commit, input);
 					if (patches == null)
 						continue;
-//					System.out.println(commit.getId()); //
 					for (String patch : patches) {
 						Patch data = new Patch(input.projectName, commit.name(), commit.getShortMessage(),
 								commit.getAuthorIdent().getWhen(), commit.getAuthorIdent().getName(), patch);
 						int len = data.patch.split("\n").length;
 						if (len > 500) {
-//							System.out.println(len);
-//							System.out.println(data.fix_commit);
 							continue;
 						}
 						writer.write(data);
-//						if(data.fix_commit.equals("b9beabf5cfbb8e447f67a8050486ca2821132f61")) {
 
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {

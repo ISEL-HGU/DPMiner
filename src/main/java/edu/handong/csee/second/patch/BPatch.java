@@ -33,6 +33,7 @@ public class BPatch {
 				.setOldTree(Utils.prepareTreeParser(repo, parent.getId().name()))
 				.setNewTree(Utils.prepareTreeParser(repo, commit.getId().name())).call();
 		for (DiffEntry diff : diffs) {
+			if(!diff.getNewPath().endsWith(".java") || diff.getNewPath().contains("test")) continue;
 			String patch = getPatch(diff, repo);
 			if (patch == null)
 				continue;
@@ -40,15 +41,11 @@ public class BPatch {
 			int numLines = Utils.parseNumOfDiffLine(patch);
 			patchSize += numLines;
 			if (patchSize > max) { // for speed
-//				System.out.println("here 1!");
-//				System.out.println(patchSize);
 				return null;
 			}
 		}
 
 		if (patchSize < min || patchSize > max) {
-//			System.out.println("here 2!");
-//			System.out.println(patchSize);
 			return null;
 		}
 		return patches;

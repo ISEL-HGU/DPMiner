@@ -23,8 +23,8 @@ import edu.handong.csee.second.parser.Parser;
  * commit. [-m], minimum printing of lines. [-x], maximum printing of lines.
  * 
  * If is there '-r', check that commit message have the pattern by reference to
- * '-r' option value. Else, check that commit message have the 'bug', 'fix' or resolved
- * keyword.
+ * '-r' option value. Else, check that commit message have the 'bug', 'fix' or
+ * resolved keyword.
  * 
  * @author imseongbin
  */
@@ -49,46 +49,43 @@ public class Main {
 			try {
 				HashSet<String> keyHashes = null; // bug commit id
 				Parser parser = null;
-				
-				if(input.repository == Repository.GitHub) { // No or too small bug issues
+
+				if (input.repository == Repository.GitHub) { // No or too small bug issues
 					try {
 						keyHashes = Utils.parseGithubIssues(input.url, input.label);
-						if(keyHashes.size() < 10) { // too small
+						if (keyHashes.size() < 10) { // too small
 							input.repository = Repository.No;
 						}
 					} catch (NoIssuePagesException e) {
-						
+
 						input.repository = Repository.No;
 					}
 				}
-				
-				switch(input.repository) {
-					case Jira: {
-						parser = new JiraParser(input);
-						break;
-					}
-					
-					case GitHub: {
-						parser = new GitHubParser(input,keyHashes);
-						break;
-					}
-						
-					case No: {
-						parser = new NoParser(input);
-						break;
-					}
+
+				switch (input.repository) {
+				case Jira: {
+					parser = new JiraParser(input);
+					break;
 				}
-				
-//				Parser parser = input.repository == Repository.Jira ? new JiraParser(input) : new GitHubParser(input);
-				if(parser instanceof JiraParser) {
-//					System.out.println("Here!!");
+
+				case GitHub: {
+					parser = new GitHubParser(input, keyHashes);
+					break;
+				}
+
+				case No: {
+					parser = new NoParser(input);
+					break;
+				}
+				}
+
+				if (parser instanceof JiraParser) {
 					((JiraParser) parser).parse(input.reference);
 				}
-				if(parser instanceof GitHubParser) {
+				if (parser instanceof GitHubParser) {
 					((GitHubParser) parser).parse();
 				}
-				
-				
+
 //				System.out.println("Exit!");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -99,7 +96,7 @@ public class Main {
 
 	private boolean parseOptions(Options options, String[] args) {
 		CommandLineParser parser = new DefaultParser();
-		
+
 		String url;
 		String resultDirectory = null;
 		String reference = null;
@@ -108,7 +105,7 @@ public class Main {
 		int conditionMax = 500;
 		int conditionMin = 0;
 		boolean isBI;
-		
+
 		try {
 
 			CommandLine cmd = parser.parse(options, args);
@@ -138,22 +135,22 @@ public class Main {
 				return false;
 			}
 
-			if(cmd.hasOption("j") ^ cmd.hasOption("k")) {
+			if (cmd.hasOption("j") ^ cmd.hasOption("k")) {
 				System.out.println("'j' options must be used with 'k'");
 				throw new Exception();
-			} else if(cmd.hasOption("j")) {
+			} else if (cmd.hasOption("j")) {
 				String jiraURL = cmd.getOptionValue("j");
 				String projectKey = cmd.getOptionValue("k");
-				JiraBugIssueCrawler crawler = new JiraBugIssueCrawler(jiraURL,projectKey);
+				JiraBugIssueCrawler crawler = new JiraBugIssueCrawler(jiraURL, projectKey);
 				reference = crawler.getJiraBugs().getAbsolutePath();
 			}
-			
+
 			url = cmd.getOptionValue("i");
 			label = cmd.getOptionValue("l");
 			resultDirectory = cmd.getOptionValue("o");
 			isBI = cmd.hasOption("b");
 			help = cmd.hasOption("h");
-			
+
 			input = new Input(url, resultDirectory, reference, label, repository, conditionMin, conditionMax, isBI);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -178,8 +175,8 @@ public class Main {
 //				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
 //				.argName("reference relative to bug").build());
 
-		options.addOption(Option.builder("x").longOpt("max")
-				.desc("Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'. (default: 500)")
+		options.addOption(Option.builder("x").longOpt("max").desc(
+				"Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'. (default: 500)")
 				.hasArg().argName("Max lines of patch").build());
 
 		options.addOption(Option.builder("m").longOpt("min")
@@ -196,14 +193,13 @@ public class Main {
 		options.addOption(Option.builder("b").longOpt("bugIntroducingChange")
 				.desc("If you want to get bug introducing changes, add this option").build());
 
-		options.addOption(Option.builder("j").longOpt("jira")
-				.desc("Jira issues URL (example: issues.apache.org)")
+		options.addOption(Option.builder("j").longOpt("jira").desc("Jira issues URL (example: issues.apache.org)")
 				.hasArg().argName("Jira project URL").build());
-		
-		options.addOption(Option.builder("k").longOpt("min")
-				.desc("Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
+
+		options.addOption(Option.builder("k").longOpt("min").desc(
+				"Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
 				.hasArg().argName("Project Key").build());
-		
+
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
 		return options;
