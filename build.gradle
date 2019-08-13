@@ -19,7 +19,7 @@ repositories {
 
 
 apply plugin: 'application'
-mainClassName = "edu.handong.csee.second.runner.Main"
+mainClassName = "edu.handong.csee.isel.runner.Main"
 
 dependencies {
 	
