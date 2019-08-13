@@ -29,10 +29,10 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 
 # Input Example
 1. Jira example - must be used with '-r' option.
-<pre><code> -i https://github.com/apache/zookeeper -j "issues.apache.org" -p ZOOKEEPER -o "your/directory" </code></pre>
+<pre><code> -i https://github.com/apache/zookeeper -j "issues.apache.org" -k ZOOKEEPER -o "your/directory" </code></pre>
 [-j, -k, Jira Project?](https://github.com/HGUISEL/BugPatchCollector/issues/18)<br><br>
 2. GitHub example
-<pre><code> -o /Users/lamb0711/Documents/git/BugPatchCollector -i https://github.com/apache/incubator-dubbo [-x 5 -m 3] [-l type/bug] </code></pre>
+<pre><code> -i https://github.com/apache/incubator-dubbo -o "your/directory" -x 5 -m 3 -l type/bug </code></pre>
 
 # Output Example
 The result file consist of Project Name, Short Commit Message, Commit Number, Date, Author and Patch.
