@@ -39,7 +39,7 @@ public class IssueLinkParser {
 
 		while(tf) {
 			String parsingAddress = address+"/issues?page="+pageNumber+"&q=label:"+label+"+is%3Aclosed";
-
+			//System.out.println(parsingAddress);
 			Document doc = Jsoup.connect(parsingAddress).header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36").get();
 
 			Elements docLine = doc.select("a");	

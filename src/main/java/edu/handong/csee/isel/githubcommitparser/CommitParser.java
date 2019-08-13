@@ -44,17 +44,24 @@ public class CommitParser {
 
 		for(int i=0; i< size; i++) {
 			String issAddress = IssueLinkParser.getIssueAddress().get(i);
-
+			//System.out.println(issAddress);
 			Document doc = Jsoup.connect(issAddress).header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36").get();
-
+			
 			Elements docLine = doc.select("div.commit-meta a");
-
+			Elements docdoc = doc.select("div.commit-ci-status summary");
+			
+			if(!docdoc.toString().contains("class=\"text-green\"")) {
+//			System.out.println(docLine);
+//			System.out.println(docdoc);
+			continue;
+			}
+			
 			Pattern pattern = Pattern.compile("<.+=\"/.+/.+/.+/(.+)\".+=\".+\">.+<.+>");
 
 			for(Element line : docLine){
-				//System.out.println(line);
 				Matcher matcher = pattern.matcher(line.toString());
 				while(matcher.find()) {
+					
 					commitAddress.add(matcher.group(1));
 				}
 			}
@@ -68,9 +75,9 @@ public class CommitParser {
 		}
 		System.out.println("Success to parsing bug commit addresses!");
 		
-		for(int i = 0; i < commitAddress.size(); i++) {
-			System.out.println(i+1+commitAddress.get(i));
-		}
+//		for(int i = 0; i < commitAddress.size(); i++) {
+//			System.out.println(i+1+commitAddress.get(i));
+//		}
 	}
 
 
@@ -84,7 +91,6 @@ public class CommitParser {
 	 */
 	void parseAndPrintCommiContents(String address, String output ,String conditionMax,String conditionMin) throws IOException {
 		String project = null;
-
 		Pattern projectPattern = Pattern.compile(".+//.+/.+/(.+)");
 		Matcher projectMatcher = projectPattern.matcher(address);
 		while(projectMatcher.find()) project = projectMatcher.group(1);
