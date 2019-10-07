@@ -196,7 +196,7 @@ public class Main {
 		options.addOption(Option.builder("j").longOpt("jira").desc("Jira issues URL (example: issues.apache.org)")
 				.hasArg().argName("Jira project URL").build());
 
-		options.addOption(Option.builder("k").longOpt("min").desc(
+		options.addOption(Option.builder("k").longOpt("key").desc(
 				"Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
 				.hasArg().argName("Project Key").build());
 
