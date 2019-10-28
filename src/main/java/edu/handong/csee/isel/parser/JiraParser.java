@@ -38,10 +38,25 @@ public class JiraParser extends Parser {
 		keywords = Utils.parseReference(reference);
 		CSVmaker writer;
 		final Pattern keyPattern = Pattern.compile("\\[?(\\w+\\-\\d+)\\]?");
+		
+		int total = 0;
+		int cnt = 0;
+		for (RevCommit commit : walk)
+			total ++;
+		
 		if (input.isBI) {
 			writer = new CSVmaker(new File(input.outPath + "BIC_" + input.projectName + ".csv"), BICheaders);
 			for (RevCommit commit : walk) {
 				try {
+					
+					if(100*(cnt-1)/total < 10) {
+						System.out.println("\b\b\b");
+					} else if (100*(cnt-1)/total < 100){
+						System.out.println("\b\b\b\b");
+					}
+					
+					System.out.println(GREEN_BACKGROUND+RED+cnt*100/total+"%"+RESET);
+					
 					RevCommit parent = commit.getParent(0);
 					Matcher m = null;
 					if (commit.getShortMessage().length() > 20)
@@ -64,10 +79,20 @@ public class JiraParser extends Parser {
 				} catch (ArrayIndexOutOfBoundsException e) {
 					break;
 				}
+				cnt++;
 			}
 		} else { // patch collect
 			writer = new CSVmaker(new File(input.outPath + "BPatch_" + input.projectName + ".csv"), Patchheaders);
 			for (RevCommit commit : walk) {
+				
+				if(100*(cnt-1)/total < 10) {
+					System.out.println("\b\b");
+				} else if (100*(cnt-1)/total < 100){
+					System.out.println("\b\b\b");
+				}
+				
+				System.out.println(GREEN_BACKGROUND+RED+cnt*100/total+"%"+RESET);
+				
 				try {
 					RevCommit parent = commit.getParent(0);
 					Matcher m = null;
@@ -99,6 +124,7 @@ public class JiraParser extends Parser {
 					break;
 				}
 			}
+			cnt++;
 		}
 	}
 

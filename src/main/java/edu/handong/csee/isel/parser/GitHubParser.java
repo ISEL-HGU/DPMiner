@@ -51,11 +51,25 @@ public class GitHubParser extends Parser {
 		int min = input.conditionMin;
 		String projectName = input.projectName;
 
+		int total = 0;
+		int cnt = 0;
+		for (RevCommit commit : walk)
+			total ++;
+		
 		if (input.isBI) {
 			writer = new CSVmaker(new File(input.outPath + "BIC_" + input.projectName + ".csv"), BICheaders);
-
+			
 			for (RevCommit commit : walk) {
 				try {
+					
+					if(100*(cnt-1)/total < 10) {
+						System.out.println("\b\b\b");
+					} else if (100*(cnt-1)/total < 100){
+						System.out.println("\b\b\b\b");
+					}
+					
+					System.out.println(GREEN_BACKGROUND+RED+cnt*100/total+"%"+RESET);
+					
 					RevCommit parent = commit.getParent(0);
 
 					if (!keyHashes.contains(commit.getId().name()))
@@ -122,12 +136,22 @@ public class GitHubParser extends Parser {
 				} catch (ArrayIndexOutOfBoundsException e) {
 					break; // last parent commit does not exist
 				}
+				cnt ++;
 			}
 
 		} else {
 			writer = new CSVmaker(new File(input.outPath + "BPatch_" + input.projectName + ".csv"), Patchheaders);
 			for (RevCommit commit : walk) {
 				try {
+					
+					if(100*(cnt-1)/total < 10) {
+						System.out.println("\b\b\b");
+					} else if (100*(cnt-1)/total < 100){
+						System.out.println("\b\b\b\b");
+					}
+					
+					System.out.println(GREEN_BACKGROUND+RED+cnt*100/total+"%"+RESET);
+					
 					RevCommit parent = commit.getParent(0);
 
 					if (!keyHashes.contains(commit.getId().name()))
@@ -163,6 +187,7 @@ public class GitHubParser extends Parser {
 				} catch (ArrayIndexOutOfBoundsException e) {
 					break;
 				}
+				cnt++;
 			}
 		}
 

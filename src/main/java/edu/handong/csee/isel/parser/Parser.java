@@ -16,6 +16,11 @@ import edu.handong.csee.isel.runner.Input;
 import edu.handong.csee.isel.utils.Utils;
 
 public class Parser {
+	public static final String RESET = "\u001B[0m";
+	public static final String GREEN_BACKGROUND = "\u001B[42m";
+	public static final String RED = "\u001B[31m";
+
+
 	Input input;
 	RevWalk walk; 
 	Git git;
