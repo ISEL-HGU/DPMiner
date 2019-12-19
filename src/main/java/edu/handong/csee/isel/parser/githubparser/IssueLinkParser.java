@@ -39,19 +39,11 @@ public class IssueLinkParser {
 		if (label == null)
 			label = "bug";
 
-<<<<<<< HEAD:src/main/java/edu/handong/csee/isel/parser/githubparser/IssueLinkParser.java
-		while (tf) {
-			String parsingAddress = address + "/issues?page=" + pageNumber + "&q=label:" + label + "+is%3Aclosed";
-
-			Document doc = Jsoup.connect(parsingAddress).header("User-Agent",
-					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36")
-					.get();
-=======
 		while(tf) {
 			String parsingAddress = address+"/issues?page="+pageNumber+"&q=label:"+label+"+is%3Aclosed";
 			//System.out.println(parsingAddress);
 			Document doc = Jsoup.connect(parsingAddress).header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36").get();
->>>>>>> c607e6de9d0fe4ceba043f537f241cde02d5ea7c:src/main/java/edu/handong/csee/isel/githubcommitparser/IssueLinkParser.java
+
 
 			Elements docLine = doc.select("a");
 			Elements docLast = doc.select("h3");

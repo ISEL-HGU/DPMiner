@@ -17,7 +17,7 @@ import edu.handong.csee.isel.patch.Patch;
 
 public class CSVmaker {
 	File file;
-	CSVPrinter printer;
+	public CSVPrinter printer;
 
 	public CSVmaker(File file, String[] headers) throws IOException {
 		this.file = file;

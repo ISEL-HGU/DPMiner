@@ -41,6 +41,8 @@ public class JiraParser extends Parser {
 		if (input.isBI) {
 			writer = new CSVmaker(new File(input.outPath + "BIC_" + input.projectName + ".csv"), BICheaders);
 			for (RevCommit commit : walk) {
+				if(commit.getParentCount()<1) // skip if there are no parents
+					continue;
 				try {
 					RevCommit parent = commit.getParent(0);
 					Matcher m = null;
@@ -68,6 +70,8 @@ public class JiraParser extends Parser {
 		} else { // patch collect
 			writer = new CSVmaker(new File(input.outPath + "BPatch_" + input.projectName + ".csv"), Patchheaders);
 			for (RevCommit commit : walk) {
+				if(commit.getParentCount()<1) // skip if there are no parents
+					continue;
 				try {
 					RevCommit parent = commit.getParent(0);
 					Matcher m = null;

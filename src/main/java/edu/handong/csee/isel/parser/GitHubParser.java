@@ -55,6 +55,8 @@ public class GitHubParser extends Parser {
 			writer = new CSVmaker(new File(input.outPath + "BIC_" + input.projectName + ".csv"), BICheaders);
 
 			for (RevCommit commit : walk) {
+				if(commit.getParentCount()<1) // skip if there are no parents
+					continue;
 				try {
 					RevCommit parent = commit.getParent(0);
 
@@ -127,6 +129,8 @@ public class GitHubParser extends Parser {
 		} else {
 			writer = new CSVmaker(new File(input.outPath + "BPatch_" + input.projectName + ".csv"), Patchheaders);
 			for (RevCommit commit : walk) {
+				if(commit.getParentCount()<1) // skip if there are no parents
+					continue;
 				try {
 					RevCommit parent = commit.getParent(0);
 

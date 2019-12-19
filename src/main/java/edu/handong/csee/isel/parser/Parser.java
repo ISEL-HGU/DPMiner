@@ -17,7 +17,7 @@ import edu.handong.csee.isel.utils.Utils;
 
 public class Parser {
 	Input input;
-	RevWalk walk; 
+	Iterable<RevCommit> walk; 
 	Git git;
 	public Parser(Input input) {
 		this.input = input;
@@ -26,15 +26,18 @@ public class Parser {
 	public void parse() throws InvalidRemoteException, TransportException, GitAPIException, IOException {
 		Git git = Utils.gitClone(input.REMOTE_URI);
 		Repository repo = git.getRepository();
-		walk = new RevWalk(repo);
-
-		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
-			if (entry.getKey().contains("refs/heads/master")) { // only master
-				Ref ref = entry.getValue();
-				RevCommit commit = walk.parseCommit(ref.getObjectId());
-				walk.markStart(commit);
-			}
-		}
+		
+		walk = git.log().call();
+		
+//		walk = new RevWalk(repo);
+//
+//		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
+//			if (entry.getKey().contains("refs/heads/master")) { // only master
+//				Ref ref = entry.getValue();
+//				RevCommit commit = walk.parseCommit(ref.getObjectId());
+//				walk.markStart(commit);
+//			}
+//		}
 
 	}
 

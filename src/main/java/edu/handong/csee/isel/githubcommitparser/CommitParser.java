@@ -19,6 +19,8 @@ import org.jsoup.nodes.Element;
 
 import org.jsoup.select.Elements;
 
+import edu.handong.csee.isel.parser.githubparser.IssueLinkParser;
+
 /**
  * Parsing commit addresses and print bug commit contents to .csv file.
  * @author yangsujin

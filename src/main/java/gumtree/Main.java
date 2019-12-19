@@ -2,7 +2,9 @@ package gumtree;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,7 @@ public class Main {
 		RevWalk walk = new RevWalk(repo);
 
 		for (Map.Entry<String, Ref> entry : repo.getAllRefs().entrySet()) {
+			
 			if (entry.getKey().contains("refs/heads/master")) { // only master
 				Ref ref = entry.getValue();
 				RevCommit commit = walk.parseCommit(ref.getObjectId());
@@ -56,10 +59,15 @@ public class Main {
 		int cnt = 0;
 
 
-		String header[] = {"commit","INS", "DEL", "MOV", "UPD" };
-		CSVmaker maker = new CSVmaker(new File(csvName), header);
+//		String header[] = {"commit-file","INS", "DEL", "MOV", "UPD" };
+		String header[] = null;
+		
 
 		for (RevCommit commit : walk) {
+			
+			if(commit.getParentCount() < 1)
+				continue;
+			
 			cnt++;
 			RevCommit parent = null;
 			try {
@@ -94,39 +102,73 @@ public class Main {
 //					System.out.println(prevFileSource.equals(fileSource));
 					
 					lst.addAll(changes);
+					
+					if(lst.size() < 1)
+						continue;
 
-				}
-				ArrayList<Integer> lst1 = new ArrayList<>();
-				ArrayList<Integer> lst2 = new ArrayList<>();
-				ArrayList<Integer> lst3 = new ArrayList<>();
-				ArrayList<Integer> lst4 = new ArrayList<>();
+					ArrayList<Integer> lst1 = new ArrayList<>();
+					ArrayList<Integer> lst2 = new ArrayList<>();
+					ArrayList<Integer> lst3 = new ArrayList<>();
+					ArrayList<Integer> lst4 = new ArrayList<>();
 
-//				System.out.println("size: " + lst.size());
-				
-				for (GChange change : lst) {
-//					System.out.println("tyep: " + change.change_type);
-					switch (change.change_type) {
-					case "INS":
-						lst1.add(change.node_type);
-						break;
+					String[] strlst = new String[lst.size()];
+//					strlst[0] = commit.getId().getName()+"-"+newPath;
+					int count = 0 ;
+					
+					for (GChange change : lst) {
+						switch (change.change_type) {
+						case "INS":
+							lst1.add(change.node_type);
+							strlst[count] = "INS"+change.node_type;
+							count++;
+							break;
 
-					case "DEL":
-						lst2.add(change.node_type);
-						break;
+						case "DEL":
+							lst2.add(change.node_type);
+							strlst[count] = "DEL"+change.node_type;
+							count++;
+							break;
 
-					case "UPD":
-						lst3.add(change.node_type);
-						break;
+						case "UPD":
+							lst3.add(change.node_type);
+							strlst[count] = "UPD"+change.node_type;
+							count++;
+							break;
 
-					case "MOV":
-						lst4.add(change.node_type);
-						break;
+						case "MOV":
+							lst4.add(change.node_type);
+							strlst[count] = "MOV"+change.node_type;
+							count++;
+							break;
+						}
 					}
+					
+//					CSVmaker maker = new CSVmaker(new File("/Users/imseongbin/Desktop/"+commit.getId().getName()+newPath), null);
+					String fn = "/Users/imseongbin/Desktop/txts/"+commit.getId().getName()+newPath.replace("/", "-")+".txt"; //TODO: File.seperator
+					
+					File f = new File(fn.replace("/", "////"));
+					
+					FileWriter print = new FileWriter(f);
+					
+					
+//					String s1 = lst1.toString().substring(1, lst1.toString().length()-1);
+//					String s2 = lst2.toString().substring(1, lst2.toString().length()-1);
+//					String s3 = lst3.toString().substring(1, lst3.toString().length()-1);
+//					String s4 = lst4.toString().substring(1, lst4.toString().length()-1);
+					
+					
+					
+					for(String s : strlst) {
+						
+						print.write(s);
+						print.write(" ");
+					}
+					print.flush();
+					print.close();
+					
+//					print.printRecord(strlst);
+
 				}
-				
-				CSVPrinter print = maker.printer;
-				
-				print.printRecord(commit.getId().getName(),lst1.toString(),lst2.toString(),lst3.toString(),lst4.toString());
 
 			} catch (Exception e) {
 				e.printStackTrace();
