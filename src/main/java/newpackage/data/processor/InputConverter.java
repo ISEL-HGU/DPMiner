@@ -1,4 +1,4 @@
-package newpackage;
+package newpackage.data.processor;
 
 import newpackage.data.Input;
 

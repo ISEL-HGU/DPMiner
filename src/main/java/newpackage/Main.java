@@ -1,64 +1,73 @@
 
 package newpackage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import newpackage.bfs.BFCGitHub;
-import newpackage.bfs.BFCJira;
-import newpackage.bfs.BFCKeyword;
-import newpackage.bic.CBICCollector;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.revwalk.RevCommit;
+
+import newpackage.bfc.BFCCollector;
+import newpackage.bfc.collector.BFCGitHubCollector;
+import newpackage.bfc.collector.BFCJiraCollector;
+import newpackage.bfc.collector.BFCKeywordCollector;
+import newpackage.bic.BICCollector;
+import newpackage.bic.collector.CBICCollector;
 import newpackage.data.CSVInfo;
 import newpackage.data.Input;
-import newpackage.patch.CPatchCollector;
+import newpackage.data.processor.CLIConverter;
+import newpackage.data.processor.CSVPrinter;
+import newpackage.data.processor.InputConverter;
+import newpackage.metric.MetricCollector;
+import newpackage.metric.collector.CMetricCollector;
+import newpackage.patch.PatchCollector;
+import newpackage.patch.collector.CPatchCollector;
 
 public class Main {
 	static String[] bugKeywords = { "bug", "fix" };
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NoHeadException, IOException, GitAPIException {
 
 		// 1. Input
-		InputConverter inputConverter = new CInputConverter();
-		Input input = inputConverter.getInputFrom(args);
-
-		// TODO: input process
+		InputConverter inputConverter = new CLIConverter();
+		Input input = inputConverter.getInputFrom(args); // TODO: input process
 
 		// 2. get commit list
-		List<RevCommit> commitList = null;
-		
+		File gitDir = Utils.Gitclone(input.gitRemoteURI);
+		List<RevCommit> commitList = Utils.getCommitList(gitDir);
+
 		// 3. collect Bug-Fix-Commit
 		List<String> bfcList = null;
 		BFCCollector bfcCollector = null;
 
-		List<String> bugIssueKeys = null; // TODO:
-		List<String> bugKeywords = null;
-		List<String> bugIDs = null; // TODO:
-
 		switch (input.referecneType) {
 		case JIRA:
-			// TODO: collect bugIssueKeys
-			bfcCollector = new BFCJira(bugIssueKeys);
-//			bfcList = bfcCollector.collectFrom();
+			List<String> bugIssueKeys = null; // TODO:
+			bfcCollector = new BFCJiraCollector(bugIssueKeys);
+			bfcList = bfcCollector.collectFrom(commitList);
 
 			break;
 
 		case GITHUB:
-			// TODO: collect bugIDs
-			bfcCollector = new BFCGitHub(bugIDs);
-//			bfcList = bfcCollector.collectFrom();
+			List<String> bugIDs = null; // TODO:
+			bfcCollector = new BFCGitHubCollector(bugIDs);
+			bfcList = bfcCollector.collectFrom(commitList);
 
 			break;
 
 		case KEYWORD:
-			bugKeywords = Arrays.asList(Main.bugKeywords);
-			bfcCollector = new BFCKeyword(bugKeywords);
-//			bfcList = bfcCollector.collectFrom();
+			List<String> bugKeywords = Arrays.asList(Main.bugKeywords);
+			bfcCollector = new BFCKeywordCollector(bugKeywords);
+			bfcList = bfcCollector.collectFrom(commitList);
 
 			break;
 		}
 
 		// 4. Patch, BIC, Metric
-		CSVInfo csvInfo = null;
+		List<CSVInfo> csvInfoLst = null;
 
 		PatchCollector patchCollector = null;
 		BICCollector bicCollector = null;
@@ -67,25 +76,25 @@ public class Main {
 		switch (input.mode) {
 		case PATCH:
 			patchCollector = new CPatchCollector();
-			csvInfo = patchCollector.collectFrom(bfcList);
+			csvInfoLst = patchCollector.collectFrom(bfcList);
 
 			break;
 		case BIC:
 			bicCollector = new CBICCollector();
-			csvInfo = bicCollector.collectFrom(bfcList);
+			csvInfoLst = bicCollector.collectFrom(bfcList);
 
 			break;
 		case METRIC:
-			bicCollector = new CBICCollector();
-			csvInfo = metricCollector.collectFrom(bfcList);
+			metricCollector = new CMetricCollector();
+			csvInfoLst = metricCollector.collectFrom(bfcList);
 
 			break;
 		}
 
-		// 4. Result
+		// 5. Print CSV
 		CSVPrinter printer = new CSVPrinter();
-		printer.setPath("path");
-		printer.print(csvInfo);
+		printer.setPath(input.outPath);
+		printer.print(csvInfoLst);
 
 	}
 }

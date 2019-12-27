@@ -2,9 +2,13 @@ package newpackage.data;
 
 public class Input {
 
-	public static ReferenceType referecneType;
+	public ReferenceType referecneType;
 
-	public static Mode mode;
+	public Mode mode;
+
+	public String outPath;
+
+	public String gitRemoteURI;
 
 	public static enum ReferenceType {
 		JIRA, GITHUB, KEYWORD

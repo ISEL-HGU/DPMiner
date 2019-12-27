@@ -1,4 +1,4 @@
-package newpackage;
+package newpackage.patch;
 
 import java.util.List;
 
@@ -6,6 +6,6 @@ import newpackage.data.CSVInfo;
 
 public interface PatchCollector {
 
-	CSVInfo collectFrom(List<String> bfcList);
+	List<CSVInfo> collectFrom(List<String> bfcList);
 
 }

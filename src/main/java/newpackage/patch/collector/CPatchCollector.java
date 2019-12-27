@@ -1,14 +1,14 @@
-package newpackage.patch;
+package newpackage.patch.collector;
 
 import java.util.List;
 
-import newpackage.PatchCollector;
 import newpackage.data.CSVInfo;
+import newpackage.patch.PatchCollector;
 
 public class CPatchCollector implements PatchCollector {
 
 	@Override
-	public CSVInfo collectFrom(List<String> bfcList) {
+	public List<CSVInfo> collectFrom(List<String> bfcList) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,8 +1,8 @@
-package newpackage;
+package newpackage.data.processor;
 
 import newpackage.data.Input;
 
-public class CInputConverter implements InputConverter{
+public class CLIConverter implements InputConverter{
 
 	@Override
 	public Input getInputFrom(String[] args) {

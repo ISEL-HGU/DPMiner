@@ -1,4 +1,6 @@
-package newpackage;
+package newpackage.data.processor;
+
+import java.util.List;
 
 import newpackage.data.CSVInfo;
 import newpackage.data.csv.BICCSV;
@@ -24,6 +26,11 @@ public class CSVPrinter {
 		if(csvInfo instanceof MetricCSV) {
 			
 		}
+		
+	}
+
+	public void print(List<CSVInfo> csvInfo) {
+		// TODO Auto-generated method stub
 		
 	}
 
