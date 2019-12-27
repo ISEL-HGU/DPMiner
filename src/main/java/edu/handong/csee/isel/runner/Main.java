@@ -171,10 +171,6 @@ public class Main {
 		options.addOption(Option.builder("o").longOpt("result").desc("directory will have result file").hasArg()
 				.argName("directory").required().build());
 
-//		options.addOption(Option.builder("r").longOpt("reference")
-//				.desc("If you have list of bug commit IDs, make a file to have the list, and push the file").hasArg()
-//				.argName("reference relative to bug").build());
-
 		options.addOption(Option.builder("x").longOpt("max").desc(
 				"Set a Max lines of each result patch. Only count '+++' and '---' lines. must used with '-m'. (default: 500)")
 				.hasArg().argName("Max lines of patch").build());
@@ -186,17 +182,13 @@ public class Main {
 		options.addOption(Option.builder("l").longOpt("label").desc("Set a bug label of github").hasArg()
 				.argName("Find coincident commit with label").build());
 
-//		options.addOption(Option.builder("t").longOpt("thread")
-//				.desc("Using threads in your cpu, you can speed up. Only do well if input is local repository.")
-//				.build());
-
 		options.addOption(Option.builder("b").longOpt("bugIntroducingChange")
 				.desc("If you want to get bug introducing changes, add this option").build());
 
-		options.addOption(Option.builder("j").longOpt("jira").desc("Jira issues URL (example: issues.apache.org)")
+		options.addOption(Option.builder("j").longOpt("jiraURL").desc("Jira issues URL (example: issues.apache.org)")
 				.hasArg().argName("Jira project URL").build());
 
-		options.addOption(Option.builder("k").longOpt("min").desc(
+		options.addOption(Option.builder("k").longOpt("jiraProject").desc(
 				"Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
 				.hasArg().argName("Project Key").build());
 
