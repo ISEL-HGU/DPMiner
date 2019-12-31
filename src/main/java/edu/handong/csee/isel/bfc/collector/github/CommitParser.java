@@ -48,6 +48,13 @@ public class CommitParser {
 					.get();
 
 			Elements docLine = doc.select("div.commit-meta a");
+			Elements docdoc = doc.select("div.commit-ci-status summary");
+			
+			if(!docdoc.toString().contains("class=\"text-green\"")) {
+//			System.out.println(docLine);
+//			System.out.println(docdoc);
+			continue;
+			}
 
 			Pattern pattern = Pattern.compile("<.+=\"/.+/.+/.+/(.+)\".+=\".+\">.+<.+>");
 

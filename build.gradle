@@ -58,6 +58,7 @@ dependencies {
 	// weka 3.7.9
     compile 'nz.ac.waikato.cms.weka:weka-dev:3.7.9'
 	compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.16.0'
+<<<<<<< HEAD
 
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
@@ -68,3 +69,12 @@ dependencies {
 	
    
 }
+=======
+	
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+	
+
+   
+}
+>>>>>>> dcec225d688bc5045fc4458ed973b4b97c33974c

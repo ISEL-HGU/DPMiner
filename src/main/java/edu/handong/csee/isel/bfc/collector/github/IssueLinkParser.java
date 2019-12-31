@@ -39,11 +39,12 @@ public class IssueLinkParser {
 		if (label == null)
 			label = "bug";
 
-		while(tf) {
-			String parsingAddress = address+"/issues?page="+pageNumber+"&q=label:"+label+"+is%3Aclosed";
-			//System.out.println(parsingAddress);
-			Document doc = Jsoup.connect(parsingAddress).header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36").get();
-
+		while (tf) {
+			String parsingAddress = address + "/issues?page=" + pageNumber + "&q=label:" + label + "+is%3Aclosed";
+			// System.out.println(parsingAddress);
+			Document doc = Jsoup.connect(parsingAddress).header("User-Agent",
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36")
+					.get();
 
 			Elements docLine = doc.select("a");
 			Elements docLast = doc.select("h3");
@@ -75,9 +76,6 @@ public class IssueLinkParser {
 				e.printStackTrace();
 			}
 		}
-//		System.out.println("Success to parsing issue addresses!");
-//		for( int i=0; i<issueAddress.size(); i++)
-//			System.out.println(i+1+" "+issueAddress.get(i));
 	}
 
 	/**
