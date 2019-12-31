@@ -48,4 +48,12 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/java,gradle
 /repositories/
+<<<<<<< HEAD
+/apacheFLUME/
+/apacheJCR/
+/apacheJENA/
+/apacheNUTCH/
+=======
 /apacheZOOKEEPER/
+/bin/
+>>>>>>> dcec225d688bc5045fc4458ed973b4b97c33974c
