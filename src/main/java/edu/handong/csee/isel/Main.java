@@ -103,8 +103,13 @@ public class Main {
 		}
 
 		// 5. Print CSV
+		if (csvInfoLst.size() < 1) {
+			return;
+		}
+
 		CSVMaker printer = new CSVMaker();
-		printer.setPath(input.outPath);
+		printer.setDataType(csvInfoLst);
+		printer.setPath(input);
 		printer.print(csvInfoLst);
 
 	}

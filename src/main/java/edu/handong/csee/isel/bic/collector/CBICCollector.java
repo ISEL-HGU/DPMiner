@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -32,7 +31,7 @@ public class CBICCollector implements BICCollector {
 
 	Input input;
 	List<String> bfcList = null;
-	
+
 	Git git;
 	Repository repo;
 
@@ -63,11 +62,12 @@ public class CBICCollector implements BICCollector {
 		List<BICInfo> lstBIChanges = new ArrayList<BICInfo>();
 		for (RevCommit commit : commitList) {
 
-			RevCommit parent = commit.getParent(0);
-			if (parent == null) {
+			if (commit.getParentCount() < 1) {
 				System.err.println("WARNING: Parent commit does not exist: " + commit.name());
 				continue;
 			}
+
+			RevCommit parent = commit.getParent(0);
 
 			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 			df.setRepository(repo);
@@ -153,10 +153,9 @@ public class CBICCollector implements BICCollector {
 						}
 					}
 
-					
-					
 					// get BI commit from lines in lstIdxOfOnlyInsteredLines
-					lstBIChanges.addAll(getBIChangesFromBILineIndices(id,commit.getCommitTime(), newPath, oldPath, prevFileSource,lstIdxOfDeletedLinesInPrevFixFile));
+					lstBIChanges.addAll(getBIChangesFromBILineIndices(id, commit.getCommitTime(), newPath, oldPath,
+							prevFileSource, lstIdxOfDeletedLinesInPrevFixFile));
 //					if(!unTrackDeletedBIlines)
 //						lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
 				}
@@ -171,8 +170,8 @@ public class CBICCollector implements BICCollector {
 		return csvInfoList;
 	}
 
-	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1,int fixCommitTime, String path, String prevPath,
-			String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
+	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, int fixCommitTime, String path,
+			String prevPath, String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
 
 		ArrayList<BICInfo> biChanges = new ArrayList<BICInfo>();
 
@@ -183,10 +182,11 @@ public class CBICCollector implements BICCollector {
 			commitID = repo.resolve(fixSha1 + "~1");
 			blamer.setStartCommit(commitID);
 			blamer.setFilePath(prevPath);
-			BlameResult blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator).setFollowFileRenames(true).call();
+			BlameResult blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator)
+					.setFollowFileRenames(true).call();
 
-			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLinesInPrevFixFile; //getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
-			for(int lineIndex:arrIndicesInOriginalFileSource){
+			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLinesInPrevFixFile; // getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
+			for (int lineIndex : arrIndicesInOriginalFileSource) {
 				RevCommit commit = blame.getSourceCommit(lineIndex);
 
 				String BISha1 = commit.name();
@@ -196,16 +196,18 @@ public class CBICCollector implements BICCollector {
 //				if(!(strStartDate.compareTo(BIDate)<=0 && BIDate.compareTo(strEndDate)<=0)) // TODO:only consider BISha1 whose date is bewteen startDate and endDate
 //					continue;
 				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
-				int lineNum = blame.getSourceLine(lineIndex)+1;
-				int lineNumInPrevFixRev = lineIndex+1;
-				
+				int lineNum = blame.getSourceLine(lineIndex) + 1;
+				int lineNumInPrevFixRev = lineIndex + 1;
+
 				String[] splitLinesSrc = prevFileSource.split("\n");
 
-				// split("\n") ignore last empty lines so lineIndex can be out-of-bound and ignore empty line (this happens as comments are removed)
-				if(splitLinesSrc.length<=lineIndex || splitLinesSrc[lineIndex].trim().equals(""))
+				// split("\n") ignore last empty lines so lineIndex can be out-of-bound and
+				// ignore empty line (this happens as comments are removed)
+				if (splitLinesSrc.length <= lineIndex || splitLinesSrc[lineIndex].trim().equals(""))
 					continue;
-				
-				BICInfo biChange = new BICInfo(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineNum,lineNumInPrevFixRev, prevFileSource.split("\n")[lineIndex].trim(),true);
+
+				BICInfo biChange = new BICInfo(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineNum,
+						lineNumInPrevFixRev, prevFileSource.split("\n")[lineIndex].trim(), true);
 				biChanges.add(biChange);
 			}
 

@@ -24,12 +24,13 @@ public class CLIConverter implements InputConverter {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			printHelp(options);
 			System.exit(1);
 		}
 
 		// CLI exception handling
 		if (!isValid(cmd, options)) {
+			printHelp(options);
 			System.exit(1);
 		}
 
@@ -50,12 +51,12 @@ public class CLIConverter implements InputConverter {
 		if (input.gitURL.endsWith("/")) {
 			input.gitURL = input.gitURL.substring(0, input.gitURL.length() - 1);
 		}
-		input.outPath = cmd.getOptionValue("o");
 		input.gitRemoteURI = input.gitURL + ".git";
 		input.jiraProjectKey = cmd.getOptionValue("k");
 		input.jiraURL = cmd.getOptionValue("j");
 		input.projectName = getProjectName(input.gitRemoteURI);
 		input.label = cmd.getOptionValue("l");
+		input.outPath = cmd.getOptionValue("o");
 
 		if (cmd.hasOption("g")) {
 			input.referecneType = Input.ReferenceType.GITHUB;

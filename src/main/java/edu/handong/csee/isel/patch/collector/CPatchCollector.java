@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -41,6 +42,7 @@ public class CPatchCollector implements PatchCollector {
 		List<CSVInfo> csvInfoList = new ArrayList<>();
 
 		for (RevCommit commit : commitList) {
+
 			if (isBFC(commit)) {
 
 				RevCommit parent = commit.getParent(0);
@@ -53,7 +55,7 @@ public class CPatchCollector implements PatchCollector {
 				List<CSVInfo> patch = getPatchBetween(parent, commit);
 				int patchSize = getPatchSize(patch);
 
-				if (patchSize < input.minSize && patchSize > input.maxSize) {
+				if (patchSize < input.minSize || patchSize > input.maxSize) {
 					continue;
 				}
 
@@ -104,6 +106,8 @@ public class CPatchCollector implements PatchCollector {
 
 				String content = getPatch(diff, repo);
 
+				patch.patch = content;
+
 				if (content != null) {
 					csvInfoList.add(patch);
 				}
@@ -118,6 +122,9 @@ public class CPatchCollector implements PatchCollector {
 	}
 
 	private int getChangedLine(String content) {
+		if (content == null) {
+			return 0;
+		}
 		int count = 0;
 		String[] lines = content.split("\n");
 		for (String line : lines) {
@@ -129,18 +136,18 @@ public class CPatchCollector implements PatchCollector {
 		return count;
 	}
 
-	private static boolean isStartWithPlus(String str) {
-		if (str.startsWith("+")) {
-			if (str.startsWith("+++"))
+	private static boolean isStartWithPlus(String line) {
+		if (line.startsWith("+")) {
+			if (line.startsWith("+++"))
 				return false;
 			return true;
 		}
 		return false;
 	}
 
-	private static boolean isStartWithMinus(String str) {
-		if (str.startsWith("-")) {
-			if (str.startsWith("---"))
+	private static boolean isStartWithMinus(String line) {
+		if (line.startsWith("-")) {
+			if (line.startsWith("---"))
 				return false;
 			return true;
 		}
