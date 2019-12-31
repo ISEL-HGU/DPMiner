@@ -22,10 +22,20 @@ apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.runner.Main"
 
 dependencies {
+
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/gen.jdt
+	compile group: 'com.github.gumtreediff', name: 'gen.jdt', version: '2.1.2'
+
 	
+
+	
+
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
+	compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'
+
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
 	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
-	
+
 	// https://mvnrepository.com/artifact/org.jsoup/jsoup
 	compile group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
 	
@@ -58,6 +68,18 @@ dependencies {
 	// weka 3.7.9
     compile 'nz.ac.waikato.cms.weka:weka-dev:3.7.9'
 	compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.16.0'
+<<<<<<< HEAD
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+
+	
+   
+}
+=======
 	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
@@ -65,3 +87,4 @@ dependencies {
 
    
 }
+>>>>>>> dcec225d688bc5045fc4458ed973b4b97c33974c
