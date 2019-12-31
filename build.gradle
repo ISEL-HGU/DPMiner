@@ -22,10 +22,20 @@ apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.runner.Main"
 
 dependencies {
+
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/gen.jdt
+	compile group: 'com.github.gumtreediff', name: 'gen.jdt', version: '2.1.2'
+
 	
+
+	
+
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
+	compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'
+
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
 	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
-	
+
 	// https://mvnrepository.com/artifact/org.jsoup/jsoup
 	compile group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
 	
