@@ -13,10 +13,10 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
 
 public class FileManager {
-	private String path;
-	private String domain;
-	private String projectKey;
-
+	private final String path;
+	private final String domain;
+	private final String projectKey;
+	
 	private List<String> fileList = new ArrayList<>();
 	private static List<String> issueKeyList = new ArrayList<>();
 	
@@ -62,24 +62,6 @@ public class FileManager {
 		}
 
 		return issueKeyList; 
-		
-		/*
-		String issueKeysWithComma = String.join("\n", issueKeyList);
-		
-		//Set file name
-		Date date= new Date();
-		Timestamp ts = new Timestamp(date.getTime());
-		String teamName = validateTeamName(this.domain);
-		String dir = this.path + File.separator + teamName + this.projectKey + File.separator;
-		String savedFileName = dir + teamName + this.projectKey + "IssueKeys" + ts + ".csv";
-		//make file
-		System.out.println("\n\tCollecting Issue keys into " + savedFileName);
-		File savedFile = new File(savedFileName);
-		savedFile.getParentFile().mkdirs();
-		FileUtils.write(savedFile, issueKeysWithComma, "UTF-8");
-		System.out.println("\tCollecting completed.");
-		*/
-//		return savedFile;
 	}
 	
 	private static void extractIssueKeys(String in, String projectKey) {

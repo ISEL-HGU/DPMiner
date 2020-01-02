@@ -25,4 +25,8 @@ public abstract class BFCCollector {
 	public void setGitHubLabel(String label ) {
 		
 	}
+
+	public void setOutPath(String outPath) {
+		
+	}
 }

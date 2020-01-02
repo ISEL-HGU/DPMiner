@@ -38,13 +38,14 @@ public class Main {
 		Input input = inputConverter.getInputFrom(args);
 
 		// 2. get all commits from GIT directory
+		List<RevCommit> commitList;
 		File gitDirectory = null;
-		if (isCloned(input.projectName)) {
-			gitDirectory = getGitDirectory(input.projectName);
+		if (isCloned(input)) {
+			gitDirectory = getGitDirectory(input);
 		} else {
-			gitDirectory = GitClone(input.gitRemoteURI);
+			gitDirectory = GitClone(input);
 		}
-		List<RevCommit> commitList = getCommitListFrom(gitDirectory);
+		commitList = getCommitListFrom(gitDirectory);
 
 		// 3. collect Bug-Fix-Commit
 		List<String> bfcList = null;
@@ -55,6 +56,7 @@ public class Main {
 			bfcCollector = new BFCJiraCollector();
 			bfcCollector.setJiraURL(input.jiraURL);
 			bfcCollector.setJiraProjectKey(input.jiraProjectKey);
+			bfcCollector.setOutPath(input.outPath);
 			bfcList = bfcCollector.collectFrom(commitList);
 
 			break;
@@ -94,7 +96,7 @@ public class Main {
 			csvInfoLst = bicCollector.collectFrom(commitList);
 
 			break;
-		case METRIC:
+		case METRIC: //TODO:
 			metricCollector = new CMetricCollector(input);
 			metricCollector.setBFC(bfcList);
 			csvInfoLst = metricCollector.collectFrom(commitList);
@@ -122,14 +124,17 @@ public class Main {
 		return commitList;
 	}
 
-	public static File getGitDirectory(String project) {
-		File clonedDirectory = new File("repositories" + File.separator + project);
+	//TODO: add out path
+	public static File getGitDirectory(Input input) {
+		File clonedDirectory = new File(input.outPath+File.separator+"repositories" + File.separator + input.projectName);
 		return clonedDirectory;
 	}
 
-	private static File GitClone(String remoteURI) throws InvalidRemoteException, TransportException, GitAPIException {
-		String projectName = CLIConverter.getProjectName(remoteURI);
-		File clonedDirectory = new File("repositories" + File.separator + projectName);
+	//TODO: add out path
+	private static File GitClone(Input input) throws InvalidRemoteException, TransportException, GitAPIException {
+		String remoteURI = input.gitRemoteURI;
+		String projectName = input.projectName;
+		File clonedDirectory = getGitDirectory(input);
 		clonedDirectory.mkdirs();
 		System.out.println("cloning " + projectName + "...");
 		Git git = Git.cloneRepository().setURI(remoteURI).setDirectory(clonedDirectory).setCloneAllBranches(true)
@@ -137,8 +142,9 @@ public class Main {
 		return git.getRepository().getDirectory();
 	}
 
-	private static boolean isCloned(String project) {
-		File clonedDirectory = new File("repositories" + File.separator + project);
+	//TODO: add out path
+	private static boolean isCloned(Input input) {
+		File clonedDirectory = getGitDirectory(input);
 		return clonedDirectory.exists();
 	}
 }

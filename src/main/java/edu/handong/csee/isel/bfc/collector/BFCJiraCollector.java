@@ -11,6 +11,8 @@ public class BFCJiraCollector extends BFCCollector {
 
 	String url;
 	String key;
+	String path;
+
 
 	public BFCJiraCollector() {
 
@@ -21,6 +23,7 @@ public class BFCJiraCollector extends BFCCollector {
 		JiraBugIssueCrawler jiraCrawler = new JiraBugIssueCrawler();
 		jiraCrawler.setURL(url);
 		jiraCrawler.setKey(key);
+		jiraCrawler.setPath(path);
 
 		jiraCrawler.crawling();
 		List<String> issueKeys = jiraCrawler.collectIssueKeys();
@@ -36,6 +39,11 @@ public class BFCJiraCollector extends BFCCollector {
 	@Override
 	public void setJiraURL(String url) {
 		this.url = url;
+	}
+
+	@Override
+	public void setOutPath(String outPath) {
+		this.path = outPath;
 	}
 
 }

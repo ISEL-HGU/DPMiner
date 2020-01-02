@@ -52,7 +52,7 @@ public class CBICCollector implements BICCollector {
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 
 		try {
-			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory(input.projectName));
+			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory(input));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,18 +19,7 @@ public class JiraBugIssueCrawler {
 	private static final int INITIAL_END = 1;
 	private static final int PERIOD = Integer.parseUnsignedInt("500");
 	private static final int MAX_DISCONNECTION = 50; // TODO using mathematical methods to improve
-	private static final String DEFAULT_PATH = System.getProperty("user.dir"); // current working directory
 	private FileManager fileManager = null;
-
-	public JiraBugIssueCrawler(String domain, String projectKey) throws InvalidDomainException {
-		this(domain, projectKey, DEFAULT_PATH);
-	}
-
-	public JiraBugIssueCrawler(String domain, String projectKey, String path) throws InvalidDomainException {
-		this.domain = validateDomain(domain);
-		this.projectKey = projectKey;
-		this.path = path;
-	}
 
 	public void setURL(String url) {
 		this.domain = url;
@@ -38,6 +27,21 @@ public class JiraBugIssueCrawler {
 
 	public void setKey(String key) {
 		this.projectKey = key;
+	}
+
+	public void setPath(String path) {
+		if (!path.endsWith(File.separator)) {
+			path += File.separator;
+		}
+
+		this.path = path;
+	}
+
+	public JiraBugIssueCrawler(String domain, String projectKey, String path) {
+		super();
+		this.domain = domain;
+		this.projectKey = projectKey;
+		this.path = path;
 	}
 
 	public JiraBugIssueCrawler() {

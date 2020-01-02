@@ -1,5 +1,6 @@
 package edu.handong.csee.isel.data.processor.input.converter;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +57,11 @@ public class CLIConverter implements InputConverter {
 		input.jiraURL = cmd.getOptionValue("j");
 		input.projectName = getProjectName(input.gitRemoteURI);
 		input.label = cmd.getOptionValue("l");
+
 		input.outPath = cmd.getOptionValue("o");
+		if (input.outPath.endsWith(File.separator)) {
+			input.outPath = input.outPath.substring(0, input.outPath.length() - 1);
+		}
 
 		if (cmd.hasOption("g")) {
 			input.referecneType = Input.ReferenceType.GITHUB;
