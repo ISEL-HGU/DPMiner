@@ -31,6 +31,10 @@ public class CPatchCollector implements PatchCollector {
 		this.input = input;
 	}
 
+	public CPatchCollector() {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public void setBFC(List<String> bfcList) {
 		this.bfcList = bfcList;
@@ -136,7 +140,7 @@ public class CPatchCollector implements PatchCollector {
 		return count;
 	}
 
-	private static boolean isStartWithPlus(String line) {
+	public boolean isStartWithPlus(String line) {
 		if (line.startsWith("+")) {
 			if (line.startsWith("+++"))
 				return false;
@@ -145,7 +149,7 @@ public class CPatchCollector implements PatchCollector {
 		return false;
 	}
 
-	private static boolean isStartWithMinus(String line) {
+	public boolean isStartWithMinus(String line) {
 		if (line.startsWith("-")) {
 			if (line.startsWith("---"))
 				return false;
@@ -154,7 +158,7 @@ public class CPatchCollector implements PatchCollector {
 		return false;
 	}
 
-	private String getPatch(DiffEntry diff, Repository repo) {
+	public String getPatch(DiffEntry diff, Repository repo) {
 		String patch = null;
 
 		ByteArrayOutputStream output = new ByteArrayOutputStream();

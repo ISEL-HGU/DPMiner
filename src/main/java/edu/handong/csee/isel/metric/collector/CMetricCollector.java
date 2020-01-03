@@ -17,39 +17,54 @@ public class CMetricCollector implements MetricCollector {
 
 	final Git git;
 	final Repository repo;
+	final String referencePath;
+	final Input input;
 	List<String> bfcList;
 
 	public CMetricCollector(Input input) throws IOException {
+		this.input = input;
 		git = Git.open(Main.getGitDirectory(input));
 		repo = git.getRepository();
+		referencePath = input.outPath + File.separator + "reference";
 	}
 
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
 
-		// TODO: 1. collect BOW arff
+		// 1. collect BOW arff
 		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
 		bowCollector.setGit(git);
 		bowCollector.setRepository(repo);
 		bowCollector.setBFC(bfcList);
 		bowCollector.setCommitList(commitList);
+		bowCollector.setReferencePath(referencePath);
+		bowCollector.setProjectName(input.projectName);
 		bowCollector.collect();
 		bowArff = bowCollector.getArff();
-		
 
-		// TODO: 2. collect Characteristic vector arff
+		// 2. collect Characteristic vector arff
 		CharacteristicVectorCollector cVectorCollector = new CharacteristicVectorCollector();
 		cVectorCollector.setGit(git);
 		cVectorCollector.setRepository(repo);
 		cVectorCollector.setBFC(bfcList);
 		cVectorCollector.setCommitList(commitList);
+		cVectorCollector.setReferencePath(referencePath);
+		cVectorCollector.setProjectName(input.projectName);
 		cVectorCollector.collect();
 		cVectorArff = cVectorCollector.getArff();
 
-		// TODO: 3. Meta data
+		// 3. make merged arff between BOW and C-Vector
+		File mergedArff = null;
+		
+		ArffHelper arffHelper = new ArffHelper();
+		arffHelper.setReferencePath(referencePath);
+		arffHelper.setProjectName(input.projectName);
+		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector,cVectorCollector);
+		
+		// TODO: 4. Meta data
 
-		// TODO: 4. Merge 1,2,3, and return csv
+		// TODO: 5. Merge 1,2,3, and return csv
 
 		return null;
 	}

@@ -75,7 +75,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
 
-	
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
+    compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'	
 
    
 }

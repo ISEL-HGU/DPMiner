@@ -1,7 +1,11 @@
 package edu.handong.csee.isel.bfc.collector;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.bfc.BFCCollector;
@@ -13,22 +17,31 @@ public class BFCJiraCollector extends BFCCollector {
 	String key;
 	String path;
 
-
 	public BFCJiraCollector() {
 
 	}
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
-		JiraBugIssueCrawler jiraCrawler = new JiraBugIssueCrawler();
-		jiraCrawler.setURL(url);
-		jiraCrawler.setKey(key);
-		jiraCrawler.setPath(path);
+		try {
+			JiraBugIssueCrawler jiraCrawler = new JiraBugIssueCrawler(url, key, path);
+			File savedFile = jiraCrawler.getJiraBugs();
 
-		jiraCrawler.crawling();
-		List<String> issueKeys = jiraCrawler.collectIssueKeys();
+			String content = FileUtils.readFileToString(savedFile, "UTF-8");
 
-		return issueKeys;
+			String[] lines = content.split("\n");
+			HashSet<String> keywordSet = new HashSet<>();
+
+			for (String line : lines) {
+				keywordSet.add(line);
+			}
+
+			return new ArrayList<>(keywordSet); // convert HashSet to List
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	@Override

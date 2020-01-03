@@ -35,9 +35,6 @@ public class CBICCollector implements BICCollector {
 	Git git;
 	Repository repo;
 
-	static public DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
-	static public RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
-
 	public CBICCollector(Input input) {
 		this.input = input;
 	}
@@ -69,100 +66,86 @@ public class CBICCollector implements BICCollector {
 
 			RevCommit parent = commit.getParent(0);
 
-			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-			df.setRepository(repo);
-			df.setDiffAlgorithm(diffAlgorithm);
-			df.setDiffComparator(diffComparator);
-			df.setDetectRenames(true);
-			List<DiffEntry> diffs;
+			List<DiffEntry> diffs = Utils.diff(parent, commit, repo);
 
-			try {
+			// check the change size in a patch
+			int numLinesChanges = 0; // deleted + added
+			String id = commit.name() + "";
+			for (DiffEntry diff : diffs) {
+				String oldPath = diff.getOldPath();
+				String newPath = diff.getNewPath();
 
-				// do diff
-				diffs = df.scan(parent.getTree(), commit.getTree());
+				// ignore when no previous revision of a file, Test files, and non-java files.
+				if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
+					continue;
 
-				// check the change size in a patch
-				int numLinesChanges = 0; // deleted + added
-				String id = commit.name() + "";
-				for (DiffEntry diff : diffs) {
-					String oldPath = diff.getOldPath();
-					String newPath = diff.getNewPath();
+				// get preFixSource and fixSource without comments
+				String prevFileSource = Utils.removeComments(Utils.fetchBlob(repo, id + "~1", oldPath));
+				String fileSource = Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
 
-					// ignore when no previous revision of a file, Test files, and non-java files.
-					if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
-						continue;
+				// get line indices that are related to BI lines.
+				EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
+				for (Edit edit : editList) {
 
-					// get preFixSource and fixSource without comments
-					String prevFileSource = Utils.removeComments(Utils.fetchBlob(repo, id + "~1", oldPath));
-					String fileSource = Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
+					int beginA = edit.getBeginA();
+					int endA = edit.getEndA();
+					int beginB = edit.getBeginB();
+					int endB = edit.getEndB();
 
-					// get line indices that are related to BI lines.
-					EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
-					for (Edit edit : editList) {
+					numLinesChanges += (endA - beginA) + (endB - beginB);
+				}
+			}
+
+			// if minPathsize is defined, check the size and exit a loop if the changes are
+			// bigger than minPatchSize
+			// only consider min <= size <=max
+			if (numLinesChanges < input.minSize || numLinesChanges > input.maxSize) {
+				continue;
+			}
+
+			// actual loop to get BI Changes
+			for (DiffEntry diff : diffs) {
+				ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile = new ArrayList<Integer>();
+				ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile = new ArrayList<Integer>();
+				String oldPath = diff.getOldPath();
+				String newPath = diff.getNewPath();
+
+				// ignore when no previous revision of a file, Test files, and non-java files.
+				if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
+					continue;
+
+				// get preFixSource and fixSource without comments
+				String prevFileSource = Utils.removeComments(Utils.fetchBlob(repo, id + "~1", oldPath));
+				String fileSource = Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
+
+				EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
+
+				// get line indices that are related to BI lines.
+				for (Edit edit : editList) {
+
+					if (edit.getType() != Edit.Type.INSERT) {
 
 						int beginA = edit.getBeginA();
 						int endA = edit.getEndA();
+
+						for (int i = beginA; i < endA; i++)
+							lstIdxOfDeletedLinesInPrevFixFile.add(i);
+
+					} else {
 						int beginB = edit.getBeginB();
 						int endB = edit.getEndB();
 
-						numLinesChanges += (endA - beginA) + (endB - beginB);
+						for (int i = beginB; i < endB; i++)
+							lstIdxOfOnlyInsteredLinesInFixFile.add(i);
 					}
 				}
 
-				// if minPathsize is defined, check the size and exit a loop if the changes are
-				// bigger than minPatchSize
-				// only consider min <= size <=max
-				if (numLinesChanges < input.minSize || numLinesChanges > input.maxSize) {
-					continue;
-				}
-
-				// actual loop to get BI Changes
-				for (DiffEntry diff : diffs) {
-					ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile = new ArrayList<Integer>();
-					ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile = new ArrayList<Integer>();
-					String oldPath = diff.getOldPath();
-					String newPath = diff.getNewPath();
-
-					// ignore when no previous revision of a file, Test files, and non-java files.
-					if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
-						continue;
-
-					// get preFixSource and fixSource without comments
-					String prevFileSource = Utils.removeComments(Utils.fetchBlob(repo, id + "~1", oldPath));
-					String fileSource = Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
-
-					EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
-
-					// get line indices that are related to BI lines.
-					for (Edit edit : editList) {
-
-						if (edit.getType() != Edit.Type.INSERT) {
-
-							int beginA = edit.getBeginA();
-							int endA = edit.getEndA();
-
-							for (int i = beginA; i < endA; i++)
-								lstIdxOfDeletedLinesInPrevFixFile.add(i);
-
-						} else {
-							int beginB = edit.getBeginB();
-							int endB = edit.getEndB();
-
-							for (int i = beginB; i < endB; i++)
-								lstIdxOfOnlyInsteredLinesInFixFile.add(i);
-						}
-					}
-
-					// get BI commit from lines in lstIdxOfOnlyInsteredLines
-					lstBIChanges.addAll(getBIChangesFromBILineIndices(id, commit.getCommitTime(), newPath, oldPath,
-							prevFileSource, lstIdxOfDeletedLinesInPrevFixFile));
+				// get BI commit from lines in lstIdxOfOnlyInsteredLines
+				lstBIChanges.addAll(getBIChangesFromBILineIndices(id, commit.getCommitTime(), newPath, oldPath,
+						prevFileSource, lstIdxOfDeletedLinesInPrevFixFile));
 //					if(!unTrackDeletedBIlines)
 //						lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			df.close();
 		}
 		Collections.sort(lstBIChanges);
 		List<CSVInfo> csvInfoList = new ArrayList<>(lstBIChanges);

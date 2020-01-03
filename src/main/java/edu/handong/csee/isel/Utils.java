@@ -43,10 +43,12 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import edu.handong.csee.isel.bfc.collector.github.CommitParser;
 import edu.handong.csee.isel.bfc.collector.github.IssueLinkParser;
 import edu.handong.csee.isel.bfc.collector.github.NoIssuePagesException;
+
 public class Utils {
 
 	static public DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
@@ -139,33 +141,36 @@ public class Utils {
 		return diffList;
 	}
 
-	static public String fetchBlob(Repository repo, String revSpec, String path)
-			throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	static public String fetchBlob(Repository repo, String revSpec, String path) {
 
-		// Resolve the revision specification
-		final ObjectId id = repo.resolve(revSpec);
+		try {
+			// Resolve the revision specification
+			final ObjectId id = repo.resolve(revSpec);
 
-		// Makes it simpler to release the allocated resources in one go
-		ObjectReader reader = repo.newObjectReader();
+			// Makes it simpler to release the allocated resources in one go
+			ObjectReader reader = repo.newObjectReader();
 
-		// Get the commit object for that revision
-		RevWalk walk = new RevWalk(reader);
-		RevCommit commit = walk.parseCommit(id);
-		walk.close();
+			// Get the commit object for that revision
+			RevWalk walk = new RevWalk(reader);
+			RevCommit commit = walk.parseCommit(id);
+			walk.close();
 
-		// Get the revision's file tree
-		RevTree tree = commit.getTree();
-		// .. and narrow it down to the single file's path
-		TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
-		if (treewalk != null) {
-			// use the blob id to read the file's data
-			byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
-			reader.close();
-			return new String(data, "utf-8");
-		} else {
-			return "";
+			// Get the revision's file tree
+			RevTree tree = commit.getTree();
+			// .. and narrow it down to the single file's path
+			TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
+			if (treewalk != null) {
+				// use the blob id to read the file's data
+				byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
+				reader.close();
+				return new String(data, "utf-8");
+			} else {
+				return "";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
+		return "";
 	}
 
 	public static Git gitClone(String REMOTE_URI)
@@ -176,8 +181,8 @@ public class Utils {
 		if (repositoriesDir.exists()) {
 			try {
 				git = Git.open(repositoriesDir);
-			} catch(RepositoryNotFoundException e) {
-				if(repositoriesDir.delete()) {
+			} catch (RepositoryNotFoundException e) {
+				if (repositoriesDir.delete()) {
 					return gitClone(REMOTE_URI);
 				}
 			}
@@ -289,14 +294,44 @@ public class Utils {
 
 	}
 
-	public static String getStringDateTimeFromCommitTime(int commitTime){
-		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-		Date commitDate = new Date(commitTime* 1000L);
+	public static String getStringDateTimeFromCommitTime(int commitTime) {
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date commitDate = new Date(commitTime * 1000L);
 
 		TimeZone GMT = TimeZone.getTimeZone("GMT");
 		ft.setTimeZone(GMT);
 
 		return ft.format(commitDate);
+	}
+
+	public static List<DiffEntry> diff(RevCommit parent, RevCommit commit, Repository repo) {
+
+		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		df.setRepository(repo);
+		df.setDiffAlgorithm(diffAlgorithm);
+		df.setDiffComparator(diffComparator);
+		df.setDetectRenames(true);
+		List<DiffEntry> diffs = null;
+		try {
+			diffs = df.scan(parent.getTree(), commit.getTree());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return diffs;
+	}
+
+	public static String getKeyName(String commitName, String newPath) {
+
+		if (newPath.contains("\\")) {
+			newPath = newPath.replace("\\", "-");
+		}
+		if (newPath.contains("/")) {
+			newPath = newPath.replace("/", "-");
+		}
+
+		return commitName + "-" + newPath;
 	}
 
 }

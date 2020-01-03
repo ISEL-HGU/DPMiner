@@ -17,6 +17,8 @@ import edu.handong.csee.isel.bfc.BFCCollector;
 import edu.handong.csee.isel.bfc.collector.BFCGitHubCollector;
 import edu.handong.csee.isel.bfc.collector.BFCJiraCollector;
 import edu.handong.csee.isel.bfc.collector.BFCKeywordCollector;
+import edu.handong.csee.isel.bfc.collector.jira.InvalidDomainException;
+import edu.handong.csee.isel.bfc.collector.jira.InvalidProjectKeyException;
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
@@ -31,7 +33,7 @@ import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
 public class Main {
 
-	public static void main(String[] args) throws NoHeadException, IOException, GitAPIException {
+	public static void main(String[] args) throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException {
 
 		// 1. Input
 		InputConverter inputConverter = new CLIConverter();
@@ -126,7 +128,7 @@ public class Main {
 
 	//TODO: add out path
 	public static File getGitDirectory(Input input) {
-		File clonedDirectory = new File(input.outPath+File.separator+"repositories" + File.separator + input.projectName);
+		File clonedDirectory = new File(input.outPath+ File.separator + "reference" + File.separator+"repositories" + File.separator + input.projectName);
 		return clonedDirectory;
 	}
 
