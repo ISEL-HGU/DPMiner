@@ -190,7 +190,7 @@ public class CharacteristicVectorCollector {
 
 	public File getCleanDirectory() {
 		String directoryPath = getCVectorirectoryPath();
-		String path = directoryPath + File.separator + File.separator + "clean";
+		String path = directoryPath + File.separator + "clean";
 		return new File(path);
 	}
 

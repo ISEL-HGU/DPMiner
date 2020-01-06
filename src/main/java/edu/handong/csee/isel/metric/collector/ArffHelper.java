@@ -61,44 +61,67 @@ public class ArffHelper {
 	public File getMergedBOWArffBetween(BagOfWordsCollector bowCollector,
 			CharacteristicVectorCollector cVectorCollector) {
 
+		File cleanDirectory = getCleanDirectory();
+		File buggyDirectory = getBuggyDirectory();
+		if (cleanDirectory.exists()) {
+			cleanDirectory.delete();
+		}
+		if (buggyDirectory.exists()) {
+			buggyDirectory.delete();
+		}
+		
 		// 1. get merged directory
-		HashMap<String, File> bowFileMap = new HashMap<>();
-		HashMap<String, File> cVectorFileMap = new HashMap<>();
+		HashMap<String, File> bowFileCleanMap = new HashMap<>();
+		HashMap<String, File> bowFileBuggyMap = new HashMap<>();
+		HashMap<String, File> cVectorCleanFileMap = new HashMap<>();
+		HashMap<String, File> cVectorBuggyFileMap = new HashMap<>();
 
 		for (File file : bowCollector.getCleanDirectory().listFiles()) {
-			bowFileMap.put(file.getName(), file);
+			bowFileCleanMap.put(file.getName(), file);
 		}
 
 		for (File file : bowCollector.getBuggyDirectory().listFiles()) {
-			bowFileMap.put(file.getName(), file);
+			bowFileBuggyMap.put(file.getName(), file);
 		}
 
 		for (File file : cVectorCollector.getCleanDirectory().listFiles()) {
-			cVectorFileMap.put(file.getName(), file);
+			cVectorCleanFileMap.put(file.getName(), file);
 		}
 
 		for (File file : cVectorCollector.getBuggyDirectory().listFiles()) {
-			cVectorFileMap.put(file.getName(), file);
+			cVectorBuggyFileMap.put(file.getName(), file);
 		}
+		
+		
 
-		for (String fileName : bowFileMap.keySet()) {
+		for (String fileName : cVectorCleanFileMap.keySet()) {
 
-			File bowFile = bowFileMap.get(fileName);
-			File cVectorFile = cVectorFileMap.get(fileName);
+			File bowFile = bowFileCleanMap.get(fileName);
+			File cVectorFile = cVectorCleanFileMap.get(fileName);
 			String bow = null, cVector = null;
 			try {
+				
+				if(!bowFile.exists()) {
+					throw new Exception("Not exist: " + bowFile.getAbsolutePath());
+				}
+				if(!cVectorFile.exists()) {
+					throw new Exception("Not exist: " + cVectorFile.getAbsolutePath());
+				}
+				
 				bow = FileUtils.readFileToString(bowFile, "UTF-8");
 				cVector = FileUtils.readFileToString(cVectorFile, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
 			}
 			String mergedContent = bow + "\n" + cVector;
 			
-			String mergedPath = getMergedDirectoryPath() + File.separator + fileName;
+			String mergedPath = getCleanDirectory() + File.separator + fileName;
 			File mergedFile = new File(mergedPath);
 			
 			mergedFile.getParentFile().mkdirs();
-			
 			try {
 				FileUtils.write(mergedFile, mergedContent,"UTF-8");
 			} catch (IOException e) {
@@ -106,14 +129,50 @@ public class ArffHelper {
 			}
 		}
 		
+		for (String fileName : cVectorBuggyFileMap.keySet()) {
 
+			File bowFile = bowFileBuggyMap.get(fileName);
+			File cVectorFile = cVectorBuggyFileMap.get(fileName);
+			String bow = null, cVector = null;
+			try {
+				
+				if(!bowFile.exists()) {
+					throw new Exception("Not exist: " + bowFile.getAbsolutePath());
+				}
+				if(!cVectorFile.exists()) {
+					throw new Exception("Not exist: " + cVectorFile.getAbsolutePath());
+				}
+				
+				bow = FileUtils.readFileToString(bowFile, "UTF-8");
+				cVector = FileUtils.readFileToString(cVectorFile, "UTF-8");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+			String mergedContent = bow + "\n" + cVector;
+			
+			String mergedPath = getBuggyDirectory() + File.separator + fileName;
+			File mergedFile = new File(mergedPath);
+			
+			mergedFile.getParentFile().mkdirs();
+			try {
+				FileUtils.write(mergedFile, mergedContent,"UTF-8");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("merged path:" + getMergedDirectoryPath());
+		System.out.println("buggy path:" + getBuggyDirectory());
+		System.out.println("clean path:" + getCleanDirectory());
+		
+		
 		// 2. get merged arff
-		ArffHelper arffHelper = new ArffHelper();
-		arffHelper.setProjectName(projectName);
+		File arff = this.getArffFromDirectory(getMergedDirectoryPath());
 
-		arff = arffHelper.getArffFromDirectory(bowDirectoryPath);
-
-		return null;
+		return arff;
 	}
 
 	public void setReferencePath(String referencePath) {
@@ -123,5 +182,18 @@ public class ArffHelper {
 
 	public String getMergedDirectoryPath() {
 		return referencePath + File.separator + projectName + "-merged-bow";
+	}
+	
+	public File getBuggyDirectory() {
+
+		String directoryPath = getMergedDirectoryPath();
+		String path = directoryPath + File.separator + "buggy";
+		return new File(path);
+	}
+
+	public File getCleanDirectory() {
+		String directoryPath = getMergedDirectoryPath();
+		String path = directoryPath + File.separator + "clean";
+		return new File(path);
 	}
 }

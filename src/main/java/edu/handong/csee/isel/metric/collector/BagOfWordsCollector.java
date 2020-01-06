@@ -127,7 +127,7 @@ public class BagOfWordsCollector {
 
 	public File getCleanDirectory() {
 		String directoryPath = getBOWDirectoryPath();
-		String path = directoryPath + File.separator + File.separator + "clean";
+		String path = directoryPath + File.separator + "clean";
 		return new File(path);
 	}
 
