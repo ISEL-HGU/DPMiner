@@ -41,6 +41,7 @@ public class CMetricCollector implements MetricCollector {
 		bowCollector.setReferencePath(referencePath);
 		bowCollector.setProjectName(input.projectName);
 		bowCollector.collect();
+//		bowCollector.makeArff(); //TODO: will be removed
 		bowArff = bowCollector.getArff();
 
 		// 2. collect Characteristic vector arff
@@ -52,6 +53,7 @@ public class CMetricCollector implements MetricCollector {
 		cVectorCollector.setReferencePath(referencePath);
 		cVectorCollector.setProjectName(input.projectName);
 		cVectorCollector.collect();
+//		cVectorCollector.makeArff();
 		cVectorArff = cVectorCollector.getArff();
 
 		// 3. make merged arff between BOW and C-Vector

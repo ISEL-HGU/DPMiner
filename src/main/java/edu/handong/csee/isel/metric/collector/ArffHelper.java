@@ -69,7 +69,7 @@ public class ArffHelper {
 		if (buggyDirectory.exists()) {
 			buggyDirectory.delete();
 		}
-		
+
 		// 1. get merged directory
 		HashMap<String, File> bowFileCleanMap = new HashMap<>();
 		HashMap<String, File> bowFileBuggyMap = new HashMap<>();
@@ -91,8 +91,6 @@ public class ArffHelper {
 		for (File file : cVectorCollector.getBuggyDirectory().listFiles()) {
 			cVectorBuggyFileMap.put(file.getName(), file);
 		}
-		
-		
 
 		for (String fileName : cVectorCleanFileMap.keySet()) {
 
@@ -100,75 +98,49 @@ public class ArffHelper {
 			File cVectorFile = cVectorCleanFileMap.get(fileName);
 			String bow = null, cVector = null;
 			try {
-				
-				if(!bowFile.exists()) {
-					throw new Exception("Not exist: " + bowFile.getAbsolutePath());
-				}
-				if(!cVectorFile.exists()) {
-					throw new Exception("Not exist: " + cVectorFile.getAbsolutePath());
-				}
-				
 				bow = FileUtils.readFileToString(bowFile, "UTF-8");
 				cVector = FileUtils.readFileToString(cVectorFile, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
 			}
 			String mergedContent = bow + "\n" + cVector;
-			
+
 			String mergedPath = getCleanDirectory() + File.separator + fileName;
 			File mergedFile = new File(mergedPath);
-			
+
 			mergedFile.getParentFile().mkdirs();
 			try {
-				FileUtils.write(mergedFile, mergedContent,"UTF-8");
+				FileUtils.write(mergedFile, mergedContent, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		for (String fileName : cVectorBuggyFileMap.keySet()) {
 
 			File bowFile = bowFileBuggyMap.get(fileName);
 			File cVectorFile = cVectorBuggyFileMap.get(fileName);
 			String bow = null, cVector = null;
 			try {
-				
-				if(!bowFile.exists()) {
-					throw new Exception("Not exist: " + bowFile.getAbsolutePath());
-				}
-				if(!cVectorFile.exists()) {
-					throw new Exception("Not exist: " + cVectorFile.getAbsolutePath());
-				}
-				
+
 				bow = FileUtils.readFileToString(bowFile, "UTF-8");
 				cVector = FileUtils.readFileToString(cVectorFile, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
 			}
 			String mergedContent = bow + "\n" + cVector;
-			
+
 			String mergedPath = getBuggyDirectory() + File.separator + fileName;
 			File mergedFile = new File(mergedPath);
-			
+
 			mergedFile.getParentFile().mkdirs();
 			try {
-				FileUtils.write(mergedFile, mergedContent,"UTF-8");
+				FileUtils.write(mergedFile, mergedContent, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		System.out.println("merged path:" + getMergedDirectoryPath());
-		System.out.println("buggy path:" + getBuggyDirectory());
-		System.out.println("clean path:" + getCleanDirectory());
-		
-		
+
 		// 2. get merged arff
 		File arff = this.getArffFromDirectory(getMergedDirectoryPath());
 
@@ -183,7 +155,7 @@ public class ArffHelper {
 	public String getMergedDirectoryPath() {
 		return referencePath + File.separator + projectName + "-merged-bow";
 	}
-	
+
 	public File getBuggyDirectory() {
 
 		String directoryPath = getMergedDirectoryPath();

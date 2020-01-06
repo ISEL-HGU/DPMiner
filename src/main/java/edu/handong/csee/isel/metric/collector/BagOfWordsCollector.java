@@ -37,7 +37,6 @@ public class BagOfWordsCollector {
 		cleanDirectory.mkdirs();
 		buggyDirectory.mkdirs();
 
-		// 1. fill clean and buggy directories
 		for (RevCommit commit : commitList) {
 
 			if (commit.getParentCount() < 1) {
@@ -59,7 +58,7 @@ public class BagOfWordsCollector {
 
 				if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
 					continue;
-				
+
 				key = Utils.getKeyName(commit.getName(), newPath);
 
 				CPatchCollector helper = new CPatchCollector();
@@ -95,7 +94,10 @@ public class BagOfWordsCollector {
 			}
 		}
 
-		// 2. weka BOW
+	}
+
+	public void makeArff() {
+
 		String bowDirectoryPath = getBOWDirectoryPath();
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setProjectName(projectName);
@@ -154,7 +156,7 @@ public class BagOfWordsCollector {
 	public void setReferencePath(String referencePath) {
 		this.referencePath = referencePath;
 	}
-	
+
 	public String getReferencePath() {
 		return referencePath;
 	}

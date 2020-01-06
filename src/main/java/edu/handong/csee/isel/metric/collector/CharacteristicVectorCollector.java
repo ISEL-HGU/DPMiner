@@ -45,7 +45,6 @@ public class CharacteristicVectorCollector {
 		cleanDirectory.mkdirs();
 		buggyDirectory.mkdirs();
 
-		// 2. fill two directories using jgit
 		for (RevCommit commit : commitList) {
 
 			if (commit.getParentCount() < 1) {
@@ -124,12 +123,16 @@ public class CharacteristicVectorCollector {
 			}
 		}
 
-		// 2. weka BOW
-				String characteristicDirectoryPath = getCVectorirectoryPath();
-				ArffHelper arffHelper = new ArffHelper();
-				arffHelper.setProjectName(projectName);
 
-				arff = arffHelper.getArffFromDirectory(characteristicDirectoryPath);
+	}
+
+	public void makeArff() {
+		
+		String characteristicDirectoryPath = getCVectorirectoryPath();
+		ArffHelper arffHelper = new ArffHelper();
+		arffHelper.setProjectName(projectName);
+
+		arff = arffHelper.getArffFromDirectory(characteristicDirectoryPath);
 	}
 
 	private List<Action> getCharacteristicVector(String prevFileSource, String fileSource) throws IOException {
