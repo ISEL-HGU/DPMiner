@@ -2,7 +2,6 @@ package edu.handong.csee.isel.metric.collector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -14,11 +13,11 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import com.github.gumtreediff.actions.ActionGenerator;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.client.Run;
-import com.github.gumtreediff.gen.Generators;
 import com.github.gumtreediff.gen.jdt.JdtTreeGenerator;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.ITree;
+
 import edu.handong.csee.isel.Utils;
 
 public class CharacteristicVectorCollector {
@@ -106,7 +105,7 @@ public class CharacteristicVectorCollector {
 					File changedVectorFile = new File(cleanDirectory + File.separator + key + ".txt");
 
 					try {
-						FileUtils.write(changedVectorFile, contentBuffer.toString(), "UTF-8");
+						FileUtils.write(changedVectorFile, content, "UTF-8");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -115,7 +114,7 @@ public class CharacteristicVectorCollector {
 					File changedVectorFile = new File(buggyDirectory + File.separator + key + ".txt");
 
 					try {
-						FileUtils.write(changedVectorFile, contentBuffer.toString(), "UTF-8");
+						FileUtils.write(changedVectorFile, content, "UTF-8");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -123,11 +122,10 @@ public class CharacteristicVectorCollector {
 			}
 		}
 
-
 	}
 
 	public void makeArff() {
-		
+
 		String characteristicDirectoryPath = getCVectorirectoryPath();
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setProjectName(projectName);

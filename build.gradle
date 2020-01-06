@@ -26,10 +26,6 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.github.gumtreediff/gen.jdt
 	compile group: 'com.github.gumtreediff', name: 'gen.jdt', version: '2.1.2'
 
-	
-
-	
-
 	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
 	compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'
 
@@ -74,9 +70,6 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
-
-	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
-    compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'	
 
    
 }

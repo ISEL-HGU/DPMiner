@@ -192,7 +192,14 @@ public class CPatchCollector implements PatchCollector {
 	}
 
 	private boolean isBFC(RevCommit commit) {
-		return bfcList.contains(commit.getName());
+
+		for (String bfc : bfcList) {
+			if (commit.getShortMessage().contains(bfc)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private Git openGitRepository() {
