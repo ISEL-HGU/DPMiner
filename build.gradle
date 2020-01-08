@@ -23,11 +23,14 @@ mainClassName = "edu.handong.csee.isel.Main"
 
 dependencies {
 
+	// https://mvnrepository.com/artifact/com.github.gumtreediff/core
+	runtime group: 'com.github.gumtreediff', name: 'core', version: '2.1.0'
+
 	// https://mvnrepository.com/artifact/com.github.gumtreediff/gen.jdt
-	compile group: 'com.github.gumtreediff', name: 'gen.jdt', version: '2.1.2'
+	compile group: 'com.github.gumtreediff', name: 'gen.jdt', version: '2.1.0'
 
 	// https://mvnrepository.com/artifact/com.github.gumtreediff/client
-	compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.2'
+	compile group: 'com.github.gumtreediff', name: 'client', version: '2.1.0'
 
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
 	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
