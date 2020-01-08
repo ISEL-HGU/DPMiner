@@ -15,6 +15,7 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
@@ -203,8 +204,7 @@ public class CPatchCollector implements PatchCollector {
 	}
 
 	private Git openGitRepository() {
-		String projectName = CLIConverter.getProjectName(input.gitRemoteURI);
-		File clonedDirectory = new File("repositories" + File.separator + projectName);
+		File clonedDirectory = Main.getGitDirectory(input);
 		Git git = null;
 		try {
 			git = Git.open(clonedDirectory);

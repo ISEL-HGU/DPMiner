@@ -33,7 +33,8 @@ import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
 public class Main {
 
-	public static void main(String[] args) throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException {
+	public static void main(String[] args)
+			throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException {
 
 		// 1. Input
 		InputConverter inputConverter = new CLIConverter();
@@ -42,9 +43,11 @@ public class Main {
 		// 2. get all commits from GIT directory
 		List<RevCommit> commitList;
 		File gitDirectory = null;
-		if (isCloned(input)) {
+		if (isCloned(input) && isValidRepository(input)) {
+			
 			gitDirectory = getGitDirectory(input);
 		} else {
+			// TODO: add exception when isCloned() && !isValidRepository()
 			gitDirectory = GitClone(input);
 		}
 		commitList = getCommitListFrom(gitDirectory);
@@ -98,7 +101,7 @@ public class Main {
 			csvInfoLst = bicCollector.collectFrom(commitList);
 
 			break;
-		case METRIC: //TODO:
+		case METRIC: // TODO:
 			metricCollector = new CMetricCollector(input);
 			metricCollector.setBFC(bfcList);
 			csvInfoLst = metricCollector.collectFrom(commitList);
@@ -118,6 +121,16 @@ public class Main {
 
 	}
 
+	private static boolean isValidRepository(Input input) {
+		File directory = getGitDirectory(input);
+		try {
+			Git git = Git.open(directory);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
 	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
 		Iterable<RevCommit> walk = git.log().call();
@@ -126,13 +139,17 @@ public class Main {
 		return commitList;
 	}
 
-	//TODO: add out path
+	public static String getReferencePath(Input input) {
+		return input.outPath + File.separator + "reference";
+	}
+
 	public static File getGitDirectory(Input input) {
-		File clonedDirectory = new File(input.outPath+ File.separator + "reference" + File.separator+"repositories" + File.separator + input.projectName);
+		String referencePath = getReferencePath(input);
+		File clonedDirectory = new File(
+				referencePath + File.separator + "repositories" + File.separator + input.projectName);
 		return clonedDirectory;
 	}
 
-	//TODO: add out path
 	private static File GitClone(Input input) throws InvalidRemoteException, TransportException, GitAPIException {
 		String remoteURI = input.gitRemoteURI;
 		String projectName = input.projectName;
@@ -141,10 +158,10 @@ public class Main {
 		System.out.println("cloning " + projectName + "...");
 		Git git = Git.cloneRepository().setURI(remoteURI).setDirectory(clonedDirectory).setCloneAllBranches(true)
 				.call();
+		System.out.println("done");
 		return git.getRepository().getDirectory();
 	}
 
-	//TODO: add out path
 	private static boolean isCloned(Input input) {
 		File clonedDirectory = getGitDirectory(input);
 		return clonedDirectory.exists();
