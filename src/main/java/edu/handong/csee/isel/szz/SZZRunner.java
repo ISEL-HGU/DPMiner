@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.eclipse.jgit.api.BlameCommand;
@@ -26,40 +25,27 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.szz.data.BIChange;
+import edu.handong.csee.isel.data.csv.BICInfo;
 import edu.handong.csee.isel.szz.data.DeletedLineInCommits;
 import edu.handong.csee.isel.szz.utils.Utils;
 
-public class SZZRunner implements BICCollector{
+public class SZZRunner implements BICCollector {
 	private boolean unTrackDeletedBIlines = false;
 	private String gitURI;
-//	private String gitURI = "/Users/kimsukjin/git/DataForSZZ";
-//	private String gitURI = "/Users/kimsukjin/git/PLOP2";
-//	private String gitURI = "/Users/kimsukjin/git/DataForINSERT";
 
 	/**
 	 * TODO it must be changed into Iterable<String> BFCCommitList, but now we gonna
 	 * deal with just only one commit.
 	 */
 	private ArrayList<String> BFCommitList = new ArrayList<String>();
-	private String BFCommit;
-	private ArrayList<HashMap<String, ArrayList<BIChange>>> BFCBICList = new ArrayList<HashMap<String, ArrayList<BIChange>>>();
-	private ArrayList<BIChange> BICommitList = new ArrayList<BIChange>();
+	private ArrayList<HashMap<String, ArrayList<BICInfo>>> BFCBICList = new ArrayList<HashMap<String, ArrayList<BICInfo>>>();
+	private List<CSVInfo> BICommitList = new ArrayList<>();
 
-//	private String BFCCommit = "768b0df07b2722db926e99a8f917deeb5b55d628"; //last commit (BFC)
-//	private String BFCCommit = "4ec01ef1579b5fa724cf2df0876a1fddcb2b87b7"; //3rd commit
-//	private String BFCCommit = "80b3937067504a86582cb4316dc0fef8e2e7d6f4"; //commit in PLOP2
-//	private String BFCCommit = "96558bd0d82b6794e22eb514f8c00a2a4629d184"; //commit in DataForINSERT(INSERT)
-//	private String BFCCommit = "65f68264208527c8ca748bad54585637b5682a51";//commit in DataForINSERT (DELETE)
-//	private String BFCCommit = "d4dac4e1db7dc72f0b39d6b00416969f19dff4ea"; //commit in DataForINSERT(EMPTY)
-	private boolean applyNoiseFilter = false;
-
-	private Git git;
 	private Repository repo;
 
 	public static void main(String[] args) {
 		SZZRunner szz = new SZZRunner();
-		szz.run();
+//		szz.collectFrom();
 	}
 
 	public SZZRunner() {
@@ -69,39 +55,30 @@ public class SZZRunner implements BICCollector{
 
 	public SZZRunner(String gitURI, Iterable<String> BFCommitList) {
 		this.gitURI = gitURI;
-		for (String bfc : BFCommitList) {
-			this.BFCommitList.add(bfc);
-		}
+		this.BFCommitList.addAll(IterableUtils.toList(BFCommitList));
 	}
 
 	/**
 	 * TODO Let's just print out BIC information and then change return type as
 	 * ArrayList<RevCommit> (i.e. BIC list)
 	 */
-	public ArrayList<BIChange> run() {
-
-		File gitDir = new File(gitURI);
+	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 
 		try {
-			git = Git.open(gitDir);
-			repo = git.getRepository();
-
-			// get commits
-			ArrayList<RevCommit> commits = getRevCommits();
 
 			// get deleted lines from commits. This data are used to identify BI lines that
 			// are only deleted and are in INSERT hunks in bug-fixing commits.
 			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines = null;
 			if (!unTrackDeletedBIlines)
-				mapDeletedLines = getDeletedLinesInCommits(commits);
+				mapDeletedLines = getDeletedLinesInCommits(commitList);
 
 			for (String bfc : BFCommitList) {
 
 				// find bug-fixing commits and get BI lines
-				ArrayList<BIChange> lstBIChanges = new ArrayList<BIChange>();
+				ArrayList<BICInfo> lstBIChanges = new ArrayList<BICInfo>();
 				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 
-				for (RevCommit rev : commits) {
+				for (RevCommit rev : commitList) {
 					if (rev.getName().equals(bfc)) { // when we found BFC on commits
 						RevCommit parent = rev.getParent(0); // Get BFC pre-commit (i.e. BFC~1 commit)
 						if (parent == null) {
@@ -136,11 +113,11 @@ public class SZZRunner implements BICCollector{
 							String fileSource = Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
 
 							// TEST
-							System.out.println("");
-							System.out.println("Old path : " + oldPath);
-							System.out.println(prevFileSource);
-							System.out.println("New path : " + newPath);
-							System.out.println(fileSource);
+//							System.out.println("");
+//							System.out.println("Old path : " + oldPath);
+//							System.out.println(prevFileSource);
+//							System.out.println("New path : " + newPath);
+//							System.out.println(fileSource);
 
 							// get line indices that are related to BI lines.
 							EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
@@ -152,17 +129,17 @@ public class SZZRunner implements BICCollector{
 								int endB = edit.getEndB();
 
 								// TEST
-								System.out.println("Type : " + edit.getType());
-								System.out.println("beginA : " + beginA);
-								System.out.println("endA : " + endA);
-								System.out.println("beginB : " + beginB);
-								System.out.println("endB : " + endB);
-								System.out.println("");
+//								System.out.println("Type : " + edit.getType());
+//								System.out.println("beginA : " + beginA);
+//								System.out.println("endA : " + endA);
+//								System.out.println("beginB : " + beginB);
+//								System.out.println("endB : " + endB);
+//								System.out.println("");
 
 								numLinesChanges += (endA - beginA) + (endB - beginB);
 							}
 							// TEST
-							System.out.println("numLinesChanges : " + numLinesChanges);
+//							System.out.println("numLinesChanges : " + numLinesChanges);
 						}
 
 						// actual loop to get BI Changes
@@ -213,58 +190,31 @@ public class SZZRunner implements BICCollector{
 
 						}
 
-//						df.close();
-//						break;
 					}
 				}
 
 				df.close();
 				Collections.sort(lstBIChanges); // commits is ordered in the order BIDate, path, FixDate, lineNum.
-				
+
 				/**
 				 * TODO : 해당 RevCommit type인 rev를 key로 넣고, lstBIChanges를 value로 넣는다.
 				 */
-//				HashMap<String, ArrayList<BIChange>> map = new HashMap<String, ArrayList<BIChange>>();
-//				map.put(bfc, lstBIChanges);
-//				BFCBICList.add(map);
 				BICommitList.addAll(lstBIChanges);
 
 				// print out results
-				if (!applyNoiseFilter) {
-					System.out.println(String.format("%40s\t%10s\t%10s\t%40s\t%20s\t%20s\t%15s\t%17s\t%15s\t%50s","BISha1","oldPath","Path","FixSha1","BIDate","FixDate","LineNumInBI","LineNumInPreFix","isAddedLine","Line"));
-					
-//					System.out.println(
-//							"\t\tBISha1\t\t\t\toldPath\t\tPath\t\t\tFixSha1\t\t\t\tBIDate\tFixDate\tLineNumInBI\tLineNumInPreFix\tisAddedLine\tLine");
-					
-					for (BIChange biChange : BICommitList) {
-						System.out.println(String.format("%40s\t%10s\t%10s\t%40s\t%20s\t%20s\t%15s\t%17s\t%15s\t%50s", 
-								biChange.getBISha1(), biChange.getBIPath(),
-								biChange.getPath(), biChange.getFixSha1(),
-								biChange.getBIDate(), biChange.getFixDate(), 
-								biChange.getLineNum(), biChange.getLineNumInPrevFixRev(),
-								biChange.getIsAddedLine(), biChange.getLine()));
-					}
-					
-//					for (HashMap<String, ArrayList<BIChange>> hashmap : BFCBICList) {
-//						for (Map.Entry<String, ArrayList<BIChange>> elem : hashmap.entrySet()) {
-//							ArrayList<BIChange> bicList = elem.getValue();
-//							for (BIChange biChange : bicList) {
-////								System.out.println(biChange.getBISha1() + "\t" + biChange.getBIPath() + "\t"
-////										+ biChange.getPath() + "\t" + biChange.getFixSha1() + "\t"
-////										+ biChange.getBIDate() + "\t" + biChange.getFixDate() + "\t"
-////										+ biChange.getLineNum() + "\t" + biChange.getLineNumInPrevFixRev() + "\t"
-////										+ biChange.getIsAddedLine() + "\t" + biChange.getLine());
-//								System.out.println(String.format("%40s\t%10s\t%10s\t%40s\t%20s\t%20s\t%15s\t%17s\t%15s\t%50s", biChange.getBISha1(), biChange.getBIPath(),
-//										biChange.getPath(), biChange.getFixSha1(),
-//										biChange.getBIDate(), biChange.getFixDate(), 
-//										biChange.getLineNum(), biChange.getLineNumInPrevFixRev(),
-//										biChange.getIsAddedLine(), biChange.getLine()));
-//							}
-//						}
-//
-//					}
+//					System.out.println(String.format("%40s\t%10s\t%10s\t%40s\t%20s\t%20s\t%15s\t%17s\t%15s\t%50s",
+//							"BISha1", "oldPath", "Path", "FixSha1", "BIDate", "FixDate", "LineNumInBI",
+//							"LineNumInPreFix", "isAddedLine", "Line"));
 
-				}
+//				for (CSVInfo csvInfo : BICommitList) {
+//					if (csvInfo instanceof BICInfo) {
+//						BICInfo biChange = (BICInfo) csvInfo;
+//							System.out.println(String.format("%40s\t%10s\t%10s\t%40s\t%20s\t%20s\t%15s\t%17s\t%15s\t%50s",
+//									biChange.getBISha1(), biChange.getBIPath(), biChange.getPath(), biChange.getFixSha1(),
+//									biChange.getBIDate(), biChange.getFixDate(), biChange.getLineNum(),
+//									biChange.getLineNumInPrevFixRev(), biChange.getIsAddedLine(), biChange.getLine()));
+//					}
+//				}
 
 			}
 		}
@@ -272,28 +222,8 @@ public class SZZRunner implements BICCollector{
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return BICommitList;
-	}
-
-	private ArrayList<RevCommit> getRevCommits() {
-		ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
-
-		try {
-
-			git = Git.open(new File(gitURI));
-
-			Iterable<RevCommit> logs = git.log().call();
-
-			for (RevCommit rev : logs) {
-				commits.add(rev);
-			}
-
-		} catch (IOException | GitAPIException e) {
-			System.err.println("Repository does not exist: " + gitURI);
-		}
-
-		return commits;
 	}
 
 	/**
@@ -301,10 +231,10 @@ public class SZZRunner implements BICCollector{
 	 * identify a BI commit that induce bug-fixing by a deleted line in the BI
 	 * commit
 	 * 
-	 * @param commits
+	 * @param commitList
 	 * @return HashMap<String, ArrayList<DeletedLineInCommits>>
 	 */
-	private HashMap<String, ArrayList<DeletedLineInCommits>> getDeletedLinesInCommits(ArrayList<RevCommit> commits) {
+	private HashMap<String, ArrayList<DeletedLineInCommits>> getDeletedLinesInCommits(List<RevCommit> commitList) {
 
 		// deletedLines are order by commit date (DESC, i.e., recent commit first)
 		HashMap<String, ArrayList<DeletedLineInCommits>> deletedLines = new HashMap<String, ArrayList<DeletedLineInCommits>>();
@@ -317,7 +247,7 @@ public class SZZRunner implements BICCollector{
 		df.setPathFilter(PathSuffixFilter.create(".java"));
 
 		// Traverse all commits to collect deleted lines.
-		for (RevCommit rev : commits) {
+		for (RevCommit rev : commitList) {
 
 			// Get basic commit info
 			String sha1 = rev.name() + "";
@@ -385,10 +315,10 @@ public class SZZRunner implements BICCollector{
 		return deletedLines;
 	}
 
-	private ArrayList<BIChange> getBIChangesFromBILineIndices(String fixSha1, int fixCommitTime, String path,
+	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, int fixCommitTime, String path,
 			String prevPath, String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
 
-		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
+		ArrayList<BICInfo> biChanges = new ArrayList<BICInfo>();
 
 		// do Blame
 		BlameCommand blamer = new BlameCommand(repo);
@@ -422,7 +352,7 @@ public class SZZRunner implements BICCollector{
 				if (splitLinesSrc.length <= lineIndex || splitLinesSrc[lineIndex].trim().equals(""))
 					continue;
 
-				BIChange biChange = new BIChange(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineNum,
+				BICInfo biChange = new BICInfo(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineNum,
 						lineNumInPrevFixRev, prevFileSource.split("\n")[lineIndex].trim(), true);
 				biChanges.add(biChange);
 			}
@@ -434,11 +364,11 @@ public class SZZRunner implements BICCollector{
 		return biChanges;
 	}
 
-	private ArrayList<BIChange> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
+	private ArrayList<BICInfo> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
 			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String fileSource,
 			ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile, String oldPath, String path) {
 
-		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
+		ArrayList<BICInfo> biChanges = new ArrayList<BICInfo>();
 
 		ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfOnlyInsteredLinesInFixFile;// getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
 
@@ -479,7 +409,7 @@ public class SZZRunner implements BICCollector{
 				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
 				int lineNumInPrevFixRev = lineIdx + 1; // this info is not important in case of a deleted line.
 
-				BIChange biChange = new BIChange(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineIdx + 1,
+				BICInfo biChange = new BICInfo(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineIdx + 1,
 						lineNumInPrevFixRev, addedlineInFixCommit, false);
 				biChanges.add(biChange);
 			}
@@ -496,30 +426,20 @@ public class SZZRunner implements BICCollector{
 		return commitList;
 	}
 
-	
 	/*
-	 * this.gitURI = gitURI;
-		for (String bfc : BFCommitList) {
-			this.BFCommitList.add(bfc);
-		}
-	 * */
-	
+	 * this.gitURI = gitURI; for (String bfc : BFCommitList) {
+	 * this.BFCommitList.add(bfc); }
+	 */
+
 	public SZZRunner(String gitURI) {
 		this.gitURI = gitURI;
 	}
-	
+
 	@Override
 	public void setBFC(List<String> bfcList) {
 		ArrayList<String> list = new ArrayList<>(bfcList);
 		this.BFCommitList = list;
-		
+
 	}
 
-	@Override
-	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
-		run();
-		
-		System.exit(0);
-		return null;
-	}
 }
