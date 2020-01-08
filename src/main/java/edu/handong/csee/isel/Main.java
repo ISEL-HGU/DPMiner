@@ -30,6 +30,7 @@ import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
+import edu.handong.csee.isel.szz.SZZRunner;
 
 public class Main {
 
@@ -97,6 +98,7 @@ public class Main {
 			break;
 		case BIC:
 			bicCollector = new CBICCollector(input);
+//			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
 			bicCollector.setBFC(bfcList);
 			csvInfoLst = bicCollector.collectFrom(commitList);
 
