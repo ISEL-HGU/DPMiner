@@ -22,7 +22,7 @@ public class BFCKeywordCollector extends BFCCollector {
 			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage());
 
 			if (bugKeyMatcher.find()) {
-				bfsList.add(commit.getName());
+				bfsList.add(commit.getShortMessage());
 			}
 		}
 
