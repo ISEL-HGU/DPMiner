@@ -30,7 +30,6 @@ import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
-import edu.handong.csee.isel.szz.SZZRunner;
 
 public class Main {
 
@@ -45,7 +44,7 @@ public class Main {
 		List<RevCommit> commitList;
 		File gitDirectory = null;
 		if (isCloned(input) && isValidRepository(input)) {
-			
+
 			gitDirectory = getGitDirectory(input);
 		} else {
 			// TODO: add exception when isCloned() && !isValidRepository()
@@ -108,7 +107,7 @@ public class Main {
 			metricCollector.setBFC(bfcList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
-			
+
 			return;
 		}
 

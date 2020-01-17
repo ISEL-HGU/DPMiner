@@ -69,14 +69,14 @@ public class CMetricCollector implements MetricCollector {
 		File metaArff = new File("/Users/imseongbin/Desktop/lottie-android.arff"); // TODO: Here your logic: make
 																					// metadata arff
 
-		ArrayList<String> fileOrder = arffHelper.getFileOrder();
+		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
 		// 5. Merge 1,2,3, and return csv
 
 		File resultArff = null;
 
 		try {
-			resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, fileOrder);
+			resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

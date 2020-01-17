@@ -1,17 +1,15 @@
 package edu.handong.csee.isel.metric.collector;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.internal.utils.FileUtil;
 
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
@@ -26,6 +24,9 @@ public class ArffHelper {
 
 	private final static String attributeNumPatternStr = "(\\{|,)(\\d+)\\s";
 	private final static Pattern attributeNumPattern = Pattern.compile(attributeNumPatternStr);
+
+	private final static String dataKeyPatternStr = "\\{.+\\,\\d+\\s(.+)\\}";
+	private final static Pattern dataKeyPattern = Pattern.compile(dataKeyPatternStr);
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
@@ -284,17 +285,19 @@ public class ArffHelper {
 
 		return newFile;
 	}
-	
-	public File makeMergedArff(File arff1, File arff2, List<String> fileOrder) throws IOException {
+
+	public File makeMergedArff(File arff1, File arff2, List<String> keyOrder) throws IOException {
 		File newFile = new File(referencePath + File.separator + "data.arff");
 
 		newFile.delete();
-		
+
 		String content1 = FileUtils.readFileToString(arff1, "UTF-8");
 		String content2 = FileUtils.readFileToString(arff2, "UTF-8");
 
 		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
 		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
+
+		attributeLineList2.remove(attributeLineList2.size() - 1); // remove Last index attribute: key
 
 		ArrayList<String> mergedAttributeLineList = new ArrayList<>();
 		mergedAttributeLineList.addAll(attributeLineList1);
@@ -302,24 +305,69 @@ public class ArffHelper {
 
 		ArrayList<String> dataLineList1 = getDataLinesFrom(content1);
 		ArrayList<String> dataLineList2 = getDataLinesFrom(content2);
-		
+
+		Map<String, String> keyDataMap1 = new HashMap<>(); // arff1 <key, data-line>
+		Map<String, String> keyDataMap2 = new HashMap<>(); // arff2 <key, data-line>
+
+		for (int i = 0; i < keyOrder.size(); i++) {
+			String key = keyOrder.get(i);
+			keyDataMap1.put(key, dataLineList1.get(i));
+		}
+
+		for (String dataLine : dataLineList2) {
+			Matcher m = dataKeyPattern.matcher(dataLine);
+			m.find();
+			String key = m.group(1);
+
+			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
+
+			keyDataMap2.put(key, dataLine);
+		}
+
 		// Should be equal
-		System.out.println("dataLine1: " + dataLineList1.size());
-		System.out.println("dataLine2: " + dataLineList2.size());
-		
-		// attributes
-		System.out.println("attributeLineList1: " + attributeLineList1.size());
-		System.out.println("attributeLineList2: " + attributeLineList2.size());
-		
+		System.out.println("First arff data count: " + dataLineList1.size());
+		System.out.println("Second arff data count: " + dataLineList2.size());
 
 		int plusAttributeNum = attributeLineList1.size();
 		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
 
+		for (int i = 0; i < keyOrder.size(); i++) {
+			String key = keyOrder.get(i);
+			keyDataMap1.put(key, dataLineList1.get(i));
+		}
+
+		for (String dataLine : dataPlusLineList) {
+			Matcher m = dataKeyPattern.matcher(dataLine);
+			m.find();
+			String key = m.group(1);
+
+			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
+
+			keyDataMap2.put(key, dataLine);
+		}
+
 		List<String> mergedDataLineList = new ArrayList<>();
 
-		for (int i = 0; i < dataLineList1.size(); i++) {
-			String data1 = dataLineList1.get(i);
-			String data2 = dataPlusLineList.get(i);
+		for (String key : keyDataMap1.keySet()) {
+			if (!keyDataMap2.keySet().contains(key)) {
+				continue;
+			}
+
+			String data1 = keyDataMap1.get(key);
+			String data2 = keyDataMap2.get(key);
+
+			String mergedData = mergeData(data1, data2);
+			mergedDataLineList.add(mergedData);
+		}
+
+		for (String key : keyDataMap2.keySet()) {
+			if (!keyDataMap1.keySet().contains(key)) {
+				continue;
+			}
+
+			String data1 = keyDataMap1.get(key);
+			String data2 = keyDataMap2.get(key);
+
 			String mergedData = mergeData(data1, data2);
 			mergedDataLineList.add(mergedData);
 		}
@@ -373,7 +421,7 @@ public class ArffHelper {
 		return attributeLineList;
 	}
 
-	public ArrayList<String> getFileOrder() {
+	public ArrayList<String> getKeyOrder() {
 
 		ArrayList<String> fileOrder = new ArrayList<>();
 
@@ -381,21 +429,20 @@ public class ArffHelper {
 
 		File cleanDirectory = null;
 		File buggyDirectory = null;
-		
-		for(File f : directory.listFiles()) {
-			if(f.isDirectory() && cleanDirectory == null) {
+
+		for (File f : directory.listFiles()) {
+			if (f.isDirectory() && cleanDirectory == null) {
 				cleanDirectory = f;
-			} else if(f.isDirectory()){
+			} else if (f.isDirectory()) {
 				buggyDirectory = f;
 			}
 		}
-		
 
 		for (File f : cleanDirectory.listFiles()) {
-			fileOrder.add(f.getName());
+			fileOrder.add(f.getName().substring(0, f.getName().length() - 4));
 		}
 		for (File f : buggyDirectory.listFiles()) {
-			fileOrder.add(f.getName());
+			fileOrder.add(f.getName().substring(0, f.getName().length() - 4));
 		}
 
 		return fileOrder;
