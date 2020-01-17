@@ -284,6 +284,62 @@ public class ArffHelper {
 
 		return newFile;
 	}
+	
+	public File makeMergedArff(File arff1, File arff2, List<String> fileOrder) throws IOException {
+		File newFile = new File(referencePath + File.separator + "data.arff");
+
+		newFile.delete();
+		
+		String content1 = FileUtils.readFileToString(arff1, "UTF-8");
+		String content2 = FileUtils.readFileToString(arff2, "UTF-8");
+
+		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
+		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
+
+		ArrayList<String> mergedAttributeLineList = new ArrayList<>();
+		mergedAttributeLineList.addAll(attributeLineList1);
+		mergedAttributeLineList.addAll(attributeLineList2);
+
+		ArrayList<String> dataLineList1 = getDataLinesFrom(content1);
+		ArrayList<String> dataLineList2 = getDataLinesFrom(content2);
+		
+		// Should be equal
+		System.out.println("dataLine1: " + dataLineList1.size());
+		System.out.println("dataLine2: " + dataLineList2.size());
+		
+		// attributes
+		System.out.println("attributeLineList1: " + attributeLineList1.size());
+		System.out.println("attributeLineList2: " + attributeLineList2.size());
+		
+
+		int plusAttributeNum = attributeLineList1.size();
+		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
+
+		List<String> mergedDataLineList = new ArrayList<>();
+
+		for (int i = 0; i < dataLineList1.size(); i++) {
+			String data1 = dataLineList1.get(i);
+			String data2 = dataPlusLineList.get(i);
+			String mergedData = mergeData(data1, data2);
+			mergedDataLineList.add(mergedData);
+		}
+
+		StringBuffer newContentBuf = new StringBuffer();
+
+		for (String line : mergedAttributeLineList) {
+			newContentBuf.append(line + "\n");
+		}
+
+		newContentBuf.append("@data\n");
+
+		for (String line : mergedDataLineList) {
+			newContentBuf.append(line + "\n");
+		}
+
+		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");
+
+		return newFile;
+	}
 
 	private static ArrayList<String> getDataLinesFrom(String content) {
 		ArrayList<String> dataLineList = new ArrayList<>();
@@ -315,5 +371,33 @@ public class ArffHelper {
 		}
 
 		return attributeLineList;
+	}
+
+	public ArrayList<String> getFileOrder() {
+
+		ArrayList<String> fileOrder = new ArrayList<>();
+
+		File directory = new File(getMergedDirectoryPath());
+
+		File cleanDirectory = null;
+		File buggyDirectory = null;
+		
+		for(File f : directory.listFiles()) {
+			if(f.isDirectory() && cleanDirectory == null) {
+				cleanDirectory = f;
+			} else if(f.isDirectory()){
+				buggyDirectory = f;
+			}
+		}
+		
+
+		for (File f : cleanDirectory.listFiles()) {
+			fileOrder.add(f.getName());
+		}
+		for (File f : buggyDirectory.listFiles()) {
+			fileOrder.add(f.getName());
+		}
+
+		return fileOrder;
 	}
 }

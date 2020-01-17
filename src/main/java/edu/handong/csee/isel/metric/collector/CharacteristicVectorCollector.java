@@ -23,7 +23,7 @@ import edu.handong.csee.isel.Utils;
 public class CharacteristicVectorCollector {
 	private Git git;
 	private Repository repo;
-	private List<String> bfcList;
+	private List<String> bfcList = null;
 	private List<RevCommit> commitList;
 	private String referencePath;
 	private String projectName;

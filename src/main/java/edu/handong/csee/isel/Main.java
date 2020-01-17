@@ -106,9 +106,10 @@ public class Main {
 		case METRIC: // TODO:
 			metricCollector = new CMetricCollector(input);
 			metricCollector.setBFC(bfcList);
-			csvInfoLst = metricCollector.collectFrom(commitList);
-
-			break;
+			File arff = metricCollector.collectFrom(commitList);
+			System.out.println("Metric was saved in " + arff.getAbsolutePath());
+			
+			return;
 		}
 
 		// 5. Print CSV

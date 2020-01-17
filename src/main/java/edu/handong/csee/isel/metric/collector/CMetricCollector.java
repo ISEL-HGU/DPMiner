@@ -2,6 +2,7 @@ package edu.handong.csee.isel.metric.collector;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -29,7 +30,7 @@ public class CMetricCollector implements MetricCollector {
 	}
 
 	@Override
-	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
+	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
 
 		// 1. collect BOW arff
@@ -58,17 +59,30 @@ public class CMetricCollector implements MetricCollector {
 
 		// 3. make merged arff between BOW and C-Vector
 		File mergedArff = null;
-		
+
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
 		arffHelper.setProjectName(input.projectName);
-		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector,cVectorCollector);
-		
-		// TODO: 4. Meta data
+		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
-		// TODO: 5. Merge 1,2,3, and return csv
+		// TODO: 4. Meta data, SJ help me
+		File metaArff = new File("/Users/imseongbin/Desktop/lottie-android.arff"); // TODO: Here your logic: make
+																					// metadata arff
 
-		return null;
+		ArrayList<String> fileOrder = arffHelper.getFileOrder();
+
+		// 5. Merge 1,2,3, and return csv
+
+		File resultArff = null;
+
+		try {
+			resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, fileOrder);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return resultArff;
 	}
 
 	@Override
