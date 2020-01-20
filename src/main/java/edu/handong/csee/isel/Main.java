@@ -44,7 +44,6 @@ public class Main {
 		List<RevCommit> commitList;
 		File gitDirectory = null;
 		if (isCloned(input) && isValidRepository(input)) {
-
 			gitDirectory = getGitDirectory(input);
 		} else {
 			// TODO: add exception when isCloned() && !isValidRepository()

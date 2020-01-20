@@ -22,6 +22,10 @@ public class Input {
 	public ReferenceType referecneType;
 
 	public Mode mode;
+	
+	public String BICpath;
+	
+	public String gitDirectory;
 
 	public static enum ReferenceType {
 		JIRA, GITHUB, KEYWORD

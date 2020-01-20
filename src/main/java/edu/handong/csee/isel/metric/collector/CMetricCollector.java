@@ -10,12 +10,13 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.Main;
+import edu.handong.csee.isel.metric.metadata.CommitCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.metric.MetricCollector;
+import edu.handong.csee.isel.metric.metadata.CommitCollector;
 
 public class CMetricCollector implements MetricCollector {
-
 	final Git git;
 	final Repository repo;
 	final String referencePath;
@@ -32,7 +33,6 @@ public class CMetricCollector implements MetricCollector {
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
-
 		// 1. collect BOW arff
 		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
 		bowCollector.setGit(git);
@@ -66,8 +66,14 @@ public class CMetricCollector implements MetricCollector {
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
-		File metaArff = new File("/Users/imseongbin/Desktop/lottie-android.arff"); // TODO: Here your logic: make
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, input.BICpath, input.projectName); //StartDate, strEndDate, test 
+		commitCollector.countCommitMetrics();
+		commitCollector.saveResultToCsvFile();
+		String arffOutputPath = commitCollector.CSV2ARFF();
+		
+		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
 																					// metadata arff
+		
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
