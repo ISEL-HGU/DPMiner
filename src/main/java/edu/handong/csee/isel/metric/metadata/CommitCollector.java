@@ -126,12 +126,16 @@ public class CommitCollector {
 
 				for (DiffEntry entry : diff) {// 현재 커밋에 있는 소스파일 하나씩 읽음 
 					String sourcePath = entry.getNewPath().toString();
+					String oldPath = entry.getOldPath();
 
-					if(!sourcePath.contains(".java"))
-						continue; //자바 파일만 보겠다.
-
-					if(test==true||(sourcePath.contains("/test/"))&&(sourcePath.contains("/tests/")))
-						continue; //테스트 파일은 보지 않겠다. (t 옵션으로 테스트 파일도 함께 볼 수 있음)
+//					if(!sourcePath.contains(".java"))
+//						continue; //자바 파일만 보겠다.
+//
+//					if((sourcePath.contains("/test/"))&&(sourcePath.contains("/tests/")))
+//						continue; //테스트 파일은 보지 않겠다. (t 옵션으로 테스트 파일도 함께 볼 수 있음)
+					
+					if (oldPath.equals("/dev/null") || sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
+						continue;
 
 					//key 생성 & 해쉬맵 생성 
 					String keySourcePath = sourcePath.replaceAll("/", "-");
