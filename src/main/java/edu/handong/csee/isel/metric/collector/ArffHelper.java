@@ -195,7 +195,6 @@ public class ArffHelper {
 	}
 
 	private static String mergeData(String oldStr, String newStr) {
-
 		StringBuffer mergedBuf = new StringBuffer();
 
 		mergedBuf.append(oldStr.substring(0, oldStr.indexOf('}')));
@@ -364,21 +363,9 @@ public class ArffHelper {
 			mergedDataLineList.add(mergedData);
 		}
 
-		for (String key : keyDataMap2.keySet()) {
-			if (!keyDataMap1.keySet().contains(key)) {
-				continue;
-			}
-
-			String data1 = keyDataMap1.get(key);
-			String data2 = keyDataMap2.get(key);
-
-			String mergedData = mergeData(data1, data2);
-			mergedDataLineList.add(mergedData);
-		}
-		
-		
-
 		StringBuffer newContentBuf = new StringBuffer();
+		
+		newContentBuf.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n");
 
 		for (String line : mergedAttributeLineList) {
 			newContentBuf.append(line + "\n");
@@ -387,7 +374,7 @@ public class ArffHelper {
 		newContentBuf.append("@data\n");
 
 		for (String line : mergedDataLineList) {
-			newContentBuf.append(line + "\n");
+			newContentBuf.append(line + "}\n");
 		}
 
 		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");

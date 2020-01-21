@@ -102,7 +102,6 @@ public class CommitCollector {
 			//arryaList index 0 = 가장 최근 커밋 
 			//arrayList index commits.size() =  첫번째 커밋
 
-			int i = 0; //첫번째 커밋부터 가장 최근 커밋 순서로 커밋을 읽는다.
 			for (int commitIndex = commits.size()-1; commitIndex > -1; commitIndex--) {// 커밋 하나씩 읽음 
 				RevCommit commit = commits.get(commitIndex);
 
@@ -174,11 +173,6 @@ public class CommitCollector {
 
 				}
 
-				//												if (i == 50)
-				//													break; // 커밋 50개까지 본다.
-				//												i++;
-
-
 			}
 			byteStream.close();
 
@@ -191,15 +185,11 @@ public class CommitCollector {
 	public void saveResultToCsvFile() {
 
 		BufferedWriter writer;
-//		Pattern pattern = Pattern.compile(".+/(.+)");
-//		Matcher matcher = pattern.matcher(inputPath);
-//		while(matcher.find()) {
-//			projectName = matcher.group(1);
-//		}
+		
 		try {
 			writer = new BufferedWriter(new FileWriter(csvOutputPath));
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitTime","CommitDate","IsBugCommit","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
-
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitTime","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
+//no is bug commit
 			Set<Map.Entry<String, MetaDataInfo>> entries = metaDatas.entrySet();
 
 			for (Map.Entry<String,MetaDataInfo> entry : entries) {
@@ -215,7 +205,7 @@ public class CommitCollector {
 				int sumOfDeveloper = entry.getValue().getSumOfDeveloper();
 				String commitTime = entry.getValue().getCommitTime();
 				String commitDay = entry.getValue().getCommitDay();
-				int isBugCommit = entry.getValue().getIsBugCommit();
+//				int isBugCommit = entry.getValue().getIsBugCommit();
 				int timeBetweenLastAndCurrentCommitDate = entry.getValue().getTimeBetweenLastAndCurrentCommitDate();
 				int numOfSubsystems = entry.getValue().getNumOfSubsystems();
 				int numOfDirectories = entry.getValue().getNumOfDirectories();
@@ -241,7 +231,7 @@ public class CommitCollector {
 				}
 				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
-				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitTime,commitDay,isBugCommit,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitTime,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();
