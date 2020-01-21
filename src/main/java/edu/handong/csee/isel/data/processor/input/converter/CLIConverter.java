@@ -68,6 +68,8 @@ public class CLIConverter implements InputConverter {
 			input.referecneType = Input.ReferenceType.GITHUB;
 		} else if (cmd.hasOption("j")) {
 			input.referecneType = Input.ReferenceType.JIRA;
+		} else if (cmd.hasOption("c")) {
+			input.referecneType = Input.ReferenceType.BICCSV;
 		} else {
 			input.referecneType = Input.ReferenceType.KEYWORD;
 		}

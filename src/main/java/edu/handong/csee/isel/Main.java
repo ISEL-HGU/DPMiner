@@ -28,6 +28,7 @@ import edu.handong.csee.isel.data.processor.input.InputConverter;
 import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
+import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
@@ -77,6 +78,12 @@ public class Main {
 			bfcCollector = new BFCKeywordCollector();
 			bfcList = bfcCollector.collectFrom(commitList);
 
+			break;
+		
+		case BICCSV:
+			System.out.println("System.out.println(BICCSV);");
+			bfcList = Utils.readBICCsvFile(input.BICpath);
+			
 			break;
 		}
 

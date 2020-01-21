@@ -28,7 +28,7 @@ public class Input {
 	public String gitDirectory;
 
 	public static enum ReferenceType {
-		JIRA, GITHUB, KEYWORD
+		JIRA, GITHUB, KEYWORD, BICCSV
 	}
 
 	public static enum Mode {

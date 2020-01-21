@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.list.TreeList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -79,42 +81,24 @@ public class Utils {
 		return ft.format(commitDate);
 	}
 
-	public static HashMap<String, String> readBICCsvFile(String BICcsvPath, boolean wekaPreprocessor) {
-		HashMap<String, String> buggyCommit = new HashMap<String, String>();
+	public static List<String> readBICCsvFile(String BICcsvPath) {
+		List<String> buggyCommit = new TreeList<String>();
 		Reader reader;
-
-//		Set<Map.Entry<CommitKey, CommitInfo>> entries = WekaParser.commitInfoForBagofWords.entrySet();
 
 		try {
 			reader = Files.newBufferedReader(Paths.get(BICcsvPath));
+			System.out.println(BICcsvPath);
 			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
 			for (CSVRecord csvRecord : csvParser) {
 				String hash = csvRecord.get(0);
-				String path = csvRecord.get(1);
-				buggyCommit.put(hash, path);
+				buggyCommit.add(hash);
 			}
-
-//			if(wekaPreprocessor == true) {
-//				for(String key : buggyCommit.keySet()){
-//					String value = buggyCommit.get(key);
-//
-//					for (Map.Entry<CommitKey, CommitInfo> entry : entries) {
-//						if(key.equals(entry.getKey().getCommitHash()) && value.equals(entry.getKey().getSourcePath())) {
-//							entry.getValue().setBuggy(true);
-//							break;
-//						}
-//					}
-//				}
-//				return null;
-//			}else {
-				return buggyCommit;
-//			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		return buggyCommit;
 
 	}

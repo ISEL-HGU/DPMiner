@@ -49,13 +49,13 @@ public class CommitCollector {
 	private Git git;
 	private Repository repo;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
-	private HashMap<String,String> bugCommit = new HashMap<String,String>();
+	List<String> bugCommit = null;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
 	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
 
-	public CommitCollector(Git git, String resultDirectory, String BICcsvPath, String projectName) { // String strStartDate,String strEndDate,boolean test
+	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
 
 //		if(strStartDate == null) {
@@ -78,7 +78,7 @@ public class CommitCollector {
 		this.test = false;
 ///////no option 
 		
-		this.bugCommit = Utils.readBICCsvFile(BICcsvPath, false);//버그 커밋해쉬 저장
+		this.bugCommit = buggyCommit;//버그 커밋해쉬 저장
 		this.git = git;
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
@@ -120,19 +120,13 @@ public class CommitCollector {
 				String commitHash = commit.getName();//커밋 해쉬 
 				String commitDay = Utils.getDayFromCommitTime(commit.getCommitTime());//커밋한 요일 (sunday..)
 				String authorId = Utils.parseAuthorID(commit.getAuthorIdent().toString());//커밋한 개발자
-				boolean isBugCommit = bugCommit.containsKey(commitHash);//현재 커밋이 버그 커밋인가? true-false
+				boolean isBugCommit = isBuggy(commit);//현재 커밋이 버그 커밋인가? true-false
 				CommitUnitInfo commitUnitInfo = new CommitUnitInfo();//커밋 단위 메트릭을 저장하는 instance 
 				int numOfentry = 0;
 
 				for (DiffEntry entry : diff) {// 현재 커밋에 있는 소스파일 하나씩 읽음 
 					String sourcePath = entry.getNewPath().toString();
 					String oldPath = entry.getOldPath();
-
-//					if(!sourcePath.contains(".java"))
-//						continue; //자바 파일만 보겠다.
-//
-//					if((sourcePath.contains("/test/"))&&(sourcePath.contains("/tests/")))
-//						continue; //테스트 파일은 보지 않겠다. (t 옵션으로 테스트 파일도 함께 볼 수 있음)
 					
 					if (oldPath.equals("/dev/null") || sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
 						continue;
@@ -326,6 +320,17 @@ public class CommitCollector {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private boolean isBuggy(RevCommit commit) {
+
+		for (String bfc : bugCommit) {
+			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

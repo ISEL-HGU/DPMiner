@@ -198,7 +198,7 @@ public class CharacteristicVectorCollector {
 	private boolean isBuggy(RevCommit commit) {
 
 		for (String bfc : bfcList) {
-			if (commit.getShortMessage().contains(bfc)) {
+			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
 				return true;
 			}
 		}
