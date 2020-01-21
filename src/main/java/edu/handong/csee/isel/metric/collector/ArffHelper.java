@@ -296,7 +296,9 @@ public class ArffHelper {
 
 		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
 		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
-
+		
+		ArrayList<String> firstCommitInformation = preprocessAttribute(attributeLineList2);
+		
 		attributeLineList2.remove(attributeLineList2.size() - 1); // remove Last index attribute: key
 
 		ArrayList<String> mergedAttributeLineList = new ArrayList<>();
@@ -305,6 +307,8 @@ public class ArffHelper {
 
 		ArrayList<String> dataLineList1 = getDataLinesFrom(content1);
 		ArrayList<String> dataLineList2 = getDataLinesFrom(content2);
+		
+		preprocessData(dataLineList2, firstCommitInformation);
 
 		Map<String, String> keyDataMap1 = new HashMap<>(); // arff1 <key, data-line>
 		Map<String, String> keyDataMap2 = new HashMap<>(); // arff2 <key, data-line>
@@ -371,6 +375,8 @@ public class ArffHelper {
 			String mergedData = mergeData(data1, data2);
 			mergedDataLineList.add(mergedData);
 		}
+		
+		
 
 		StringBuffer newContentBuf = new StringBuffer();
 
@@ -387,6 +393,38 @@ public class ArffHelper {
 		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");
 
 		return newFile;
+	}
+
+	private ArrayList<String> preprocessAttribute(ArrayList<String> attributeLineList2) {
+		ArrayList<String> firstCommitInformation = new ArrayList<String>();
+		
+		for(int i = 0; i < attributeLineList2.size(); i++) {
+			if(attributeLineList2.get(i).startsWith("@attribute AuthorID") || attributeLineList2.get(i).startsWith("@attribute CommitTime") || attributeLineList2.get(i).startsWith("@attribute CommitDate") || attributeLineList2.get(i).startsWith("@attribute Key")) {
+				String[] words = attributeLineList2.get(i).split(",");
+				Pattern pattern = Pattern.compile("@.+\\{(.+)");
+				Matcher matcher = pattern.matcher(words[0]);
+				while(matcher.find()) {
+					firstCommitInformation.add(matcher.group(1));
+				}
+			}
+			
+			if(attributeLineList2.get(i).startsWith("@attribute CommitTime")) {
+				attributeLineList2.set(i, "@attribute CommitTime Date 'yyyy-MM-dd HH:mm:ss'");
+			}
+		}
+		
+		return firstCommitInformation;
+	}
+	
+	private void preprocessData(ArrayList<String> dataLineList2, ArrayList<String> firstCommitInformation) {
+		for(int i = 0; i < dataLineList2.size(); i++) {
+			if(dataLineList2.get(i).startsWith("{")) {
+				String[] words = dataLineList2.get(i).split("\\}");
+				words[0] = words[0] + ",5 " + firstCommitInformation.get(0) + ",9 " + firstCommitInformation.get(1) + ",10 " + firstCommitInformation.get(2) + ",20 " + firstCommitInformation.get(3) + "}";
+				dataLineList2.set(i, words[0]);
+				break;
+			}
+		}
 	}
 
 	private static ArrayList<String> getDataLinesFrom(String content) {

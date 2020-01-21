@@ -87,7 +87,6 @@ public class Utils {
 
 		try {
 			reader = Files.newBufferedReader(Paths.get(BICcsvPath));
-			System.out.println(BICcsvPath);
 			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
 			for (CSVRecord csvRecord : csvParser) {

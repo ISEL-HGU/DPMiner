@@ -81,7 +81,6 @@ public class Main {
 			break;
 		
 		case BICCSV:
-			System.out.println("System.out.println(BICCSV);");
 			bfcList = Utils.readBICCsvFile(input.BICpath);
 			
 			break;

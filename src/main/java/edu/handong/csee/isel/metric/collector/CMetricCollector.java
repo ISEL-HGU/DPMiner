@@ -73,7 +73,6 @@ public class CMetricCollector implements MetricCollector {
 		
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
 																					// metadata arff
-		
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
