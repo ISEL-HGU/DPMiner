@@ -80,6 +80,16 @@ public class Utils {
 
 		return ft.format(commitDate);
 	}
+	
+	public static String getHourFromCommitTime(int commitTime) {
+		SimpleDateFormat ft =  new SimpleDateFormat ("HH", new Locale("en", "US"));
+		Date commitHour = new Date(commitTime* 1000L);
+
+		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		ft.setTimeZone(GMT);
+
+		return ft.format(commitHour);
+	}
 
 	public static List<String> readBICCsvFile(String BICcsvPath) {
 		List<String> buggyCommit = new TreeList<String>();

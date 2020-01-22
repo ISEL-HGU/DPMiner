@@ -387,17 +387,13 @@ public class ArffHelper {
 		ArrayList<String> firstCommitInformation = new ArrayList<String>();
 		
 		for(int i = 0; i < attributeLineList2.size(); i++) {
-			if(attributeLineList2.get(i).startsWith("@attribute AuthorID") || attributeLineList2.get(i).startsWith("@attribute CommitTime") || attributeLineList2.get(i).startsWith("@attribute CommitDate") || attributeLineList2.get(i).startsWith("@attribute Key")) {
+			if(attributeLineList2.get(i).startsWith("@attribute AuthorID") || attributeLineList2.get(i).startsWith("@attribute CommitDate") || attributeLineList2.get(i).startsWith("@attribute Key")) {
 				String[] words = attributeLineList2.get(i).split(",");
 				Pattern pattern = Pattern.compile("@.+\\{(.+)");
 				Matcher matcher = pattern.matcher(words[0]);
 				while(matcher.find()) {
 					firstCommitInformation.add(matcher.group(1));
 				}
-			}
-			
-			if(attributeLineList2.get(i).startsWith("@attribute CommitTime")) {
-				attributeLineList2.set(i, "@attribute CommitTime Date 'yyyy-MM-dd HH:mm:ss'");
 			}
 		}
 		
@@ -416,10 +412,9 @@ public class ArffHelper {
 					metrics.put( Integer.parseInt(matcher.group(1)), matcher.group(2));
 				}
 				
-				metrics.put(5,firstCommitInformation.get(0));
-				metrics.put(9,firstCommitInformation.get(1));
-				metrics.put(10,firstCommitInformation.get(2));
-				metrics.put(20,firstCommitInformation.get(3));
+				metrics.put(5,firstCommitInformation.get(0)); 
+				metrics.put(10,firstCommitInformation.get(1));
+				metrics.put(20,firstCommitInformation.get(2));
 				
 				StringBuffer metric = new StringBuffer();
 				

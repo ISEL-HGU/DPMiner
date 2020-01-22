@@ -117,6 +117,7 @@ public class CommitCollector {
 				List<DiffEntry> diff = Utils.diff(parent, commit, repo);
 
 				String commitHash = commit.getName();//커밋 해쉬 
+				String commitHour = Utils.getHourFromCommitTime(commit.getCommitTime());
 				String commitDay = Utils.getDayFromCommitTime(commit.getCommitTime());//커밋한 요일 (sunday..)
 				String authorId = Utils.parseAuthorID(commit.getAuthorIdent().toString());//커밋한 개발자
 				boolean isBugCommit = isBuggy(commit);//현재 커밋이 버그 커밋인가? true-false
@@ -139,7 +140,7 @@ public class CommitCollector {
 					String fileSource = Utils.fetchBlob(repo, commit.getName(), sourcePath);
 
 					//save commit data to metaDataInfo
-					metaDataInfo.setCommitTime(commitTime);//metaDataInfo에 commit Time 저장 
+					metaDataInfo.setCommitHour(commitHour);//metaDataInfo에 commit Time 저장 
 					metaDataInfo.setCommitDay(commitDay);//metaDataInfo에 commit Day 저장 
 					metaDataInfo.setCommitAuthor(authorId);//metaDataInfo에 author 저장 
 					metaDataInfo.setIsBugCommit((isBugCommit) ? 1 : 0);//metaDataInfo에 isBugCommit을 integer로 저장 
@@ -188,7 +189,7 @@ public class CommitCollector {
 		
 		try {
 			writer = new BufferedWriter(new FileWriter(csvOutputPath));
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitTime","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
 //no is bug commit
 			Set<Map.Entry<String, MetaDataInfo>> entries = metaDatas.entrySet();
 
@@ -203,7 +204,7 @@ public class CommitCollector {
 				int fileAge = entry.getValue().getFileAge();
 				int sumOfSourceRevision = entry.getValue().getSumOfSourceRevision();
 				int sumOfDeveloper = entry.getValue().getSumOfDeveloper();
-				String commitTime = entry.getValue().getCommitTime();
+				String commitHour = entry.getValue().getCommitHour();
 				String commitDay = entry.getValue().getCommitDay();
 //				int isBugCommit = entry.getValue().getIsBugCommit();
 				int timeBetweenLastAndCurrentCommitDate = entry.getValue().getTimeBetweenLastAndCurrentCommitDate();
@@ -231,7 +232,7 @@ public class CommitCollector {
 				}
 				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
-				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitTime,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();

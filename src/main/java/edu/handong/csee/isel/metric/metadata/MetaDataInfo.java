@@ -10,7 +10,7 @@ public class MetaDataInfo {
 	int distributionOfModifiedLines; //ok
 	int sumOfSourceRevision; //ok
 	int sumOfDeveloper; //ok
-	String commitTime; //ok
+	String commitHour; //ok
 	String commitDay; //ok
 	int fileAge; //ok
 	int isBugCommit; //ok
@@ -25,7 +25,7 @@ public class MetaDataInfo {
 	public MetaDataInfo() {
 		this.numOfBIC = 0;
 		this.commitAuthor = null;
-		this.commitTime = null;
+		this.commitHour = null;
 		this.numOfModifyLines = 0;
 		this.numOfDeleteLines = 0;
 		this.numOfAddLines = 0;
@@ -104,12 +104,12 @@ public class MetaDataInfo {
 		this.commitDay = commitDay;
 	}
 
-	public String getCommitTime() {
-		return commitTime;
+	public String getCommitHour() {
+		return commitHour;
 	}
 
-	public void setCommitTime(String commitTime) {
-		this.commitTime = commitTime;
+	public void setCommitHour(String commitHour) {
+		this.commitHour = commitHour;
 	}
 
 	public int getFileAge() {
