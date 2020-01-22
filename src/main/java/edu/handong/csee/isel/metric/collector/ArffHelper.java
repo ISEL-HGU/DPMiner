@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -333,7 +334,7 @@ public class ArffHelper {
 
 		int plusAttributeNum = attributeLineList1.size();
 		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
-
+////////?????????
 		for (int i = 0; i < keyOrder.size(); i++) {
 			String key = keyOrder.get(i);
 			keyDataMap1.put(key, dataLineList1.get(i));
@@ -348,7 +349,7 @@ public class ArffHelper {
 
 			keyDataMap2.put(key, dataLine);
 		}
-
+/////////////////?????
 		List<String> mergedDataLineList = new ArrayList<>();
 
 		for (String key : keyDataMap1.keySet()) {
@@ -365,13 +366,13 @@ public class ArffHelper {
 
 		StringBuffer newContentBuf = new StringBuffer();
 		
-		newContentBuf.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n");
+		newContentBuf.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n\n");
 
 		for (String line : mergedAttributeLineList) {
 			newContentBuf.append(line + "\n");
 		}
 
-		newContentBuf.append("@data\n");
+		newContentBuf.append("\n@data\n");
 
 		for (String line : mergedDataLineList) {
 			newContentBuf.append(line + "}\n");
@@ -404,11 +405,30 @@ public class ArffHelper {
 	}
 	
 	private void preprocessData(ArrayList<String> dataLineList2, ArrayList<String> firstCommitInformation) {
+		TreeMap<Integer,String> metrics = new TreeMap<Integer,String>();
+		
 		for(int i = 0; i < dataLineList2.size(); i++) {
 			if(dataLineList2.get(i).startsWith("{")) {
-				String[] words = dataLineList2.get(i).split("\\}");
-				words[0] = words[0] + ",5 " + firstCommitInformation.get(0) + ",9 " + firstCommitInformation.get(1) + ",10 " + firstCommitInformation.get(2) + ",20 " + firstCommitInformation.get(3) + "}";
-				dataLineList2.set(i, words[0]);
+				Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+\\.?\\d*)");
+				Matcher matcher = pattern.matcher(dataLineList2.get(i));
+				
+				while(matcher.find()) {
+					metrics.put( Integer.parseInt(matcher.group(1)), matcher.group(2));
+				}
+				
+				metrics.put(5,firstCommitInformation.get(0));
+				metrics.put(9,firstCommitInformation.get(1));
+				metrics.put(10,firstCommitInformation.get(2));
+				metrics.put(20,firstCommitInformation.get(3));
+				
+				StringBuffer metric = new StringBuffer();
+				
+				metric.append("{");
+				for (int key : metrics.keySet()) {
+					metric.append(key+" "+metrics.get(key)+",");
+				}
+				metric.deleteCharAt(metric.length() - 1);
+				metric.append("}");
 				break;
 			}
 		}
