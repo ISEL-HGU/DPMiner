@@ -22,6 +22,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 public class ArffHelper {
 	private String projectName;
 	private String referencePath;
+	private String outPath;
 
 	private final static String attributeNumPatternStr = "(\\{|,)(\\d+)\\s";
 	private final static Pattern attributeNumPattern = Pattern.compile(attributeNumPatternStr);
@@ -31,6 +32,10 @@ public class ArffHelper {
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+	
+	public void setOutPath(String outPath) {
+		this.outPath = outPath;
 	}
 
 	public File getArffFromDirectory(String bowDirectoryPath) {
@@ -287,7 +292,7 @@ public class ArffHelper {
 	}
 
 	public File makeMergedArff(File arff1, File arff2, List<String> keyOrder) throws IOException {
-		File newFile = new File(referencePath + File.separator + "data.arff");
+		File newFile = new File(outPath + File.separator + projectName +"-data.arff");
 
 		newFile.delete();
 

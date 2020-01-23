@@ -27,7 +27,7 @@ public class CMetricCollector implements MetricCollector {
 		this.input = input;
 		git = Git.open(Main.getGitDirectory(input));
 		repo = git.getRepository();
-		referencePath = input.outPath + File.separator + "reference";
+		referencePath = input.outPath + File.separator + input.projectName +"-reference";
 	}
 
 	@Override
@@ -63,6 +63,7 @@ public class CMetricCollector implements MetricCollector {
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
 		arffHelper.setProjectName(input.projectName);
+		arffHelper.setOutPath(input.outPath);
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
