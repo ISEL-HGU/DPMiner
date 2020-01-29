@@ -81,6 +81,11 @@ public class Main {
 			break;
 		
 		case BICCSV:
+			File BIC = new File(input.BICpath);
+			if (!BIC.isFile()) {
+				System.out.println("There is no BIC file");
+				System.exit(0);
+			}
 			bfcList = Utils.readBICCsvFile(input.BICpath);
 			
 			break;
