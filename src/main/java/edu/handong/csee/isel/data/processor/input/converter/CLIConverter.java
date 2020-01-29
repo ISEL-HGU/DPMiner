@@ -57,6 +57,7 @@ public class CLIConverter implements InputConverter {
 		input.jiraURL = cmd.getOptionValue("j");
 		input.projectName = getProjectName(input.gitRemoteURI);
 		input.label = cmd.getOptionValue("l");
+		input.BICpath = cmd.getOptionValue("c");
 
 		input.outPath = cmd.getOptionValue("o");
 		if (input.outPath.endsWith(File.separator)) {
@@ -67,6 +68,8 @@ public class CLIConverter implements InputConverter {
 			input.referecneType = Input.ReferenceType.GITHUB;
 		} else if (cmd.hasOption("j")) {
 			input.referecneType = Input.ReferenceType.JIRA;
+		} else if (cmd.hasOption("c")) {
+			input.referecneType = Input.ReferenceType.BICCSV;
 		} else {
 			input.referecneType = Input.ReferenceType.KEYWORD;
 		}
@@ -144,6 +147,9 @@ public class CLIConverter implements InputConverter {
 		options.addOption(Option.builder("k").longOpt("jiraProject").desc(
 				"Jira project key. you can get more informations: https://github.com/HGUISEL/BugPatchCollector/issues/18")
 				.hasArg().argName("Project Key").build());
+		
+		options.addOption(Option.builder("c").longOpt("BugIntroducingChange csv file path").desc("Path of csv file")
+				.hasArg().argName("BIC csv file path").build());
 
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 

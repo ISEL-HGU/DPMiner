@@ -11,6 +11,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.Utils;
+import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
 public class BagOfWordsCollector {
@@ -108,7 +109,7 @@ public class BagOfWordsCollector {
 	private boolean isBuggy(RevCommit commit) {
 
 		for (String bfc : bfcList) {
-			if (commit.getShortMessage().contains(bfc)) {
+			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
 				return true;
 			}
 		}

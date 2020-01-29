@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +22,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 public class ArffHelper {
 	private String projectName;
 	private String referencePath;
+	private String outPath;
 
 	private final static String attributeNumPatternStr = "(\\{|,)(\\d+)\\s";
 	private final static Pattern attributeNumPattern = Pattern.compile(attributeNumPatternStr);
@@ -30,6 +32,10 @@ public class ArffHelper {
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+	
+	public void setOutPath(String outPath) {
+		this.outPath = outPath;
 	}
 
 	public File getArffFromDirectory(String bowDirectoryPath) {
@@ -195,7 +201,6 @@ public class ArffHelper {
 	}
 
 	private static String mergeData(String oldStr, String newStr) {
-
 		StringBuffer mergedBuf = new StringBuffer();
 
 		mergedBuf.append(oldStr.substring(0, oldStr.indexOf('}')));
@@ -287,7 +292,7 @@ public class ArffHelper {
 	}
 
 	public File makeMergedArff(File arff1, File arff2, List<String> keyOrder) throws IOException {
-		File newFile = new File(referencePath + File.separator + "data.arff");
+		File newFile = new File(outPath + File.separator + projectName +"-data.arff");
 
 		newFile.delete();
 
@@ -296,7 +301,9 @@ public class ArffHelper {
 
 		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
 		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
-
+		
+		ArrayList<String> firstCommitInformation = preprocessAttribute(attributeLineList2);
+		
 		attributeLineList2.remove(attributeLineList2.size() - 1); // remove Last index attribute: key
 
 		ArrayList<String> mergedAttributeLineList = new ArrayList<>();
@@ -305,6 +312,8 @@ public class ArffHelper {
 
 		ArrayList<String> dataLineList1 = getDataLinesFrom(content1);
 		ArrayList<String> dataLineList2 = getDataLinesFrom(content2);
+		
+		preprocessData(dataLineList2, firstCommitInformation);
 
 		Map<String, String> keyDataMap1 = new HashMap<>(); // arff1 <key, data-line>
 		Map<String, String> keyDataMap2 = new HashMap<>(); // arff2 <key, data-line>
@@ -330,7 +339,7 @@ public class ArffHelper {
 
 		int plusAttributeNum = attributeLineList1.size();
 		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
-
+////////?????????
 		for (int i = 0; i < keyOrder.size(); i++) {
 			String key = keyOrder.get(i);
 			keyDataMap1.put(key, dataLineList1.get(i));
@@ -345,7 +354,7 @@ public class ArffHelper {
 
 			keyDataMap2.put(key, dataLine);
 		}
-
+/////////////////?????
 		List<String> mergedDataLineList = new ArrayList<>();
 
 		for (String key : keyDataMap1.keySet()) {
@@ -360,33 +369,69 @@ public class ArffHelper {
 			mergedDataLineList.add(mergedData);
 		}
 
-		for (String key : keyDataMap2.keySet()) {
-			if (!keyDataMap1.keySet().contains(key)) {
-				continue;
-			}
-
-			String data1 = keyDataMap1.get(key);
-			String data2 = keyDataMap2.get(key);
-
-			String mergedData = mergeData(data1, data2);
-			mergedDataLineList.add(mergedData);
-		}
-
 		StringBuffer newContentBuf = new StringBuffer();
+		
+		newContentBuf.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n\n");
 
 		for (String line : mergedAttributeLineList) {
 			newContentBuf.append(line + "\n");
 		}
 
-		newContentBuf.append("@data\n");
+		newContentBuf.append("\n@data\n");
 
 		for (String line : mergedDataLineList) {
-			newContentBuf.append(line + "\n");
+			newContentBuf.append(line + "}\n");
 		}
 
 		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");
 
 		return newFile;
+	}
+
+	private ArrayList<String> preprocessAttribute(ArrayList<String> attributeLineList2) {
+		ArrayList<String> firstCommitInformation = new ArrayList<String>();
+		
+		for(int i = 0; i < attributeLineList2.size(); i++) {
+			if(attributeLineList2.get(i).startsWith("@attribute AuthorID") || attributeLineList2.get(i).startsWith("@attribute CommitDate") || attributeLineList2.get(i).startsWith("@attribute Key")) {
+				String[] words = attributeLineList2.get(i).split(",");
+				Pattern pattern = Pattern.compile("@.+\\{(.+)");
+				Matcher matcher = pattern.matcher(words[0]);
+				while(matcher.find()) {
+					firstCommitInformation.add(matcher.group(1));
+				}
+			}
+		}
+		
+		return firstCommitInformation;
+	}
+	
+	private void preprocessData(ArrayList<String> dataLineList2, ArrayList<String> firstCommitInformation) {
+		TreeMap<Integer,String> metrics = new TreeMap<Integer,String>();
+		
+		for(int i = 0; i < dataLineList2.size(); i++) {
+			if(dataLineList2.get(i).startsWith("{")) {
+				Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+\\.?\\d*)");
+				Matcher matcher = pattern.matcher(dataLineList2.get(i));
+				
+				while(matcher.find()) {
+					metrics.put( Integer.parseInt(matcher.group(1)), matcher.group(2));
+				}
+				
+				metrics.put(5,firstCommitInformation.get(0)); 
+				metrics.put(10,firstCommitInformation.get(1));
+				metrics.put(20,firstCommitInformation.get(2));
+				
+				StringBuffer metric = new StringBuffer();
+				
+				metric.append("{");
+				for (int key : metrics.keySet()) {
+					metric.append(key+" "+metrics.get(key)+",");
+				}
+				metric.deleteCharAt(metric.length() - 1);
+				metric.append("}");
+				break;
+			}
+		}
 	}
 
 	private static ArrayList<String> getDataLinesFrom(String content) {

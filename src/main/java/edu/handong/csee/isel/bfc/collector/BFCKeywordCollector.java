@@ -25,7 +25,6 @@ public class BFCKeywordCollector extends BFCCollector {
 				bfsList.add(commit.getShortMessage());
 			}
 		}
-
 		return bfsList;
 	}
 

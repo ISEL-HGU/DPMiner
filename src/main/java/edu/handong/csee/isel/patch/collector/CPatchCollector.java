@@ -195,7 +195,11 @@ public class CPatchCollector implements PatchCollector {
 	private boolean isBFC(RevCommit commit) {
 
 		for (String bfc : bfcList) {
+			System.out.println(commit.getShortMessage());
+			System.out.println(bfc);
+			System.out.println();
 			if (commit.getShortMessage().contains(bfc)) {
+				System.out.println(commit.getShortMessage());
 				return true;
 			}
 		}

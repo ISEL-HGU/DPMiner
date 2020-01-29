@@ -28,6 +28,7 @@ import edu.handong.csee.isel.data.processor.input.InputConverter;
 import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
+import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
@@ -44,7 +45,6 @@ public class Main {
 		List<RevCommit> commitList;
 		File gitDirectory = null;
 		if (isCloned(input) && isValidRepository(input)) {
-
 			gitDirectory = getGitDirectory(input);
 		} else {
 			// TODO: add exception when isCloned() && !isValidRepository()
@@ -78,6 +78,16 @@ public class Main {
 			bfcCollector = new BFCKeywordCollector();
 			bfcList = bfcCollector.collectFrom(commitList);
 
+			break;
+		
+		case BICCSV:
+			File BIC = new File(input.BICpath);
+			if (!BIC.isFile()) {
+				System.out.println("There is no BIC file");
+				System.exit(0);
+			}
+			bfcList = Utils.readBICCsvFile(input.BICpath);
+			
 			break;
 		}
 

@@ -65,7 +65,9 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 	
 	// weka 3.7.9
-    compile 'nz.ac.waikato.cms.weka:weka-dev:3.7.9'
+  //  compile 'nz.ac.waikato.cms.weka:weka-dev:3.7.9'
+    compile group: 'nz.ac.waikato.cms.weka', name: 'weka-dev', version: '3.9.3'
+    
 	compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.16.0'
 
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
