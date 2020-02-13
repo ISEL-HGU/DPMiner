@@ -53,6 +53,9 @@ public class BagOfWordsCollector {
 
 				String key = null;
 				StringBuffer contentBuffer = new StringBuffer();
+				
+				contentBuffer.append(commit.getFullMessage());
+				contentBuffer.append("\n");
 
 				String oldPath = diff.getOldPath();
 				String newPath = diff.getNewPath();
