@@ -148,7 +148,9 @@ public class CBICCollector implements BICCollector {
 			}
 		}
 		Collections.sort(lstBIChanges);
-		List<CSVInfo> csvInfoList = new ArrayList<>(lstBIChanges);
+
+		ArrayList<CSVInfo> csvInfoList = new ArrayList<>();
+		csvInfoList.addAll(lstBIChanges);
 
 		return csvInfoList;
 	}
