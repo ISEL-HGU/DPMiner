@@ -67,7 +67,7 @@ public class CMetricCollector implements MetricCollector {
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bfcList, input.projectName); //StartDate, strEndDate, test 
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bfcList, input.projectName); //StartDate, strEndDate, test
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
 		String arffOutputPath = commitCollector.CSV2ARFF();

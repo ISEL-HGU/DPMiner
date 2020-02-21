@@ -189,7 +189,7 @@ public class CommitCollector {
 		
 		try {
 			writer = new BufferedWriter(new FileWriter(csvOutputPath));
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
+			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
 //no is bug commit
 			Set<Map.Entry<String, MetaDataInfo>> entries = metaDatas.entrySet();
 
@@ -206,7 +206,7 @@ public class CommitCollector {
 				int sumOfDeveloper = entry.getValue().getSumOfDeveloper();
 				String commitHour = entry.getValue().getCommitHour();
 				String commitDay = entry.getValue().getCommitDay();
-//				int isBugCommit = entry.getValue().getIsBugCommit();
+				int isBugCommit = entry.getValue().getIsBugCommit();
 				int timeBetweenLastAndCurrentCommitDate = entry.getValue().getTimeBetweenLastAndCurrentCommitDate();
 				int numOfSubsystems = entry.getValue().getNumOfSubsystems();
 				int numOfDirectories = entry.getValue().getNumOfDirectories();
@@ -232,7 +232,7 @@ public class CommitCollector {
 				}
 				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
-				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				csvPrinter.printRecord(isBugCommit,numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();
