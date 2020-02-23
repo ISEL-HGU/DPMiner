@@ -237,7 +237,7 @@ public class CommitCollector {
 				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
 				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
-				developerCsvPrinter.printRecord(isBugCommit,numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				developerCsvPrinter.printRecord(isBugCommit == 1? "buggy" : "clean",numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();
