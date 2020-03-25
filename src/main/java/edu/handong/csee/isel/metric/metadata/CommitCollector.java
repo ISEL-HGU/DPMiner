@@ -183,6 +183,17 @@ public class CommitCollector {
 
 	}
 
+	private boolean isBuggy(RevCommit commit) {
+		
+		for(String bic : bugCommit) {
+			if(bic.equals(commit.getName())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	public void saveResultToCsvFile() {
 
 		BufferedWriter writer;
@@ -320,15 +331,6 @@ public class CommitCollector {
 
 	}
 	
-	private boolean isBuggy(RevCommit commit) {
-
-		for (String bfc : bugCommit) {
-			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
+	
 
 }
