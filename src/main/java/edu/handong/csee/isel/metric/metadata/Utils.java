@@ -130,7 +130,7 @@ public class Utils {
 
 
 	public static String parseAuthorID(String authorId) {
-		Pattern pattern = Pattern.compile(".+\\[(.+),.+,.+\\]");
+		Pattern pattern = Pattern.compile(".+\\[.+,(.+),.+\\]");
 		Matcher matcher = pattern.matcher(authorId);
 		while(matcher.find()) {
 			authorId = matcher.group(1);
