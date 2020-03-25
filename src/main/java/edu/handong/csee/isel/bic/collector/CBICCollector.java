@@ -141,7 +141,7 @@ public class CBICCollector implements BICCollector {
 				}
 
 				// get BI commit from lines in lstIdxOfOnlyInsteredLines
-				lstBIChanges.addAll(getBIChangesFromBILineIndices(id, commit.getCommitTime(), newPath, oldPath,
+				lstBIChanges.addAll(getBIChangesFromBILineIndices(id, commit, newPath, oldPath,
 						prevFileSource, lstIdxOfDeletedLinesInPrevFixFile));
 //					if(!unTrackDeletedBIlines)
 //						lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
@@ -155,7 +155,7 @@ public class CBICCollector implements BICCollector {
 		return csvInfoList;
 	}
 
-	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, int fixCommitTime, String path,
+	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, RevCommit fixCommit, String path,
 			String prevPath, String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
 
 		ArrayList<BICInfo> biChanges = new ArrayList<BICInfo>();
@@ -177,10 +177,10 @@ public class CBICCollector implements BICCollector {
 				String BISha1 = commit.name();
 				String biPath = blame.getSourcePath(lineIndex);
 				String FixSha1 = fixSha1;
-				String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
+				String BIDate = Utils.getStringDateTimeFromCommit(commit);
 //				if(!(strStartDate.compareTo(BIDate)<=0 && BIDate.compareTo(strEndDate)<=0)) // TODO:only consider BISha1 whose date is bewteen startDate and endDate
 //					continue;
-				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
+				String FixDate = Utils.getStringDateTimeFromCommit(fixCommit);
 				int lineNum = blame.getSourceLine(lineIndex) + 1;
 				int lineNumInPrevFixRev = lineIndex + 1;
 

@@ -294,11 +294,14 @@ public class Utils {
 
 	}
 
-	public static String getStringDateTimeFromCommitTime(int commitTime) {
+	public static String getStringDateTimeFromCommit(RevCommit commit) {
+		
+		
+		
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date commitDate = new Date(commitTime * 1000L);
+		Date commitDate = commit.getAuthorIdent().getWhen();
 
-		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		TimeZone GMT = commit.getCommitterIdent().getTimeZone();
 		ft.setTimeZone(GMT);
 
 		return ft.format(commitDate);
