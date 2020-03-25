@@ -91,12 +91,16 @@ public class Utils {
 				.diff(diffComparator, rt1, rt2));
 		return diffList;
 	}
-	
-	public static String getStringDateTimeFromCommitTime(int commitTime){
-		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-		Date commitDate = new Date(commitTime* 1000L); //sec to millisec
 
-		TimeZone GMT = TimeZone.getTimeZone("GMT");
+
+	public static String getStringDateTimeFromCommit(RevCommit commit) {
+		
+		
+		
+		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date commitDate = commit.getAuthorIdent().getWhen();
+
+		TimeZone GMT = commit.getCommitterIdent().getTimeZone();
 		ft.setTimeZone(GMT);
 
 		return ft.format(commitDate);

@@ -57,6 +57,10 @@ public class SZZRunner implements BICCollector {
 		this.gitURI = gitURI;
 		this.BFCommitList.addAll(IterableUtils.toList(BFCommitList));
 	}
+	
+	public SZZRunner(Iterable<String> BFCommitList) {
+		this.BFCommitList.addAll(IterableUtils.toList(BFCommitList));
+	}
 
 	/**
 	 * TODO Let's just print out BIC information and then change return type as
@@ -181,11 +185,11 @@ public class SZZRunner implements BICCollector {
 							}
 
 							// get BI commit from lines in lstIdxOfOnlyInsteredLines
-							lstBIChanges.addAll(getBIChangesFromBILineIndices(id, rev.getCommitTime(), newPath, oldPath,
+							lstBIChanges.addAll(getBIChangesFromBILineIndices(id, rev, newPath, oldPath,
 									prevFileSource, lstIdxOfDeletedLinesInPrevFixFile));
 							if (!unTrackDeletedBIlines)
 								lstBIChanges
-										.addAll(getBIChangesFromDeletedBILine(id, rev.getCommitTime(), mapDeletedLines,
+										.addAll(getBIChangesFromDeletedBILine(id, rev, mapDeletedLines,
 												fileSource, lstIdxOfOnlyInsertedLinesInFixFile, oldPath, newPath));
 
 						}
@@ -251,7 +255,7 @@ public class SZZRunner implements BICCollector {
 
 			// Get basic commit info
 			String sha1 = rev.name() + "";
-			String date = Utils.getStringDateTimeFromCommitTime(rev.getCommitTime()); // GMT time string
+			String date = Utils.getStringDateTimeFromCommit(rev); // GMT time string
 
 			if (rev.getParentCount() < 1) // skip if there are no parents (i.e. no commits to trace)
 				continue;
@@ -315,7 +319,7 @@ public class SZZRunner implements BICCollector {
 		return deletedLines;
 	}
 
-	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, int fixCommitTime, String path,
+	private ArrayList<BICInfo> getBIChangesFromBILineIndices(String fixSha1, RevCommit fixCommit, String path,
 			String prevPath, String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
 
 		ArrayList<BICInfo> biChanges = new ArrayList<BICInfo>();
@@ -336,12 +340,9 @@ public class SZZRunner implements BICCollector {
 
 				String BISha1 = commit.name();
 				String biPath = blame.getSourcePath(lineIndex);
-				// String path;
 				String FixSha1 = fixSha1;
-				String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
-//				if(!(strStartDate.compareTo(BIDate)<=0 && BIDate.compareTo(strEndDate)<=0)) // only consider BISha1 whose date is bewteen startDate and endDate
-//					continue;
-				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
+				String BIDate = Utils.getStringDateTimeFromCommit(commit);
+				String FixDate = Utils.getStringDateTimeFromCommit(fixCommit);
 				int lineNum = blame.getSourceLine(lineIndex) + 1;
 				int lineNumInPrevFixRev = lineIndex + 1;
 
@@ -364,7 +365,7 @@ public class SZZRunner implements BICCollector {
 		return biChanges;
 	}
 
-	private ArrayList<BICInfo> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
+	private ArrayList<BICInfo> getBIChangesFromDeletedBILine(String fixSha1, RevCommit fixCommit,
 			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String fileSource,
 			ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile, String oldPath, String path) {
 
@@ -385,7 +386,7 @@ public class SZZRunner implements BICCollector {
 
 			DeletedLineInCommits deletedLineToConsider = null;
 			for (DeletedLineInCommits deletedLine : lstDeletedLines) {
-				if (deletedLine.getBIDate().compareTo(Utils.getStringDateTimeFromCommitTime(fixCommitTime)) < 0
+				if (deletedLine.getBIDate().compareTo(Utils.getStringDateTimeFromCommit(fixCommit)) < 0
 						&& deletedLine.getPath().equals(oldPath)) {
 					deletedLineToConsider = deletedLine;
 				}
@@ -406,7 +407,7 @@ public class SZZRunner implements BICCollector {
 				// String path;
 				String FixSha1 = fixSha1;
 				String BIDate = deletedLineToConsider.getBIDate();
-				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
+				String FixDate = Utils.getStringDateTimeFromCommit(fixCommit);
 				int lineNumInPrevFixRev = lineIdx + 1; // this info is not important in case of a deleted line.
 
 				BICInfo biChange = new BICInfo(BISha1, biPath, FixSha1, path, BIDate, FixDate, lineIdx + 1,
@@ -425,11 +426,6 @@ public class SZZRunner implements BICCollector {
 
 		return commitList;
 	}
-
-	/*
-	 * this.gitURI = gitURI; for (String bfc : BFCommitList) {
-	 * this.BFCommitList.add(bfc); }
-	 */
 
 	public SZZRunner(String gitURI) {
 		this.gitURI = gitURI;

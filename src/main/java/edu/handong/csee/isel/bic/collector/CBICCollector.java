@@ -178,8 +178,6 @@ public class CBICCollector implements BICCollector {
 				String biPath = blame.getSourcePath(lineIndex);
 				String FixSha1 = fixSha1;
 				String BIDate = Utils.getStringDateTimeFromCommit(commit);
-//				if(!(strStartDate.compareTo(BIDate)<=0 && BIDate.compareTo(strEndDate)<=0)) // TODO:only consider BISha1 whose date is bewteen startDate and endDate
-//					continue;
 				String FixDate = Utils.getStringDateTimeFromCommit(fixCommit);
 				int lineNum = blame.getSourceLine(lineIndex) + 1;
 				int lineNumInPrevFixRev = lineIndex + 1;
