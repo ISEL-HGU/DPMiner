@@ -105,7 +105,7 @@ public class CommitCollector {
 			for (int commitIndex = commits.size()-1; commitIndex > -1; commitIndex--) {// 커밋 하나씩 읽음 
 				RevCommit commit = commits.get(commitIndex);
 
-				String commitTime = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());//커밋 날짜 yyyy-MM-dd HH:mm:ss
+				String commitTime = Utils.getStringDateTimeFromCommit(commit);//커밋 날짜 yyyy-MM-dd HH:mm:ss
 				if(!(startDate.compareTo(commitTime)<=0 && endDate.compareTo(commitTime)>=0))
 					continue;
 

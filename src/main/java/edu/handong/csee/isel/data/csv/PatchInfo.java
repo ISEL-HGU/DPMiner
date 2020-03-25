@@ -11,7 +11,7 @@ public class PatchInfo implements CSVInfo {
 	public String project;
 	public String commitName;
 	public String commitMessage;
-	public Date date;
+	public String date;
 	public String author;
 	public String patch;
 	

@@ -106,7 +106,7 @@ public class CPatchCollector implements PatchCollector {
 				patch.project = input.projectName;
 				patch.commitName = commit.getName();
 				patch.commitMessage = commit.getFullMessage();
-				patch.date = commit.getAuthorIdent().getWhen();
+				patch.date = Utils.getStringDateTimeFromCommit(commit);
 				patch.author = commit.getAuthorIdent().getName();
 
 				String content = getPatch(diff, repo);
