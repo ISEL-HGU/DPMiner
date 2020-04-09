@@ -72,24 +72,27 @@ public class Utils {
 		return ft.format(commitDate);
 	}
 
-	public static String getDayFromCommitTime(int commitTime) {
-		SimpleDateFormat ft =  new SimpleDateFormat ("EEEEEEEE", new Locale("en", "US"));
-		Date commitDate = new Date(commitTime* 1000L);
+	public static String getDayFromCommitTime(RevCommit commit) {
+		
+		
+		SimpleDateFormat ft =  new SimpleDateFormat ("EEEEEEEE");
+		Date commitDate = commit.getAuthorIdent().getWhen();
 
-		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		TimeZone GMT = commit.getCommitterIdent().getTimeZone();
 		ft.setTimeZone(GMT);
 
 		return ft.format(commitDate);
 	}
 	
-	public static String getHourFromCommitTime(int commitTime) {
-		SimpleDateFormat ft =  new SimpleDateFormat ("HH", new Locale("en", "US"));
-		Date commitHour = new Date(commitTime* 1000L);
+	public static String getHourFromCommitTime(RevCommit commit) {
+		
+		SimpleDateFormat ft =  new SimpleDateFormat ("HH");
+		Date commitDate = commit.getAuthorIdent().getWhen();
 
-		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		TimeZone GMT = commit.getCommitterIdent().getTimeZone();
 		ft.setTimeZone(GMT);
 
-		return ft.format(commitHour);
+		return ft.format(commitDate);
 	}
 
 	public static List<String> readBICCsvFile(String BICcsvPath) {

@@ -117,8 +117,8 @@ public class CommitCollector {
 				List<DiffEntry> diff = Utils.diff(parent, commit, repo);
 
 				String commitHash = commit.getName();//커밋 해쉬 
-				String commitHour = Utils.getHourFromCommitTime(commit.getCommitTime());
-				String commitDay = Utils.getDayFromCommitTime(commit.getCommitTime());//커밋한 요일 (sunday..)
+				String commitHour = Utils.getHourFromCommitTime(commit);
+				String commitDay = Utils.getDayFromCommitTime(commit);//커밋한 요일 (sunday..)
 				String authorId = Utils.parseAuthorID(commit.getAuthorIdent().toString());//커밋한 개발자
 				boolean isBugCommit = isBuggy(commit);//현재 커밋이 버그 커밋인가? true-false
 				CommitUnitInfo commitUnitInfo = new CommitUnitInfo();//커밋 단위 메트릭을 저장하는 instance 
