@@ -26,8 +26,8 @@ public class MetricParser {
 
 		for(int i = 5; i < diffLines.size(); i++) {
 			String line = diffLines.get(i);
-			if(line.startsWith("-")) numOfDeleteLines++;
-			else if(line.startsWith("+")) numOfAddLines++;
+			if(line.startsWith("-") && !(line.startsWith("---"))) numOfDeleteLines++;
+			else if(line.startsWith("+") && !line.startsWith("+++")) numOfAddLines++;
 			else if(line.startsWith("@@")) distributionOfModifiedLines++;
 		}
 		

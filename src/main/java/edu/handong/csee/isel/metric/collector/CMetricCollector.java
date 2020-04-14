@@ -10,8 +10,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.Main;
-import edu.handong.csee.isel.metric.metadata.CommitCollector;
-import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
@@ -33,6 +31,7 @@ public class CMetricCollector implements MetricCollector {
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
+		
 		// 1. collect BOW arff
 		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
 		bowCollector.setGit(git);

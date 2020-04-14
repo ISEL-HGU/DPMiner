@@ -225,19 +225,19 @@ public class CommitCollector {
 
 				//normalized
 				float NUC = (float)numOfUniqueCommitToTheModifyFiles/numOfFiles;
-				float LA = (float)numOfAddLines/linesOfCodeBeforeTheChange;
-				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
-
-				if(LA == 0 ) LA = 0;
-				if(LD == 0 ) LD = 0;
-				if(linesOfCodeBeforeTheChange == 0) {
-					LA = numOfAddLines;
-					LD = numOfDeleteLines;
-				}
+//				float LA = (float)numOfAddLines/linesOfCodeBeforeTheChange;
+//				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
+//
+//				if(LA == 0 ) LA = 0;
+//				if(LD == 0 ) LD = 0;
+//				if(linesOfCodeBeforeTheChange == 0) {
+//					LA = numOfAddLines;
+//					LD = numOfDeleteLines;
+//				}
 				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
-				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
-				developerCsvPrinter.printRecord(isBugCommit == 1? "buggy" : "clean",numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				csvPrinter.printRecord(numOfModifyLines,numOfAddLines, numOfDeleteLines, distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				developerCsvPrinter.printRecord(isBugCommit == 1? "buggy" : "clean",numOfModifyLines,numOfAddLines, numOfDeleteLines,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();
