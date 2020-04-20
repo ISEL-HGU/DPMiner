@@ -11,7 +11,7 @@ public interface MetricCollector {
 
 	File collectFrom(List<RevCommit> commitList);
 
-	void setBFC(List<String> bfcList);
+	void setBIC(List<String> bfcList);
 
 
 }

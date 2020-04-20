@@ -17,7 +17,7 @@ import edu.handong.csee.isel.patch.collector.CPatchCollector;
 public class BagOfWordsCollector {
 	private Git git;
 	private Repository repo;
-	private List<String> bfcList;
+	private List<String> bicList;
 	private List<RevCommit> commitList;
 	private String referencePath;
 	private String projectName;
@@ -111,8 +111,8 @@ public class BagOfWordsCollector {
 
 	private boolean isBuggy(RevCommit commit) {
 
-		for (String bfc : bfcList) {
-			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
+		for (String bic : bicList) {
+			if (commit.getShortMessage().contains(bic) || commit.getName().contains(bic)) {
 				return true;
 			}
 		}
@@ -153,8 +153,8 @@ public class BagOfWordsCollector {
 		this.repo = repo;
 	}
 
-	public void setBFC(List<String> bfcList) {
-		this.bfcList = bfcList;
+	public void setBIC(List<String> bicList) {
+		this.bicList = bicList;
 	}
 
 	public void setReferencePath(String referencePath) {

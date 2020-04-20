@@ -19,7 +19,7 @@ public class CMetricCollector implements MetricCollector {
 	final Repository repo;
 	final String referencePath;
 	final Input input;
-	List<String> bfcList;
+	List<String> bicList;
 
 	public CMetricCollector(Input input) throws IOException {
 		this.input = input;
@@ -36,7 +36,7 @@ public class CMetricCollector implements MetricCollector {
 		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
 		bowCollector.setGit(git);
 		bowCollector.setRepository(repo);
-		bowCollector.setBFC(bfcList);
+		bowCollector.setBIC(bicList);
 		bowCollector.setCommitList(commitList);
 		bowCollector.setReferencePath(referencePath);
 		bowCollector.setProjectName(input.projectName);
@@ -48,7 +48,7 @@ public class CMetricCollector implements MetricCollector {
 		CharacteristicVectorCollector cVectorCollector = new CharacteristicVectorCollector();
 		cVectorCollector.setGit(git);
 		cVectorCollector.setRepository(repo);
-		cVectorCollector.setBFC(bfcList);
+		cVectorCollector.setBIC(bicList);
 		cVectorCollector.setCommitList(commitList);
 		cVectorCollector.setReferencePath(referencePath);
 		cVectorCollector.setProjectName(input.projectName);
@@ -66,7 +66,7 @@ public class CMetricCollector implements MetricCollector {
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bfcList, input.projectName); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName); //StartDate, strEndDate, test
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
 		String arffOutputPath = commitCollector.CSV2ARFF();
@@ -91,8 +91,8 @@ public class CMetricCollector implements MetricCollector {
 	}
 
 	@Override
-	public void setBFC(List<String> bfcList) {
-		this.bfcList = bfcList;
+	public void setBIC(List<String> bicList) {
+		this.bicList = bicList;
 
 	}
 

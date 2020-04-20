@@ -23,7 +23,7 @@ import edu.handong.csee.isel.Utils;
 public class CharacteristicVectorCollector {
 	private Git git;
 	private Repository repo;
-	private List<String> bfcList = null;
+	private List<String> bicList = null;
 	private List<RevCommit> commitList;
 	private String referencePath;
 	private String projectName;
@@ -102,7 +102,7 @@ public class CharacteristicVectorCollector {
 
 				if (isBuggy(commit)) {
 
-					File changedVectorFile = new File(cleanDirectory + File.separator + key + ".txt");
+					File changedVectorFile = new File(buggyDirectory + File.separator + key + ".txt");
 
 					try {
 						FileUtils.write(changedVectorFile, content, "UTF-8");
@@ -111,7 +111,7 @@ public class CharacteristicVectorCollector {
 					}
 
 				} else {
-					File changedVectorFile = new File(buggyDirectory + File.separator + key + ".txt");
+					File changedVectorFile = new File(cleanDirectory + File.separator + key + ".txt");
 
 					try {
 						FileUtils.write(changedVectorFile, content, "UTF-8");
@@ -166,8 +166,8 @@ public class CharacteristicVectorCollector {
 		this.repo = repo;
 	}
 
-	public void setBFC(List<String> bfcList) {
-		this.bfcList = bfcList;
+	public void setBIC(List<String> bicList) {
+		this.bicList = bicList;
 	}
 
 	public void setProjectName(String projectName) {
@@ -197,8 +197,8 @@ public class CharacteristicVectorCollector {
 
 	private boolean isBuggy(RevCommit commit) {
 
-		for (String bfc : bfcList) {
-			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
+		for (String bic : bicList) {
+			if (commit.getShortMessage().contains(bic) || commit.getName().contains(bic)) {
 				return true;
 			}
 		}

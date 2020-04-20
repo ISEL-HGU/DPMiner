@@ -54,6 +54,7 @@ public class Main {
 
 		// 3. collect Bug-Fix-Commit
 		List<String> bfcList = null;
+		List<String> bicList = null;
 		BFCCollector bfcCollector = null;
 
 		switch (input.referecneType) {
@@ -86,7 +87,7 @@ public class Main {
 				System.out.println("There is no BIC file");
 				System.exit(0);
 			}
-			bfcList = Utils.readBICCsvFile(input.BICpath);
+			bicList = Utils.readBICCsvFile(input.BICpath);
 			
 			break;
 		}
@@ -114,7 +115,7 @@ public class Main {
 			break;
 		case METRIC: // TODO:
 			metricCollector = new CMetricCollector(input);
-			metricCollector.setBFC(bfcList);
+			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
