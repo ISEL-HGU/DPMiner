@@ -58,7 +58,7 @@ public class Utils {
 	public static String getDayFromCommitTime(RevCommit commit) {
 		
 		
-		SimpleDateFormat ft =  new SimpleDateFormat ("EEEEEEEE");
+		SimpleDateFormat ft =  new SimpleDateFormat("EEEEEEEE");
 		Date commitDate = commit.getAuthorIdent().getWhen();
 
 		TimeZone GMT = commit.getCommitterIdent().getTimeZone();

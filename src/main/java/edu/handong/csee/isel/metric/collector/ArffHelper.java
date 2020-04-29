@@ -400,7 +400,7 @@ public class ArffHelper {
 		ArrayList<String> firstCommitInformation = new ArrayList<String>();
 		
 		for(int i = 0; i < attributeLineList2.size(); i++) {
-			if(attributeLineList2.get(i).startsWith("@attribute AuthorID") || attributeLineList2.get(i).startsWith("@attribute CommitDate") || attributeLineList2.get(i).startsWith("@attribute Key")) {
+			if(attributeLineList2.get(i).startsWith("@attribute meta_data-AuthorID") || attributeLineList2.get(i).startsWith("@attribute meta_data-CommitDate") || attributeLineList2.get(i).startsWith("@attribute meta_data-Key")) {
 				String[] words = attributeLineList2.get(i).split(",");
 				Pattern pattern = Pattern.compile("@.+\\{(.+)");
 				Matcher matcher = pattern.matcher(words[0]);
