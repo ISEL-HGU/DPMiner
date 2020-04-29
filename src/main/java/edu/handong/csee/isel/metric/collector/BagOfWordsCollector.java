@@ -78,7 +78,7 @@ public class BagOfWordsCollector {
 
 				if (isBuggy(commit)) {
 
-					File deletedAndAddedLinesFile = new File(cleanDirectory + File.separator + key + ".txt");
+					File deletedAndAddedLinesFile = new File(buggyDirectory + File.separator + key + ".txt");
 
 					try {
 						FileUtils.write(deletedAndAddedLinesFile, contentBuffer.toString(), "UTF-8");
@@ -87,7 +87,7 @@ public class BagOfWordsCollector {
 					}
 
 				} else {
-					File deletedAndAddedLinesFile = new File(buggyDirectory + File.separator + key + ".txt");
+					File deletedAndAddedLinesFile = new File(cleanDirectory + File.separator + key + ".txt");
 
 					try {
 						FileUtils.write(deletedAndAddedLinesFile, contentBuffer.toString(), "UTF-8");

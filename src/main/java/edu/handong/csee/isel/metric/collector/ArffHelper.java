@@ -116,9 +116,17 @@ public class ArffHelper {
 			String bow = null, cVector = null;
 			try {
 				bow = FileUtils.readFileToString(bowFile, "UTF-8");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println("ERROR: cannot find '"+bowFile.getAbsolutePath() +"'");
+				continue;
+			}
+			try {
 				cVector = FileUtils.readFileToString(cVectorFile, "UTF-8");
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.err.println("ERROR: cannot find '"+cVectorFile.getAbsolutePath() +"'");
+				continue;
 			}
 			String mergedContent = bow + "\n" + cVector;
 
