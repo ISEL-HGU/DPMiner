@@ -14,18 +14,18 @@ public class BFCKeywordCollector extends BFCCollector {
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
-		List<String> bfsList = new ArrayList<>();
+		List<String> bfcList = new ArrayList<>();
 
 		final Pattern bugMessagePattern = Pattern.compile(String.join("|", bugKeywords), Pattern.CASE_INSENSITIVE);
 
 		for (RevCommit commit : commitList) {
-			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage());
+			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage().subSequence(0, 15));
 
 			if (bugKeyMatcher.find()) {
-				bfsList.add(commit.getShortMessage());
+				bfcList.add(commit.getName());
 			}
 		}
-		return bfsList;
+		return bfcList;
 	}
 
 }

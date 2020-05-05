@@ -55,12 +55,16 @@ public class CBICCollector implements BICCollector {
 			e.printStackTrace();
 		}
 		repo = git.getRepository();
-
+		
 		List<BICInfo> lstBIChanges = new ArrayList<BICInfo>();
 		for (RevCommit commit : commitList) {
 
 			if (commit.getParentCount() < 1) {
 				System.err.println("WARNING: Parent commit does not exist: " + commit.name());
+				continue;
+			}
+			
+			if(!Utils.isBFC(commit, bfcList)) {
 				continue;
 			}
 
