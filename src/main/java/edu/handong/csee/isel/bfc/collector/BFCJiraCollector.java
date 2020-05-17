@@ -49,11 +49,9 @@ public class BFCJiraCollector extends BFCCollector {
 
 		for (RevCommit commit : commitList) {
 			String message;
-			if(commit.getShortMessage().length() > 20) {
-				message = commit.getShortMessage().substring(0, 20);
-			} else {
-				message = commit.getShortMessage();
-			}
+
+			message = commit.getShortMessage();
+			
 			Matcher matcher = pattern.matcher(message);
 
 			if (matcher.find()) {
