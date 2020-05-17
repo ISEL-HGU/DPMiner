@@ -56,6 +56,9 @@ public class CBICCollector implements BICCollector {
 		}
 		repo = git.getRepository();
 		
+		System.out.println("bfcList:");
+		System.out.println(bfcList);
+		
 		List<BICInfo> lstBIChanges = new ArrayList<BICInfo>();
 		for (RevCommit commit : commitList) {
 
@@ -67,6 +70,7 @@ public class CBICCollector implements BICCollector {
 			if(!Utils.isBFC(commit, bfcList)) {
 				continue;
 			}
+			
 
 			RevCommit parent = commit.getParent(0);
 

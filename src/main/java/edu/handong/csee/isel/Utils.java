@@ -295,9 +295,7 @@ public class Utils {
 	}
 
 	public static String getStringDateTimeFromCommit(RevCommit commit) {
-		
-		
-		
+
 		SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date commitDate = commit.getAuthorIdent().getWhen();
 
@@ -336,36 +334,9 @@ public class Utils {
 
 		return commitName + "-" + newPath;
 	}
-	
-	public static boolean isBFC(RevCommit commit, List<String> bfcList) {
-		
-		if(bfcList.get(0).length() == 40) { // if not bfc
-			if(!bfcList.contains(commit.getId().getName()) ) {
-				return false;
-			}
-			
-		} else { 
-			String substr;
-			if(commit.getShortMessage().length() > 15) {
-				substr = commit.getShortMessage().substring(0,15);
-			} else {
-				substr = commit.getShortMessage();
-			}
-			boolean fixed = false;
-			System.out.println("sub: " + substr);
-			for(String bfc : bfcList) { 
-				if(substr.contains(bfc)) { 
-					fixed = true;
-					break;
-				}
-			}
-			if(!fixed) {
-				return false;
-			}
-		}
-		return true;
-		
-		
-	}
 
+	public static boolean isBFC(RevCommit commit, List<String> bfcList) {
+
+		return bfcList.contains(commit.getId().getName());
+	}
 }

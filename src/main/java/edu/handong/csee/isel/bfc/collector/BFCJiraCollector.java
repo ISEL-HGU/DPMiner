@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -23,6 +25,11 @@ public class BFCJiraCollector extends BFCCollector {
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
+		Pattern pattern = Pattern.compile(key + "-\\d+", Pattern.CASE_INSENSITIVE);
+
+		List<String> bfcList = new ArrayList<>();
+		List<String> keywordList = new ArrayList<>();
+
 		try {
 			JiraBugIssueCrawler jiraCrawler = new JiraBugIssueCrawler(url, key, path);
 			File savedFile = jiraCrawler.getJiraBugs();
@@ -30,18 +37,36 @@ public class BFCJiraCollector extends BFCCollector {
 			String content = FileUtils.readFileToString(savedFile, "UTF-8");
 
 			String[] lines = content.split("\n");
-			HashSet<String> keywordSet = new HashSet<>();
 
 			for (String line : lines) {
-				keywordSet.add(line);
+				keywordList.add(line);
 			}
 
-			return new ArrayList<>(keywordSet); // convert HashSet to List
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 
-		return null;
+		for (RevCommit commit : commitList) {
+			String message;
+			if(commit.getShortMessage().length() > 20) {
+				message = commit.getShortMessage().substring(0, 20);
+			} else {
+				message = commit.getShortMessage();
+			}
+			Matcher matcher = pattern.matcher(message);
+
+			if (matcher.find()) {
+				String key = matcher.group();
+				
+				if(keywordList.contains(key)) {
+					
+					bfcList.add(commit.getName());
+				}
+			}
+		}
+
+		return bfcList;
 	}
 
 	@Override

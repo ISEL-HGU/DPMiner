@@ -46,8 +46,11 @@ public class Main {
 		File gitDirectory = null;
 		if (isCloned(input) && isValidRepository(input)) {
 			gitDirectory = getGitDirectory(input);
+		} else if (isCloned(input) && (!isValidRepository(input))) {
+			File directory = getGitDirectory(input);
+			directory.delete();
+			gitDirectory = GitClone(input);
 		} else {
-			// TODO: add exception when isCloned() && !isValidRepository()
 			gitDirectory = GitClone(input);
 		}
 		commitList = getCommitListFrom(gitDirectory);
@@ -80,15 +83,15 @@ public class Main {
 			bfcList = bfcCollector.collectFrom(commitList);
 
 			break;
-		
+
 		case BICCSV:
 			File BIC = new File(input.BICpath);
 			if (!BIC.isFile()) {
 				System.out.println("There is no BIC file");
-				System.exit(0);
+				System.exit(1);
 			}
 			bicList = Utils.readBICCsvFile(input.BICpath);
-			
+
 			break;
 		}
 
