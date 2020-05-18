@@ -227,17 +227,20 @@ public class CommitCollector {
 				float NUC = (float)numOfUniqueCommitToTheModifyFiles/numOfFiles;
 				float LA = (float)numOfAddLines/linesOfCodeBeforeTheChange;
 				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
+				float MoL = (float)numOfModifyLines/linesOfCodeBeforeTheChange;
 
-				if(LA == 0 ) LA = 0;
-				if(LD == 0 ) LD = 0;
+				if(LA == 0 ) LA = 0; ///not error!
+				if(LD == 0 ) LD = 0;///not error!
+				if(MoL == 0) MoL = 0;///not error!
+				
 				if(linesOfCodeBeforeTheChange == 0) {
 					LA = numOfAddLines;
 					LD = numOfDeleteLines;
+					MoL = numOfModifyLines;
 				}
-				//float LT = (float)linesOfCodeBeforeTheChange/numOfFiles;  //이거는 키가 소스파일이라서 상관 없지 않나???
 
-				csvPrinter.printRecord(numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
-				developerCsvPrinter.printRecord(isBugCommit == 1? "buggy" : "clean",numOfModifyLines,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				csvPrinter.printRecord(MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+				developerCsvPrinter.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 			}
 
 			csvPrinter.close();
