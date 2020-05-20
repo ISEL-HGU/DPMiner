@@ -60,6 +60,10 @@ public class BFCJiraCollector extends BFCCollector {
 				if(keywordList.contains(key)) {
 					
 					bfcList.add(commit.getName());
+					if(commit.getName().equals("53a3d5530bd337625374396199ab985e115025ed")) {
+						System.out.println("Message: " + message);
+						System.out.println("commit: " + commit.getName());
+					}
 				}
 			}
 		}
