@@ -104,6 +104,12 @@ public class CLIConverter implements InputConverter {
 					throw new Exception(eMessage);
 				}
 			}
+			
+			if (cmd.hasOption("t") && !cmd.hasOption("c")) {
+				String eMessage = "Extracting Metrics requires BIC csv. get BIC first";
+				throw new Exception(eMessage);
+			}
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			printHelp(options);
