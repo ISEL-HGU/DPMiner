@@ -26,7 +26,13 @@ public class Input {
 	public String BICpath;
 	
 	public String gitDirectory;
-
+	
+	public String startDate;
+	
+	public String midDate;
+	
+	public String endDate;
+	
 	public static enum ReferenceType {
 		JIRA, GITHUB, KEYWORD, BICCSV
 	}

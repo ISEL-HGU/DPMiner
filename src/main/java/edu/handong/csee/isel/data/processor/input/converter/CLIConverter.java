@@ -58,6 +58,9 @@ public class CLIConverter implements InputConverter {
 		input.projectName = getProjectName(input.gitRemoteURI);
 		input.label = cmd.getOptionValue("l");
 		input.BICpath = cmd.getOptionValue("c");
+		input.startDate = cmd.getOptionValue("s");
+		input.midDate = cmd.getOptionValue("d");
+		input.endDate = cmd.getOptionValue("e");
 
 		input.outPath = cmd.getOptionValue("o");
 		if (input.outPath.endsWith(File.separator)) {
@@ -157,6 +160,27 @@ public class CLIConverter implements InputConverter {
 		options.addOption(Option.builder("c").longOpt("BugIntroducingChange csv file path").desc("Path of csv file")
 				.hasArg().argName("BIC csv file path").build());
 
+		options.addOption(Option.builder("s").longOpt("startdate")
+				.desc("Start date for collecting training data. Format: \"yyyy-MM-dd HH:mm:ss\"")
+				.hasArg()
+				.argName("Start date")
+//				.required()
+				.build());
+		
+		options.addOption(Option.builder("d").longOpt("middate")
+				.desc("End date for collecting training data and Start date for collecting test data. Format: \"yyyy-MM-dd HH:mm:ss\"")
+				.hasArg()
+				.argName("Mid date")
+//				.required()
+				.build());
+
+		options.addOption(Option.builder("e").longOpt("enddate")
+				.desc("End date for collecting test data. Format: \"yyyy-MM-dd HH:mm:ss\"")
+				.hasArg()
+				.argName("End date")
+//				.required()
+				.build());
+		
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());
 
 		return options;
