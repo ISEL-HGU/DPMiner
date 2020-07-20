@@ -59,7 +59,6 @@ public class CLIConverter implements InputConverter {
 		input.label = cmd.getOptionValue("l");
 		input.BICpath = cmd.getOptionValue("c");
 		input.startDate = cmd.getOptionValue("s");
-		input.midDate = cmd.getOptionValue("d");
 		input.endDate = cmd.getOptionValue("e");
 
 		input.outPath = cmd.getOptionValue("o");
@@ -81,9 +80,11 @@ public class CLIConverter implements InputConverter {
 			input.mode = Input.Mode.BIC;
 		} else if (cmd.hasOption("t")) {
 			input.mode = Input.Mode.METRIC;
+		} else if(cmd.hasOption("d")){
+			input.mode = Input.Mode.DEVELOPERMETRIC;
 		} else {
 			input.mode = Input.Mode.PATCH;
-		}
+		} 
 
 		return input;
 	}
@@ -167,17 +168,17 @@ public class CLIConverter implements InputConverter {
 //				.required()
 				.build());
 		
-		options.addOption(Option.builder("d").longOpt("middate")
-				.desc("End date for collecting training data and Start date for collecting test data. Format: \"yyyy-MM-dd HH:mm:ss\"")
-				.hasArg()
-				.argName("Mid date")
-//				.required()
-				.build());
-
 		options.addOption(Option.builder("e").longOpt("enddate")
 				.desc("End date for collecting test data. Format: \"yyyy-MM-dd HH:mm:ss\"")
 				.hasArg()
 				.argName("End date")
+//				.required()
+				.build());
+		
+		options.addOption(Option.builder("d").longOpt("developer")
+				.desc("collecting metrics for developer history scenario")
+				.hasArg()
+				.argName("developer history")
 //				.required()
 				.build());
 		

@@ -21,6 +21,9 @@ public class BagOfWordsCollector {
 	private List<RevCommit> commitList;
 	private String referencePath;
 	private String projectName;
+	private String startDate;
+	private String endDate;
+	
 
 	private File arff = null;
 
@@ -46,6 +49,11 @@ public class BagOfWordsCollector {
 			}
 
 			RevCommit parent = commit.getParent(0);
+			
+			//time 
+//			String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
+//			if(!(startDate.compareTo(BIDate)<=0 && BIDate.compareTo(endDate)<=0)) // only consider BISha1 whose date is bewteen startDate and endDate
+//				continue;
 
 			List<DiffEntry> diffs = Utils.diff(parent, commit, repo);
 
@@ -169,4 +177,14 @@ public class BagOfWordsCollector {
 		this.projectName = projectName;
 
 	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+	
+	
 }

@@ -19,13 +19,20 @@ public class CMetricCollector implements MetricCollector {
 	final Repository repo;
 	final String referencePath;
 	final Input input;
+	final String startDate;
+	final String endDate;
+	
 	List<String> bicList;
-
+	
 	public CMetricCollector(Input input) throws IOException {
 		this.input = input;
 		git = Git.open(Main.getGitDirectory(input));
 		repo = git.getRepository();
 		referencePath = input.outPath + File.separator + input.projectName +"-reference";
+		
+		this.startDate = input.startDate;
+		this.endDate = input.endDate;
+		
 	}
 
 	@Override
@@ -40,6 +47,8 @@ public class CMetricCollector implements MetricCollector {
 		bowCollector.setCommitList(commitList);
 		bowCollector.setReferencePath(referencePath);
 		bowCollector.setProjectName(input.projectName);
+		bowCollector.setStartDate(startDate);
+		bowCollector.setEndDate(endDate);
 		bowCollector.collect();
 //		bowCollector.makeArff(); //TODO: will be removed
 		bowArff = bowCollector.getArff();

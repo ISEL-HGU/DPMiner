@@ -339,4 +339,14 @@ public class Utils {
 
 		return bfcList.contains(commit.getId().getName());
 	}
+	
+	public static String getStringDateTimeFromCommitTime(int commitTime){
+		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		Date commitDate = new Date(commitTime* 1000L);
+
+		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		ft.setTimeZone(GMT);
+
+		return ft.format(commitDate);
+	}
 }

@@ -29,16 +29,16 @@ public class Input {
 	
 	public String startDate;
 	
-	public String midDate;
-	
 	public String endDate;
+	
+	
 	
 	public static enum ReferenceType {
 		JIRA, GITHUB, KEYWORD, BICCSV
 	}
 
 	public static enum Mode {
-		PATCH, BIC, METRIC
+		PATCH, BIC, METRIC, DEVELOPERMETRIC
 	}
 
 }
