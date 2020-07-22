@@ -47,6 +47,7 @@ public class CommitCollector {
 	private String arffOutputPath;
 	private Git git;
 	private Repository repo;
+	private boolean developerHistory;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 	List<String> bugCommit = null;
 
@@ -54,7 +55,7 @@ public class CommitCollector {
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
 	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
 
-	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate) { // String strStartDate,String strEndDate,boolean test
+	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
 
 		this.startDate = startDate;
@@ -64,6 +65,7 @@ public class CommitCollector {
 		this.git = git;
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
+		this.developerHistory = developerHistory;
 	}
 
 	public void countCommitMetrics() {

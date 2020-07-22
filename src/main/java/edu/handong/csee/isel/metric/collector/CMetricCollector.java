@@ -22,8 +22,7 @@ public class CMetricCollector implements MetricCollector {
 	String startDate;
 	String endDate;
 	String midDate;
-	boolean testData;
-	String projectName;
+	boolean developerHistory;
 	
 	List<String> bicList;
 	
@@ -38,10 +37,7 @@ public class CMetricCollector implements MetricCollector {
 		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
 		else this.endDate = endDate;
 		
-		this.testData = testData;
-		if(testData == false) this.projectName = input.projectName+"-"+"training";
-		else this.projectName = input.projectName+"-"+"test";
-	
+		this.developerHistory = developerHistory;
 	}
 
 	@Override
@@ -55,7 +51,7 @@ public class CMetricCollector implements MetricCollector {
 		bowCollector.setBIC(bicList);
 		bowCollector.setCommitList(commitList);
 		bowCollector.setReferencePath(referencePath);
-		bowCollector.setProjectName(projectName);
+		bowCollector.setProjectName(input.projectName);
 		bowCollector.setStartDate(startDate);
 		bowCollector.setEndDate(endDate);
 		bowCollector.collect();
@@ -69,7 +65,7 @@ public class CMetricCollector implements MetricCollector {
 		cVectorCollector.setBIC(bicList);
 		cVectorCollector.setCommitList(commitList);
 		cVectorCollector.setReferencePath(referencePath);
-		cVectorCollector.setProjectName(projectName);
+		cVectorCollector.setProjectName(input.projectName);
 		cVectorCollector.setStartDate(startDate);
 		cVectorCollector.setEndDate(endDate);
 		cVectorCollector.collect();
@@ -81,12 +77,12 @@ public class CMetricCollector implements MetricCollector {
 
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
-		arffHelper.setProjectName(projectName);
+		arffHelper.setProjectName(input.projectName);
 		arffHelper.setOutPath(input.outPath);
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, projectName, startDate, endDate); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
 		String arffOutputPath = commitCollector.CSV2ARFF();

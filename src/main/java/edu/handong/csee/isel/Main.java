@@ -129,15 +129,10 @@ public class Main {
 			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
 			
-			//training data
-			metricCollector = new CMetricCollector(input,input.startDate,midDate,false);
+			metricCollector = new CMetricCollector(input,input.startDate,input.endDate,true);
 			metricCollector.setBIC(bicList);
 			metricCollector.collectFrom(commitList);
 			
-			//test date
-			metricCollector = new CMetricCollector(input,midDate,input.endDate,true);
-			metricCollector.setBIC(bicList);
-			metricCollector.collectFrom(commitList);
 			
 			return;
 		}
