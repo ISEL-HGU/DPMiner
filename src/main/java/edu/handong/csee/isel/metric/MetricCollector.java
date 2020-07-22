@@ -12,7 +12,4 @@ public interface MetricCollector {
 	File collectFrom(List<RevCommit> commitList);
 
 	void setBIC(List<String> bfcList);
-	
-	void setTest(boolean test);
-
 }

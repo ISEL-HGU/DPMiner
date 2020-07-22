@@ -27,6 +27,8 @@ public class CharacteristicVectorCollector {
 	private List<RevCommit> commitList;
 	private String referencePath;
 	private String projectName;
+	private String startDate;
+	private String endDate;
 
 	private File arff = null;
 
@@ -52,6 +54,10 @@ public class CharacteristicVectorCollector {
 			}
 
 			RevCommit parent = commit.getParent(0);
+			
+			String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
+			if(!(startDate.compareTo(BIDate)<=0 && BIDate.compareTo(endDate)<0)) // only consider BISha1 whose date is bewteen startDate and endDate
+				continue;
 
 			List<DiffEntry> diffs = Utils.diff(parent, commit, repo);
 
@@ -176,6 +182,14 @@ public class CharacteristicVectorCollector {
 
 	public void setReferencePath(String referencePath) {
 		this.referencePath = referencePath;
+	}
+	
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 
 	private String getCVectorirectoryPath() {

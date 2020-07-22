@@ -45,7 +45,6 @@ public class CommitCollector {
 	private String endDate;
 	private String csvOutputPath;
 	private String arffOutputPath;
-	private boolean test;
 	private Git git;
 	private Repository repo;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
@@ -55,28 +54,11 @@ public class CommitCollector {
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
 	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
 
-	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName) { // String strStartDate,String strEndDate,boolean test
+	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
 
-//		if(strStartDate == null) {
-//			this.startDate = "0000-00-00 00:00:00";
-//		}else {
-//			this.startDate = strStartDate;
-//		}
-//
-//		if(strEndDate == null) {
-//			this.endDate = "9999-99-99 99:99:99";
-//		}else {
-//			this.endDate = strEndDate;
-//		}
-//
-//		this.test = test;
-		
-///////no option 
-		this.startDate = "0000-00-00 00:00:00";
-		this.endDate = "9999-99-99 99:99:99";
-		this.test = false;
-///////no option 
+		this.startDate = startDate;
+		this.endDate = endDate;
 		
 		this.bugCommit = buggyCommit;//버그 커밋해쉬 저장
 		this.git = git;
@@ -105,8 +87,8 @@ public class CommitCollector {
 			for (int commitIndex = commits.size()-1; commitIndex > -1; commitIndex--) {// 커밋 하나씩 읽음 
 				RevCommit commit = commits.get(commitIndex);
 
-				String commitTime = Utils.getStringDateTimeFromCommit(commit);//커밋 날짜 yyyy-MM-dd HH:mm:ss
-				if(!(startDate.compareTo(commitTime)<=0 && endDate.compareTo(commitTime)>=0))
+				String commitTime = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());//커밋 날짜 yyyy-MM-dd HH:mm:ss
+				if(!(startDate.compareTo(commitTime)<=0 && commitTime.compareTo(endDate)<0)) // only consider BISha1 whose date is bewteen startDate and endDate
 					continue;
 
 				if (commit.getParentCount() == 0) continue;
@@ -145,7 +127,7 @@ public class CommitCollector {
 					metaDataInfo.setCommitAuthor(authorId);//metaDataInfo에 author 저장 
 					metaDataInfo.setIsBugCommit((isBugCommit) ? 1 : 0);//metaDataInfo에 isBugCommit을 integer로 저장 
 
-					if(numOfentry == 0) Utils.countDeveloperCommit(developerExperience,authorId,commitTime);//수진이가 천재인 이유 : test와 .java를 포함하지 않은 커밋의 개발자 정보만 count 한다.
+					if(numOfentry == 0) Utils.countDeveloperCommit(developerExperience,authorId,commitTime);// test와 .java를 포함하지 않은 커밋의 개발자 정보만 count 한다.
 					numOfentry++;
 
 					try (DiffFormatter formatter = new DiffFormatter(byteStream)) { //한 소스파일의 diff 읽기(코드 보기)
@@ -247,6 +229,7 @@ public class CommitCollector {
 			developerCsvPrinter.close();
 			writer.close();
 			developerWriter.close();
+			metaDatas.clear();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

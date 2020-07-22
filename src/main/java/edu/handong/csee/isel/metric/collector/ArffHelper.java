@@ -392,7 +392,19 @@ public class ArffHelper {
 		}
 
 		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");
-
+		
+		mergedDataLineList.clear();
+		attributeLineList1.clear();
+		attributeLineList2.clear();
+		firstCommitInformation.clear();
+		dataLineList1.clear();
+		dataLineList2.clear();
+		dataPlusLineList.clear();
+		mergedAttributeLineList.clear();
+		mergedDataLineList.clear();
+		keyDataMap1.clear();
+		keyDataMap2.clear();
+		
 		return newFile;
 	}
 

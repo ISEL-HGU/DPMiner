@@ -11,7 +11,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.Utils;
-import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
 public class BagOfWordsCollector {
@@ -51,9 +50,9 @@ public class BagOfWordsCollector {
 			RevCommit parent = commit.getParent(0);
 			
 			//time 
-//			String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
-//			if(!(startDate.compareTo(BIDate)<=0 && BIDate.compareTo(endDate)<=0)) // only consider BISha1 whose date is bewteen startDate and endDate
-//				continue;
+			String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
+			if(!(startDate.compareTo(BIDate)<=0 && BIDate.compareTo(endDate)<0)) // only consider BISha1 whose date is bewteen startDate and endDate
+				continue;
 
 			List<DiffEntry> diffs = Utils.diff(parent, commit, repo);
 

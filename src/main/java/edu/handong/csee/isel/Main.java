@@ -118,7 +118,7 @@ public class Main {
 
 			break;
 		case METRIC: // TODO:
-			metricCollector = new CMetricCollector(input,input.startDate,input.endDate);
+			metricCollector = new CMetricCollector(input,input.startDate,input.endDate,false);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
@@ -128,16 +128,16 @@ public class Main {
 		case DEVELOPERMETRIC:
 			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
+			
 			//training data
-			metricCollector = new CMetricCollector(input,input.startDate,midDate);
-//			metricCollector.setBIC(bicList);
-//			metricCollector.collectFrom(commitList);
+			metricCollector = new CMetricCollector(input,input.startDate,midDate,false);
+			metricCollector.setBIC(bicList);
+			metricCollector.collectFrom(commitList);
 			
 			//test date
-			metricCollector = new CMetricCollector(input,midDate,input.endDate);
-			metricCollector.setTest(true);
-//			metricCollector.setBIC(bicList);
-//			metricCollector.collectFrom(commitList);
+			metricCollector = new CMetricCollector(input,midDate,input.endDate,true);
+			metricCollector.setBIC(bicList);
+			metricCollector.collectFrom(commitList);
 			
 			return;
 		}
