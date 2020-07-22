@@ -21,6 +21,7 @@ public class CMetricCollector implements MetricCollector {
 	final Input input;
 	final String startDate;
 	final String endDate;
+	final String mode;
 	
 	List<String> bicList;
 	
@@ -32,6 +33,7 @@ public class CMetricCollector implements MetricCollector {
 		
 		this.startDate = input.startDate;
 		this.endDate = input.endDate;
+		this.mode = input.mode.toString();
 		
 	}
 

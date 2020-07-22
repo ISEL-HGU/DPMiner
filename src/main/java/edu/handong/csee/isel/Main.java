@@ -28,6 +28,7 @@ import edu.handong.csee.isel.data.processor.input.InputConverter;
 import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
+import edu.handong.csee.isel.metric.collector.DeveloperHistory;
 import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
@@ -122,6 +123,15 @@ public class Main {
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
+			return;
+			
+		case DEVELOPERMETRIC:
+			DeveloperHistory developerHistory = new DeveloperHistory(input);
+			developerHistory.findDeveloperDate();
+//			metricCollector = new CMetricCollector(input);
+//			metricCollector.setBIC(bicList);
+//			metricCollector.collectFrom(commitList);
+			
 			return;
 		}
 

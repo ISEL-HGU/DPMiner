@@ -114,6 +114,11 @@ public class CLIConverter implements InputConverter {
 				throw new Exception(eMessage);
 			}
 			
+			if (cmd.hasOption("d") && !cmd.hasOption("c")) {
+				String eMessage = "Extracting Metrics requires BIC csv. get BIC first";
+				throw new Exception(eMessage);
+			}
+			
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			printHelp(options);
@@ -177,7 +182,6 @@ public class CLIConverter implements InputConverter {
 		
 		options.addOption(Option.builder("d").longOpt("developer")
 				.desc("collecting metrics for developer history scenario")
-				.hasArg()
 				.argName("developer history")
 //				.required()
 				.build());
