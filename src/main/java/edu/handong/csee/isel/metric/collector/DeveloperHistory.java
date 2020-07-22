@@ -25,15 +25,17 @@ public class DeveloperHistory {
 			this.git = Git.open(Main.getGitDirectory(input));
 			this.repo = git.getRepository();
 			if(input.startDate == null) startDate = "0000-00-00 00:00:00";
+			else this.startDate = input.startDate;
+			
 			if(input.endDate == null) endDate = "9999-99-99 99:99:99";
-
+			else this.endDate = input.endDate;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void findDeveloperDate() {
+	public String findDeveloperDate() {
 		midDate = null;
 		ArrayList<String> newDeveloper = new ArrayList<String>();
 		ArrayList<String> dateOfCameIn = new ArrayList<String>();
@@ -90,7 +92,7 @@ public class DeveloperHistory {
 		}
 		
 		double halfDeveloper = Math.ceil((double)newDeveloper.size()/(double)2.0);
-		midDate = dateOfCameIn.get((int)halfDeveloper);
+		return midDate = dateOfCameIn.get((int)halfDeveloper);
 	}
 
 	public String getMidDate() {

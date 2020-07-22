@@ -21,20 +21,23 @@ public class CMetricCollector implements MetricCollector {
 	final Input input;
 	final String startDate;
 	final String endDate;
-	final String mode;
+	String midDate;
+	boolean test;
 	
 	List<String> bicList;
 	
-	public CMetricCollector(Input input) throws IOException {
+	public CMetricCollector(Input input, String startDate, String endDate) throws IOException {
 		this.input = input;
 		git = Git.open(Main.getGitDirectory(input));
 		repo = git.getRepository();
 		referencePath = input.outPath + File.separator + input.projectName +"-reference";
 		
-		this.startDate = input.startDate;
-		this.endDate = input.endDate;
-		this.mode = input.mode.toString();
+		if(startDate == null) this.startDate = "0000-00-00 00:00:00";
+		else this.startDate = startDate;
+		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
+		else this.endDate = endDate;
 		
+		this.test = false;
 	}
 
 	@Override
@@ -107,4 +110,8 @@ public class CMetricCollector implements MetricCollector {
 
 	}
 
+	public void setTest(boolean test) {
+		this.test = test;
+	}
+	
 }
