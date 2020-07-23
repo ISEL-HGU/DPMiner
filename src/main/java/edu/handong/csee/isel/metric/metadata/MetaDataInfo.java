@@ -21,6 +21,7 @@ public class MetaDataInfo {
 	int developerExperience;//ok
 	float recentDeveloperExperience;//ok
 	int LinesOfCodeBeforeTheChange;//ok
+	String commitTime;
 
 	public MetaDataInfo() {
 		this.numOfBIC = 0;
@@ -41,6 +42,7 @@ public class MetaDataInfo {
 		this.developerExperience = 0;
 		this.recentDeveloperExperience = 0;
 		this.LinesOfCodeBeforeTheChange = 0;
+		this.commitTime = null;
 	}
 
 	public int getNumOfBIC() {
@@ -190,4 +192,13 @@ public class MetaDataInfo {
 	public void setLinesOfCodeBeforeTheChange(int linesOfCodeBeforeTheChange) {
 		LinesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange;
 	}
+
+	public String getCommitTime() {
+		return commitTime;
+	}
+
+	public void setCommitTime(String commitTime) {
+		this.commitTime = commitTime;
+	}
+	
 }

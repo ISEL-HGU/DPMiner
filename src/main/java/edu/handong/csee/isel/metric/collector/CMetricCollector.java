@@ -26,16 +26,16 @@ public class CMetricCollector implements MetricCollector {
 	
 	List<String> bicList;
 	
-	public CMetricCollector(Input input, String startDate, String endDate, boolean testData) throws IOException {
+	public CMetricCollector(Input input, boolean developerHistory) throws IOException {
 		this.input = input;
 		git = Git.open(Main.getGitDirectory(input));
 		repo = git.getRepository();
 		referencePath = input.outPath + File.separator + input.projectName +"-reference";
 		
 		if(startDate == null) this.startDate = "0000-00-00 00:00:00";
-		else this.startDate = startDate;
+		else this.startDate = input.startDate;
 		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
-		else this.endDate = endDate;
+		else this.endDate = input.endDate;
 		
 		this.developerHistory = developerHistory;
 	}
@@ -83,6 +83,7 @@ public class CMetricCollector implements MetricCollector {
 
 		// TODO: 4. Meta data, SJ help me
 		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
+		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
 		String arffOutputPath = commitCollector.CSV2ARFF();
@@ -110,5 +111,9 @@ public class CMetricCollector implements MetricCollector {
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 
+	}
+	
+	public void setMidDate(String midDate) {
+		this.midDate = midDate;
 	}
 }
