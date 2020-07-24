@@ -578,7 +578,7 @@ public class ArffHelper {
 
 			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
 			String dataLine2 = dataLine.substring(0,dataLine.lastIndexOf(',')) + "}";
-
+//			System.out.println(dataLine2);
 			keyDataMap2.put(key, dataLine);
 			keyDataMap2NoCommitTime.put(key, dataLine2);
 		}
@@ -610,10 +610,13 @@ public class ArffHelper {
 				dataLine = dataLine.substring(0, dataLine.lastIndexOf(','));
 				dataLine = dataLine + ","+(numberOfAttribute - 1)+" '" + firstCommitTime +"'"+ key2;
 			}
-			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
 			
 			String dataLine2 = dataLine.substring(0,dataLine.lastIndexOf(',')) + "}";
-
+//			System.out.println(dataLine2);
+			dataLine2 = dataLine2.substring(0,dataLine2.lastIndexOf(',')) + "}";
+//			System.out.println(dataLine2);
+//			System.out.println();
+			
 			keyDataMap2.put(key, dataLine);
 			keyDataMap2NoCommitTime.put(key, dataLine2);
 		}
