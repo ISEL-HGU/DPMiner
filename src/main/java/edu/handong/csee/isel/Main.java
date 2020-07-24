@@ -128,7 +128,7 @@ public class Main {
 		case DEVELOPERMETRIC:
 			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
-			
+			System.out.println("MidDate : "+midDate);
 			metricCollector = new CMetricCollector(input,true);
 			metricCollector.setMidDate(midDate);
 			metricCollector.setBIC(bicList);

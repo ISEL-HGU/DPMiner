@@ -23,12 +23,23 @@ public class ArffHelper {
 	private String projectName;
 	private String referencePath;
 	private String outPath;
+	private static String firstCommitTime = null;
+	private static String firstCommitKey = null;
 
 	private final static String attributeNumPatternStr = "(\\{|,)(\\d+)\\s";
 	private final static Pattern attributeNumPattern = Pattern.compile(attributeNumPatternStr);
 
 	private final static String dataKeyPatternStr = "\\{.+\\,\\d+\\s(.+)\\}";
 	private final static Pattern dataKeyPattern = Pattern.compile(dataKeyPatternStr);
+	
+	private final static String firstCommitTimePatternStr = ".+\\{'(\\d+-\\d+-\\d+\\s+\\d+:\\d+:\\d+)',.+\\}";
+	private final static Pattern firstCommitTimePattern = Pattern.compile(firstCommitTimePatternStr);
+	
+	private final static String firstCommitKeyPatternStr = "\\{([\\w|\\d|\\-]+.java)\\,(.+)\\}";
+	private final static Pattern firstCommitKeyPattern = Pattern.compile(firstCommitKeyPatternStr);
+	
+	private final static String commitTimePatternStr = "\\{.+\\,\\d+\\s'(.+)'";
+	private final static Pattern commitTimePattern = Pattern.compile(commitTimePatternStr);
 
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
@@ -199,12 +210,11 @@ public class ArffHelper {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		String arffPath1 = "/Users/imseongbin/Desktop/lottie-android.arff";
-		String arffPath2 = "/Users/imseongbin/Desktop/lottie-android.arff";
+		String arffPath1 = "/Users/yangsujin/Desktop/incubator-hivemall.arff";
+		String arffPath2 = "/Users/yangsujin/Desktop/incubator-hivemall_.arff";
 		File arff1 = new File(arffPath1);
 		File arff2 = new File(arffPath2);
 
-		File arff3 = makeMergedArff(arff1, arff2);
 
 	}
 
@@ -393,18 +403,6 @@ public class ArffHelper {
 
 		FileUtils.write(newFile, newContentBuf.toString(), "UTF-8");
 		
-		mergedDataLineList.clear();
-		attributeLineList1.clear();
-		attributeLineList2.clear();
-		firstCommitInformation.clear();
-		dataLineList1.clear();
-		dataLineList2.clear();
-		dataPlusLineList.clear();
-		mergedAttributeLineList.clear();
-		mergedDataLineList.clear();
-		keyDataMap1.clear();
-		keyDataMap2.clear();
-		
 		return newFile;
 	}
 
@@ -462,7 +460,6 @@ public class ArffHelper {
 		for (String line : lines) {
 			if (dataPart) {
 				dataLineList.add(line);
-
 			} else if (line.startsWith("@data")) {
 
 				dataPart = true;
@@ -479,6 +476,16 @@ public class ArffHelper {
 
 		for (String line : lines) {
 			if (line.startsWith("@attribute")) {
+				if(line.startsWith("@attribute meta_data-commitTime")) {
+					Matcher m = firstCommitTimePattern.matcher(line);
+					m.find();
+					firstCommitTime = m.group(1);
+				}
+				if(line.startsWith("@attribute meta_data-Key")) {
+					Matcher m = firstCommitKeyPattern.matcher(line);
+					m.find();
+					firstCommitKey = m.group(1);
+				}
 				attributeLineList.add(line);
 			}
 		}
@@ -511,5 +518,161 @@ public class ArffHelper {
 		}
 
 		return fileOrder;
+	}
+	
+	public File makeMergedDeveloperHistoryArff(File arff1, File arff2, List<String> keyOrder, String midDate) throws IOException {
+		File newFileTrain = new File(referencePath + File.separator + projectName +"-train-data.arff");
+		File newFileTest = new File(referencePath + File.separator + projectName +"-test-data.arff");
+		File newFileTestdeveloper = new File(referencePath + File.separator + projectName +"-test-developer-data.arff");
+
+		newFileTrain.delete();
+		newFileTest.delete();
+		newFileTestdeveloper.delete();
+
+		String content1 = FileUtils.readFileToString(arff1, "UTF-8");
+		String content2 = FileUtils.readFileToString(arff2, "UTF-8");
+
+		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
+		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
+		
+		ArrayList<String> firstCommitInformation = preprocessAttribute(attributeLineList2);
+		
+		
+		attributeLineList2.remove(attributeLineList2.size() - 2); // remove Last index attribute: key
+		attributeLineList2.remove(attributeLineList2.size() - 1);
+		
+		
+		ArrayList<String> mergedAttributeLineList = new ArrayList<>();
+		mergedAttributeLineList.addAll(attributeLineList1);
+		mergedAttributeLineList.addAll(attributeLineList2);
+		
+
+		ArrayList<String> dataLineList1 = getDataLinesFrom(content1);
+		ArrayList<String> dataLineList2 = getDataLinesFrom(content2);
+		
+		preprocessData(dataLineList2, firstCommitInformation);
+
+		Map<String, String> keyDataMap1 = new HashMap<>(); // arff1 <key, data-line>
+		Map<String, String> keyDataMap2 = new HashMap<>(); // arff2 <key, data-line>
+		Map<String, String> keyDataMap2NoCommitTime = new HashMap<>();
+
+		for (int i = 0; i < keyOrder.size(); i++) {
+			String key = keyOrder.get(i);
+			keyDataMap1.put(key, dataLineList1.get(i));
+		}
+
+		for (String dataLine : dataLineList2) {
+			Matcher m = dataKeyPattern.matcher(dataLine);
+			m.find();
+			String key = m.group(1);
+
+			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
+			String dataLine2 = dataLine.substring(0,dataLine.lastIndexOf(',')) + "}";
+
+			keyDataMap2.put(key, dataLine);
+			keyDataMap2NoCommitTime.put(key, dataLine2);
+		}
+
+		// Should be equal
+		System.out.println("First arff data count: " + dataLineList1.size());
+		System.out.println("Second arff data count: " + dataLineList2.size());
+		System.out.println();
+		int plusAttributeNum = attributeLineList1.size();
+		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
+////////?????????
+		for (int i = 0; i < keyOrder.size(); i++) {
+			String key = keyOrder.get(i);
+			keyDataMap1.put(key, dataLineList1.get(i));
+		}
+
+		for (String dataLine : dataPlusLineList) {
+			Matcher m = dataKeyPattern.matcher(dataLine);
+			m.find();
+			String key = m.group(1);
+			
+			if(!dataLine.contains(",12988 ")) {
+				dataLine = dataLine.substring(0, dataLine.lastIndexOf('}'));
+				dataLine = dataLine + ",12988 "+ firstCommitKey + "}";
+			}
+			
+			if(!dataLine.contains(",12987 ")) {
+				String key2 = dataLine.substring(dataLine.lastIndexOf(','),dataLine.lastIndexOf('}')+1);
+				dataLine = dataLine.substring(0, dataLine.lastIndexOf(','));
+				dataLine = dataLine + ",12987 '" + firstCommitTime +"'"+ key2;
+			}
+			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
+			
+			String dataLine2 = dataLine.substring(0,dataLine.lastIndexOf(',')) + "}";
+
+			keyDataMap2.put(key, dataLine);
+			keyDataMap2NoCommitTime.put(key, dataLine2);
+		}
+/////////////////?????
+		List<String> mergedDataLineList = new ArrayList<>();
+		List<String> mergedDataLineListNoCommitTime = new ArrayList<>();
+
+		for (String key : keyDataMap1.keySet()) {
+			if (!keyDataMap2.keySet().contains(key)) {
+				continue;
+			}
+			
+			if (!keyDataMap2NoCommitTime.keySet().contains(key)) {
+				continue;
+			}
+
+			String data1 = keyDataMap1.get(key);
+			String data2 = keyDataMap2.get(key);
+			String data2NoCommitTime = keyDataMap2NoCommitTime.get(key);
+
+			String mergedData = mergeData(data1, data2);
+			String mergedDataNoCommitTime = mergeData(data1, data2NoCommitTime);
+			
+			mergedDataLineList.add(mergedData);
+			mergedDataLineListNoCommitTime.add(mergedDataNoCommitTime);
+		}
+
+		StringBuffer newContentBufTrain = new StringBuffer();
+		StringBuffer newContentBufTest = new StringBuffer();
+		StringBuffer newContentBufTestDeveloper = new StringBuffer();
+		
+//		StringBuffer newContentBuf = new StringBuffer();
+		
+		newContentBufTrain.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n\n");
+		newContentBufTest.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n\n");
+		newContentBufTestDeveloper.append("@relation weka.filters.unsupervised.instance.NonSparseToSparse\n\n");
+
+		for (String line : mergedAttributeLineList) {
+			newContentBufTrain.append(line + "\n");
+			newContentBufTest.append(line + "\n");
+			newContentBufTestDeveloper.append(line + "\n");
+		}
+
+		newContentBufTrain.append("\n@data\n");
+		newContentBufTest.append("\n@data\n");
+		newContentBufTestDeveloper.append("\n@data\n");
+
+//		for (String line : mergedDataLineList) {
+//			newContentBuf.append(line + "}\n");
+//		}
+		
+		for(int i = 0; i < mergedDataLineList.size(); i++) {
+//			System.out.println(mergedDataLineList.get(i));
+			Matcher m = commitTimePattern.matcher(mergedDataLineList.get(i));
+			m.find();
+			String commitTime = m.group(1);
+			
+			if(midDate.compareTo(commitTime) >= 0) { //if middata < commitTime = training data
+				newContentBufTrain.append(mergedDataLineListNoCommitTime.get(i) + "}\n");
+			}else {//test data
+				newContentBufTest.append(mergedDataLineListNoCommitTime.get(i) + "}\n");
+				newContentBufTestDeveloper.append(mergedDataLineList.get(i) + "}\n");
+			}
+		}
+
+		FileUtils.write(newFileTrain, newContentBufTrain.toString(), "UTF-8");
+		FileUtils.write(newFileTest, newContentBufTest.toString(), "UTF-8");
+		FileUtils.write(newFileTestdeveloper, newContentBufTestDeveloper.toString(), "UTF-8");
+		
+		return newFileTrain;
 	}
 }

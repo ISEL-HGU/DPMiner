@@ -98,7 +98,8 @@ public class CMetricCollector implements MetricCollector {
 		File resultArff = null;
 
 		try {
-			resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
+			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
+			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
