@@ -671,7 +671,7 @@ public class ArffHelper {
 			m.find();
 			String commitTime = m.group(1);
 			
-			if(midDate.compareTo(commitTime) >= 0) { //if middata < commitTime = training data
+			if(midDate.compareTo(commitTime) > 0) { //if middata < commitTime = training data
 				newContentBufTrain.append(mergedDataLineListNoCommitTime.get(i) + "}\n");
 			}else {//test data
 				newContentBufTest.append(mergedDataLineListNoCommitTime.get(i) + "}\n");
