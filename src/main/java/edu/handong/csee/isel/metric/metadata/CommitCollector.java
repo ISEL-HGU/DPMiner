@@ -260,7 +260,9 @@ public class CommitCollector {
 			developerCsvPrinterTrain.close();
 			writer.close();
 			developerTrainWriter.close();
-			developerCsvPrinterTest.close();
+			if(developerHistory == true) {
+				developerCsvPrinterTest.close();
+			}
 			metaDatas.clear();
 			
 		} catch (IOException e) {

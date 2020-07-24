@@ -320,6 +320,8 @@ public class ArffHelper {
 		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
 		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
 		
+		int numberOfAttribute = attributeLineList1.size() + attributeLineList2.size() - 1;
+		
 		ArrayList<String> firstCommitInformation = preprocessAttribute(attributeLineList2);
 		
 		attributeLineList2.remove(attributeLineList2.size() - 1); // remove Last index attribute: key
@@ -367,9 +369,15 @@ public class ArffHelper {
 			Matcher m = dataKeyPattern.matcher(dataLine);
 			m.find();
 			String key = m.group(1);
-
+			
+			if(!dataLine.contains(","+numberOfAttribute+" ")) {
+				dataLine = dataLine.substring(0, dataLine.lastIndexOf('}'));
+				dataLine = dataLine + ","+numberOfAttribute+" "+ firstCommitKey + "}";
+			}
+//			System.out.println(dataLine);
 			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
-
+//			System.out.println(dataLine);
+//			System.out.println();
 			keyDataMap2.put(key, dataLine);
 		}
 /////////////////?????
@@ -535,6 +543,8 @@ public class ArffHelper {
 		ArrayList<String> attributeLineList1 = getAttributeLinesFrom(content1);
 		ArrayList<String> attributeLineList2 = getAttributeLinesFrom(content2);
 		
+		int numberOfAttribute = attributeLineList1.size() + attributeLineList2.size() - 1;
+
 		ArrayList<String> firstCommitInformation = preprocessAttribute(attributeLineList2);
 		
 		
@@ -590,15 +600,15 @@ public class ArffHelper {
 			m.find();
 			String key = m.group(1);
 			
-			if(!dataLine.contains(",12988 ")) {
+			if(!dataLine.contains(","+numberOfAttribute+" ")) {
 				dataLine = dataLine.substring(0, dataLine.lastIndexOf('}'));
-				dataLine = dataLine + ",12988 "+ firstCommitKey + "}";
+				dataLine = dataLine + ","+numberOfAttribute+" "+ firstCommitKey + "}";
 			}
 			
-			if(!dataLine.contains(",12987 ")) {
+			if(!dataLine.contains(","+ (numberOfAttribute - 1) +" ")) {
 				String key2 = dataLine.substring(dataLine.lastIndexOf(','),dataLine.lastIndexOf('}')+1);
 				dataLine = dataLine.substring(0, dataLine.lastIndexOf(','));
-				dataLine = dataLine + ",12987 '" + firstCommitTime +"'"+ key2;
+				dataLine = dataLine + ","+(numberOfAttribute - 1)+" '" + firstCommitTime +"'"+ key2;
 			}
 			dataLine = dataLine.substring(0, dataLine.lastIndexOf(',')) + "}";
 			
