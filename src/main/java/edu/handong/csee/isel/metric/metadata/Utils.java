@@ -88,7 +88,9 @@ public class Utils {
 
 			for (CSVRecord csvRecord : csvParser) {
 				String hash = csvRecord.get(0);
-				buggyCommit.add(hash);
+				String source = csvRecord.get(1);
+				String key = hash + "-" + source;
+				buggyCommit.add(key);
 			}
 
 		} catch (IOException e) {

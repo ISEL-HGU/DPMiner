@@ -105,13 +105,13 @@ public class CommitCollector {
 				String commitHour = Utils.getHourFromCommitTime(commit);
 				String commitDay = Utils.getDayFromCommitTime(commit);//커밋한 요일 (sunday..)
 				String authorId = Utils.parseAuthorID(commit.getAuthorIdent().toString());//커밋한 개발자
-				boolean isBugCommit = isBuggy(commit);//현재 커밋이 버그 커밋인가? true-false
 				CommitUnitInfo commitUnitInfo = new CommitUnitInfo();//커밋 단위 메트릭을 저장하는 instance 
 				int numOfentry = 0;
 
 				for (DiffEntry entry : diff) {// 현재 커밋에 있는 소스파일 하나씩 읽음 
 					String sourcePath = entry.getNewPath().toString();
 					String oldPath = entry.getOldPath();
+					boolean isBugCommit = isBuggy(commit, entry);//현재 커밋-소스가 버그인가? true-false
 					
 					if (oldPath.equals("/dev/null") || sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
 						continue;
@@ -341,10 +341,15 @@ public class CommitCollector {
 
 	}
 	
-	private boolean isBuggy(RevCommit commit) {
+	private boolean isBuggy(RevCommit commit, DiffEntry diff) {
 
-		for (String bfc : bugCommit) {
-			if (commit.getShortMessage().contains(bfc) || commit.getName().contains(bfc)) {
+		for (String bic : bugCommit) {
+			if (commit.getShortMessage().contains(bic)) {
+				return true;
+			}
+			
+			String key = commit.getName() + "-" + diff.getNewPath().toString();
+			if(key.contains(bic)) {
 				return true;
 			}
 		}

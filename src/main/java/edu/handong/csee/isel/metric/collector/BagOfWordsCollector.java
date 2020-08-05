@@ -83,7 +83,7 @@ public class BagOfWordsCollector {
 					}
 				}
 
-				if (isBuggy(commit)) {
+				if (isBuggy(commit,diff)) {
 
 					File deletedAndAddedLinesFile = new File(buggyDirectory + File.separator + key + ".txt");
 
@@ -116,10 +116,15 @@ public class BagOfWordsCollector {
 		arff = arffHelper.getArffFromDirectory(bowDirectoryPath);
 	}
 
-	private boolean isBuggy(RevCommit commit) {
+	private boolean isBuggy(RevCommit commit, DiffEntry diff) {
 
 		for (String bic : bicList) {
-			if (commit.getShortMessage().contains(bic) || commit.getName().contains(bic)) {
+			if (commit.getShortMessage().contains(bic)) {
+				return true;
+			}
+			
+			String key = commit.getName() + "-" + diff.getNewPath().toString();
+			if(key.contains(bic)) {
 				return true;
 			}
 		}

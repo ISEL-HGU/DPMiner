@@ -106,7 +106,7 @@ public class CharacteristicVectorCollector {
 
 				String content = contentBuffer.toString().trim();
 
-				if (isBuggy(commit)) {
+				if (isBuggy(commit,diff)) {
 
 					File changedVectorFile = new File(buggyDirectory + File.separator + key + ".txt");
 
@@ -209,10 +209,15 @@ public class CharacteristicVectorCollector {
 		return new File(path);
 	}
 
-	private boolean isBuggy(RevCommit commit) {
+	private boolean isBuggy(RevCommit commit, DiffEntry diff) {
 
 		for (String bic : bicList) {
-			if (commit.getShortMessage().contains(bic) || commit.getName().contains(bic)) {
+			if (commit.getShortMessage().contains(bic)) {
+				return true;
+			}
+			
+			String key = commit.getName() + "-" + diff.getNewPath().toString();
+			if(key.contains(bic)) {
 				return true;
 			}
 		}
