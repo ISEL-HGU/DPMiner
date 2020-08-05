@@ -75,7 +75,6 @@ public class CBICCollector implements BICCollector {
 			RevCommit parent = commit.getParent(0);
 
 			List<DiffEntry> diffs = Utils.diff(parent, commit, repo);
-
 			// check the change size in a patch
 			int numLinesChanges = 0; // deleted + added
 			String id = commit.name() + "";

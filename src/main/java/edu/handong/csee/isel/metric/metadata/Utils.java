@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,7 +80,7 @@ public class Utils {
 	}
 
 	public static List<String> readBICCsvFile(String BICcsvPath) {
-		List<String> buggyCommit = new TreeList<String>();
+		TreeSet<String> buggyCommit = new TreeSet<String>();
 		Reader reader;
 
 		try {
@@ -96,9 +97,9 @@ public class Utils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return buggyCommit;
-
+		List<String> resultList = new ArrayList<String>(buggyCommit);
+		System.out.println("Size of BIC : "+resultList.size());
+		return resultList;
 	}
 
 	public static int calDate(String first, String second) throws ParseException {

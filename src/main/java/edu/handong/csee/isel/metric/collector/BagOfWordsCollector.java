@@ -39,14 +39,14 @@ public class BagOfWordsCollector {
 
 		cleanDirectory.mkdirs();
 		buggyDirectory.mkdirs();
-
+		
 		for (RevCommit commit : commitList) {
-
+			
 			if (commit.getParentCount() < 1) {
 				System.err.println("WARNING: Parent commit does not exist: " + commit.name());
 				continue;
 			}
-
+			
 			RevCommit parent = commit.getParent(0);
 			
 			//time 
@@ -117,13 +117,13 @@ public class BagOfWordsCollector {
 	}
 
 	private boolean isBuggy(RevCommit commit, DiffEntry diff) {
-
+		
+		
 		for (String bic : bicList) {
 			if (commit.getShortMessage().contains(bic)) {
 				return true;
 			}
-			
-			String key = commit.getName() + "-" + diff.getNewPath().toString();
+			String key = commit.getId().getName() + "-" + diff.getNewPath().toString();
 			if(key.contains(bic)) {
 				return true;
 			}

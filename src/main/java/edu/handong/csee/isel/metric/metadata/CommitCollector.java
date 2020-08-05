@@ -348,7 +348,7 @@ public class CommitCollector {
 				return true;
 			}
 			
-			String key = commit.getName() + "-" + diff.getNewPath().toString();
+			String key = commit.getId().getName() + "-" + diff.getNewPath().toString();
 			if(key.contains(bic)) {
 				return true;
 			}
