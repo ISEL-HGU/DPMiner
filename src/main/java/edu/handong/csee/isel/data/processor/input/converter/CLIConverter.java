@@ -60,6 +60,19 @@ public class CLIConverter implements InputConverter {
 		input.BICpath = cmd.getOptionValue("c");
 		input.startDate = cmd.getOptionValue("s");
 		input.endDate = cmd.getOptionValue("e");
+		
+		int inputPercent;
+		if(!cmd.hasOption("p")) {
+			inputPercent = 5; //default
+		}else {
+			inputPercent = Integer.parseInt(cmd.getOptionValue("p"));
+			if(inputPercent > 1 && inputPercent < 10) {
+				input.percent = Integer.parseInt(cmd.getOptionValue("p"));
+			}else {
+				inputPercent = 5;
+			}
+		}
+		input.percent = inputPercent;
 
 		input.outPath = cmd.getOptionValue("o");
 		if (input.outPath.endsWith(File.separator)) {
@@ -170,20 +183,23 @@ public class CLIConverter implements InputConverter {
 				.desc("Start date for collecting training data. Format: \"yyyy-MM-dd HH:mm:ss\"")
 				.hasArg()
 				.argName("Start date")
-//				.required()
 				.build());
 		
 		options.addOption(Option.builder("e").longOpt("enddate")
 				.desc("End date for collecting test data. Format: \"yyyy-MM-dd HH:mm:ss\"")
 				.hasArg()
 				.argName("End date")
-//				.required()
 				.build());
 		
 		options.addOption(Option.builder("d").longOpt("developer")
 				.desc("collecting metrics for developer history scenario")
 				.argName("developer history")
-//				.required()
+				.build());
+		
+		options.addOption(Option.builder("p").longOpt("percent")
+				.desc("Percent of developer. Range : 2 ~ 9")
+				.hasArg()
+				.argName("percent of developer")
 				.build());
 		
 		options.addOption(Option.builder("h").longOpt("help").desc("Help").build());

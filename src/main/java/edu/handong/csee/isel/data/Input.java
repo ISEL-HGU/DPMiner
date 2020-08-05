@@ -31,6 +31,8 @@ public class Input {
 	
 	public String endDate;
 	
+	public int percent;
+	
 	
 	
 	public static enum ReferenceType {

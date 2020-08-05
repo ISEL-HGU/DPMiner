@@ -19,6 +19,7 @@ public class DeveloperHistory {
 	String startDate;
 	String endDate;
 	String midDate;
+	double percent;
 	
 	public DeveloperHistory(Input input){
 		try {
@@ -29,6 +30,8 @@ public class DeveloperHistory {
 			
 			if(input.endDate == null) endDate = "9999-99-99 99:99:99";
 			else this.endDate = input.endDate;
+			
+			this.percent = (double)input.percent;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,8 +93,8 @@ public class DeveloperHistory {
 				dateOfCameIn.add(commitTime);
 			}
 		}
-		
-		double halfDeveloper = Math.ceil((double)newDeveloper.size()/(double)2.0);
+		percent = (double) (percent * 0.1); // 0.2~0.9 (20% ~ 90%)
+		double halfDeveloper = Math.ceil((double)newDeveloper.size() * percent);
 		return midDate = dateOfCameIn.get((int)halfDeveloper);
 	}
 
