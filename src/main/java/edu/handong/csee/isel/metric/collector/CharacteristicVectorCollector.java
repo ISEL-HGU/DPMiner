@@ -105,6 +105,14 @@ public class CharacteristicVectorCollector {
 				}
 
 				String content = contentBuffer.toString().trim();
+				
+				if(key.length() > 254) {
+					if(CMetricCollector.tooLongName.containsKey(key)) {
+						key = CMetricCollector.tooLongName.get(key).toString();
+					}else {
+						System.err.println("Error : can not find key");
+					}
+				}
 
 				if (isBuggy(commit,diff)) {
 

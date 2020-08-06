@@ -88,10 +88,12 @@ public class Utils {
 			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
 			for (CSVRecord csvRecord : csvParser) {
-				String hash = csvRecord.get(0);
-				String source = csvRecord.get(1);
-				String key = hash + "-" + source;
-				buggyCommit.add(key);
+				if(csvRecord.get(0) != null || csvRecord.get(1) != null) {
+					String hash = csvRecord.get(0);
+					String source = csvRecord.get(1);
+					String key = hash + "-" + source;
+					buggyCommit.add(key);
+				}
 			}
 
 		} catch (IOException e) {
