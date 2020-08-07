@@ -26,6 +26,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
+import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitUnitInfo;
 import edu.handong.csee.isel.metric.metadata.DeveloperExperienceInfo;
 import edu.handong.csee.isel.metric.metadata.MetaDataInfo;
@@ -119,6 +120,13 @@ public class CommitCollector {
 					//key 생성 & 해쉬맵 생성 
 					String keySourcePath = sourcePath.replaceAll("/", "-");
 					String key = commitHash+"-"+keySourcePath;
+					if(key.length() > 254) {
+						if(CMetricCollector.tooLongName.containsKey(key)) {
+							key = CMetricCollector.tooLongName.get(key).toString();
+						}else {
+							System.err.println("Error : can not find key");
+						}
+					}
 					metaDataInfo = new MetaDataInfo();
 					metaDatas.put(key, metaDataInfo);
 
@@ -183,7 +191,7 @@ public class CommitCollector {
 			
 			if(developerHistory == false) {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
-				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_train_developer.csv"));
+				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv"));
 				
 				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-LT","meta_data-Key"));
 				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));

@@ -24,7 +24,7 @@ public class CMetricCollector implements MetricCollector {
 	String endDate;
 	String midDate;
 	boolean developerHistory;
-	static HashMap<String,Integer> tooLongName = new HashMap<>();
+	public static HashMap<String,Integer> tooLongName = new HashMap<>();
 	static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
