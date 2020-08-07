@@ -67,16 +67,16 @@ public class BagOfWordsCollector {
 				String oldPath = diff.getOldPath();
 				String newPath = diff.getNewPath();
 
-				if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
+				if (newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
 					continue;
 				
 				key = Utils.getKeyName(commit.getName(), newPath);
 				
-				if(key.length() > 254) {
-					CMetricCollector.tooLongName.put(key, CMetricCollector.tooLongNameIndex);
-					key = Integer.toString(CMetricCollector.tooLongNameIndex);
-					CMetricCollector.tooLongNameIndex++;
-				}
+//				if(key.length() > 254) {
+//					CMetricCollector.tooLongName.put(key, CMetricCollector.tooLongNameIndex);
+//					key = Integer.toString(CMetricCollector.tooLongNameIndex);
+//					CMetricCollector.tooLongNameIndex++;
+//				}
 				
 				CPatchCollector helper = new CPatchCollector();
 				String patch = helper.getPatch(diff, repo);

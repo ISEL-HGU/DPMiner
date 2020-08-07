@@ -68,7 +68,7 @@ public class CharacteristicVectorCollector {
 				String oldPath = diff.getOldPath();
 				String newPath = diff.getNewPath();
 
-				if (oldPath.equals("/dev/null") || newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
+				if (newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
 					continue;
 
 				key = Utils.getKeyName(commit.getName(), newPath);
@@ -106,13 +106,13 @@ public class CharacteristicVectorCollector {
 
 				String content = contentBuffer.toString().trim();
 				
-				if(key.length() > 254) {
-					if(CMetricCollector.tooLongName.containsKey(key)) {
-						key = CMetricCollector.tooLongName.get(key).toString();
-					}else {
-						System.err.println("Error : can not find key");
-					}
-				}
+//				if(key.length() > 254) {
+//					if(CMetricCollector.tooLongName.containsKey(key)) {
+//						key = CMetricCollector.tooLongName.get(key).toString();
+//					}else {
+//						System.err.println("Error : can not find key");
+//					}
+//				}
 
 				if (isBuggy(commit,diff)) {
 

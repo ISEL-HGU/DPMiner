@@ -114,19 +114,19 @@ public class CommitCollector {
 					String oldPath = entry.getOldPath();
 					boolean isBugCommit = isBuggy(commit, entry);//현재 커밋-소스가 버그인가? true-false
 					
-					if (oldPath.equals("/dev/null") || sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
+					if (sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
 						continue;
 
 					//key 생성 & 해쉬맵 생성 
 					String keySourcePath = sourcePath.replaceAll("/", "-");
 					String key = commitHash+"-"+keySourcePath;
-					if(key.length() > 254) {
-						if(CMetricCollector.tooLongName.containsKey(key)) {
-							key = CMetricCollector.tooLongName.get(key).toString();
-						}else {
-							System.err.println("Error : can not find key");
-						}
-					}
+//					if(key.length() > 254) {
+//						if(CMetricCollector.tooLongName.containsKey(key)) {
+//							key = CMetricCollector.tooLongName.get(key).toString();
+//						}else {
+//							System.err.println("Error : can not find key");
+//						}
+//					}
 					metaDataInfo = new MetaDataInfo();
 					metaDatas.put(key, metaDataInfo);
 
