@@ -111,7 +111,6 @@ public class CommitCollector {
 
 				for (DiffEntry entry : diff) {// 현재 커밋에 있는 소스파일 하나씩 읽음 
 					String sourcePath = entry.getNewPath().toString();
-					String oldPath = entry.getOldPath();
 					boolean isBugCommit = isBuggy(commit, entry);//현재 커밋-소스가 버그인가? true-false
 					
 					if (sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
@@ -241,9 +240,11 @@ public class CommitCollector {
 				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
 				float MoL = (float)numOfModifyLines/linesOfCodeBeforeTheChange;
 
-				if(LA == 0 ) LA = 0; ///not error!
-				if(LD == 0 ) LD = 0;///not error!
-				if(MoL == 0) MoL = 0;///not error!
+				if(numOfUniqueCommitToTheModifyFiles == 0 ) NUC = 0; 
+				if(numOfAddLines == 0 ) LA = 0; 
+				if(numOfDeleteLines == 0) LD = 0;
+				if(numOfModifyLines == 0) MoL = 0;
+				if(numOfFiles == 0) NUC = numOfUniqueCommitToTheModifyFiles;
 				
 				if(linesOfCodeBeforeTheChange == 0) {
 					LA = numOfAddLines;

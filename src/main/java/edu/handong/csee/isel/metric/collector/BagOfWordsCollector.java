@@ -64,7 +64,6 @@ public class BagOfWordsCollector {
 				contentBuffer.append(commit.getFullMessage());
 				contentBuffer.append("\n");
 
-				String oldPath = diff.getOldPath();
 				String newPath = diff.getNewPath();
 
 				if (newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
@@ -77,7 +76,7 @@ public class BagOfWordsCollector {
 //					key = Integer.toString(CMetricCollector.tooLongNameIndex);
 //					CMetricCollector.tooLongNameIndex++;
 //				}
-				
+			
 				CPatchCollector helper = new CPatchCollector();
 				String patch = helper.getPatch(diff, repo);
 
