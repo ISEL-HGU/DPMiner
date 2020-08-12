@@ -230,27 +230,28 @@ public class CommitCollector {
 				float recentDeveloperExperience = entry.getValue().getRecentDeveloperExperience();
 				int linesOfCodeBeforeTheChange = entry.getValue().getLinesOfCodeBeforeTheChange();
 				String commitTime = entry.getValue().getCommitTime();
-
+				
 				//compute LT
 				linesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange - numOfAddLines + numOfDeleteLines;
-
+				
 				//normalized
 				float NUC = (float)numOfUniqueCommitToTheModifyFiles/numOfFiles;
 				float LA = (float)numOfAddLines/linesOfCodeBeforeTheChange;
 				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
 				float MoL = (float)numOfModifyLines/linesOfCodeBeforeTheChange;
 
-				if(numOfUniqueCommitToTheModifyFiles == 0 ) NUC = 0; 
 				if(numOfAddLines == 0 ) LA = 0; 
 				if(numOfDeleteLines == 0) LD = 0;
 				if(numOfModifyLines == 0) MoL = 0;
+				if(numOfUniqueCommitToTheModifyFiles <= 0 ) NUC = 0; 
 				if(numOfFiles == 0) NUC = numOfUniqueCommitToTheModifyFiles;
 				
-				if(linesOfCodeBeforeTheChange == 0) {
+				if(linesOfCodeBeforeTheChange <= 0) {
 					LA = numOfAddLines;
 					LD = numOfDeleteLines;
 					MoL = numOfModifyLines;
 				}
+				
 				if(developerHistory == false) {
 					csvPrinter.printRecord(MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
