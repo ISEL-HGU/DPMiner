@@ -89,6 +89,8 @@ public class CSVMaker {
 			// TODO:
 			break;
 		}
+		
+		printer.close();
 	}
 
 	private void print(BICInfo info) throws IOException {
