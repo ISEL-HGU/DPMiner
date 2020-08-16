@@ -79,7 +79,7 @@ public class CMetricCollector implements MetricCollector {
 		arffHelper.setReferencePath(referencePath);
 		arffHelper.setProjectName(input.projectName);
 		arffHelper.setOutPath(input.outPath);
-		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
+		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector); //arrf 파일이 하나나온다  <<bow-vector arff>>
 
 		// TODO: 4. Meta data, SJ help me
 		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
@@ -89,7 +89,7 @@ public class CMetricCollector implements MetricCollector {
 		String arffOutputPath = commitCollector.CSV2ARFF();
 		
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
-																					// metadata arff
+																					// metadata arff //reference 안에 있는 arff...!
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
@@ -98,7 +98,7 @@ public class CMetricCollector implements MetricCollector {
 		File resultArff = null;
 
 		try {
-			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
+			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
 			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

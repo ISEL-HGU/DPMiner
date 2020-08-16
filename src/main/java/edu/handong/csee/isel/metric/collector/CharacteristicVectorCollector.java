@@ -92,7 +92,7 @@ public class CharacteristicVectorCollector {
 					case "UPD":
 					case "MOV":
 
-						String changedNode = element.getName() + String.valueOf(element.getNode().getType());
+						String changedNode = element.getName() + String.valueOf(element.getNode().getType());//node
 
 						contentBuffer.append(changedNode);
 						contentBuffer.append(" ");

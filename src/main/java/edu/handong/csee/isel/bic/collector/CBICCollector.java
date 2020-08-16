@@ -27,7 +27,7 @@ import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.data.csv.BICInfo;
 
-public class CBICCollector implements BICCollector {
+public class CBICCollector implements BICCollector {  //도대체 왜 여기서 에러가 뜨는지가 모르겠다. 건든게 일도 없는데?
 
 	Input input;
 	List<String> bfcList = null;
