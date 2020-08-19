@@ -23,7 +23,7 @@ public class Input {
 
 	public Mode mode;// BIC 랑 Path일 경우 (ij, ig, ik 옵션 정하기 위해)  
 	
-	public String Issue_keyWord; //이슈키 추가한 부분 
+	public String Issue_keyWord; //이슈키 추가한 부분 //고쳐야 한다
 	
 	public String BICpath;
 	

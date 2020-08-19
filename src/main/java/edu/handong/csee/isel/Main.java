@@ -69,7 +69,7 @@ public class Main {
 		switch (input.taskType) {
 		case Patch:
 			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);
-			
+		
 			PatchCollector patchCollector = new CPatchCollector(input);
 			patchCollector.setBFC(bfcList);
 			csvInfoLst = patchCollector.collectFrom(commitList);
@@ -85,14 +85,12 @@ public class Main {
 //			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
 			bicCollector.setBFC(bfcList);
 			csvInfoLst = bicCollector.collectFrom(commitList);
-			System.out.println("please~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 			Print_CSV(input, csvInfoLst);//이게 최종 BIC프린트 해주는 메소드-> 손델것은 없다. 알아서 하는 메소드.
-			System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 			break;
 
 		case Metric:
 			//BIC 파일 읽기
-			Read_BICcsv(input, bicList);
+			bicList= Read_BICcsv(input);			
 			
 			metricCollector = new CMetricCollector(input,false);
 			metricCollector.setBIC(bicList);
@@ -103,7 +101,7 @@ public class Main {
 			
 		case Develop_Metirc:
 			//BIC 파일 읽기
-			Read_BICcsv(input, bicList);
+			bicList=Read_BICcsv(input);
 			
 			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
@@ -123,13 +121,13 @@ public class Main {
 	
 	
 	
-	public static List<String> Read_BICcsv(Input input, List<String> bicList){
+	public static List<String> Read_BICcsv(Input input){
 		File BIC = new File(input.BICpath);
 		if (!BIC.isFile()) {
 			System.out.println("There is no BIC file");
 			System.exit(1);
 		}
-		bicList = Utils.readBICCsvFile(input.BICpath);
+		 List<String> bicList = Utils.readBICCsvFile(input.BICpath);
 		
 		return bicList;
 		
@@ -138,7 +136,7 @@ public class Main {
 	public static void Print_CSV( Input input, List<CSVInfo> csvInfoLst)  throws IOException {
 
 		if (csvInfoLst.size() < 1) {
-			System.out.println("why is it not workding?");
+			System.out.println("why is it not working?");
 			return;
 		}
 		System.out.println("Really?");

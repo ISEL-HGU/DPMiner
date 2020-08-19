@@ -25,14 +25,12 @@ public class CLIConverter implements InputConverter {
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			System.out.println("여기!!!!1111");
 			printHelp(options);
 			System.exit(1);
 		}
 
 		// CLI exception handling
 		if (!isValid(cmd, options)) {
-			System.out.println("여기!!!!22222");
 			System.exit(1);
 		}
 		
@@ -53,12 +51,12 @@ public class CLIConverter implements InputConverter {
 		
 		
 		//각각 옵션이 null아닐때 값을 넣어주고 해당 값에 맞는 input.mode를 정해 주었다!
-		if(cmd.getOptionValue("ij")!=null) {
+		if(!cmd.hasOption("ij")) {
 			input.jiraURL = cmd.getOptionValue("ij");
 			input.jiraProjectKey = cmd.getOptionValue("jk");
 			input.mode = Input.Mode.Jira;
 		}
-		else if(cmd.getOptionValue("ik")!=null) {
+		else if(!cmd.hasOption("ik")) {
 			input.Issue_keyWord = cmd.getOptionValue("ik");
 			input.mode = Input.Mode.KeyWord;
 		}
@@ -78,7 +76,7 @@ public class CLIConverter implements InputConverter {
 			input.taskType = Input.TaskType.Develop_Metirc;
 		}
 		
-		input.BICpath = cmd.getOptionValue("cp");  //metric 만들때 필요한 BIC 인풋 path옵션! 
+		input.BICpath = cmd.getOptionValue("bp");  //metric 만들때 필요한 BIC 인풋 path옵션! 
 		
 		input.label = cmd.getOptionValue("l");
 		input.startDate = cmd.getOptionValue("s");
@@ -96,20 +94,6 @@ public class CLIConverter implements InputConverter {
 		}
 		input.maxSize = max;
 		input.minSize = min;
-		
-
-//		if (cmd.hasOption("b")) {
-//			input.mode = Input.Mode.BIC;
-//		} else if (cmd.hasOption("t")) {
-//			input.mode = Input.Mode.METRIC;
-//		} else if(cmd.hasOption("d")){
-//			input.mode = Input.Mode.DEVELOPERMETRIC;
-//		} else {
-//			input.mode = Input.Mode.PATCH;
-//		} 
-		
-
-
 		
 		int inputPercent;
 		if(!cmd.hasOption("p")) {
@@ -156,8 +140,8 @@ public class CLIConverter implements InputConverter {
 				String eMessage = "Making patch or BIC.csv need 'ij' or 'ig' of 'ik'option";
 				throw new Exception(eMessage);
 			}
-			// metic과 Develop_Metric이라면 CP(BIC path)는 무조건 있어야 한다.
-			if ((task.equals("metric")||task.equals("Develop_Metric")) ^ (cmd.hasOption("cp"))) {
+			// metic과 Develop_Metric이라면 bP(BIC path)는 무조건 있어야 한다.
+			if ((task.equals("metric")||task.equals("Develop_Metric")) ^ (cmd.hasOption("bp"))) {
 				String eMessage = "It need a BIC CSV file to make a metric";
 				throw new Exception(eMessage);
 			}
@@ -168,21 +152,6 @@ public class CLIConverter implements InputConverter {
 				throw new Exception(eMessage);
 			}
 			
-
-			
-//			if ((cmd.hasOption("t") ^ cmd.hasOption("p"))||(cmd.hasOption("t") ^ cmd.hasOption("b"))
-//					||(cmd.hasOption("t") ^ cmd.hasOption("m"))||(cmd.hasOption("t") ^ cmd.hasOption("dm"))){
-//				String eMessage = "'t' options must be used with 'k'";
-//				throw new Exception(eMessage);
-//			}
-//			
-//
-//			
-//			if (cmd.hasOption("d") && !cmd.hasOption("c")) {
-//				String eMessage = "Extracting Metrics requires BIC csv. get BIC first";
-//				throw new Exception(eMessage);
-//			}
-
 			
 			if (cmd.hasOption("x") ^ cmd.hasOption("m")) {
 			String eMessage = "'x' and 'm' Option must be used together!";
@@ -199,7 +168,6 @@ public class CLIConverter implements InputConverter {
 		}
 			
 		} catch (Exception e) {
-			System.out.println("여기깅ㄴ가 혹");
 			System.out.println(e.getMessage());
 			printHelp(options);
 			return false;
@@ -207,15 +175,21 @@ public class CLIConverter implements InputConverter {
 		return true;
 	}
 	
+	
+	
 //bic CSV파일 만드는 컴파일 명령  	
 //	./BugPatchCollector -i https://github.com/apache/nutch -o /Users/juhui/Desktop/testMain/BIC -t BIC -ij issues.apache.org -jk NUTCH 
 	
 //arff파일 만드는 명령
 //	./BugPatchCollector -i https://github.com/apache/metamodel -o /data/metric -t -c /data/BIC/BIC_metamodel.csv
 	
-//바뀐 메인 돌리기 	
-//	./BugPatchCollector -i https://github.com/apache/juddi -ij issues.apache.org -jk JUDDI -t BIC -o /Users/juhui/Desktop/testMain/BIC	
+//바뀐 메인 돌리기 BIC
+//	./BugPatchCollector -i https://github.com/apache/juddi -ij issues.apache.org -jk JUDDI -t BIC -o /Users/juhui/Desktop/testMain/BIC
+//바뀐 메인 메트릭.....
+//	./BugPatchCollector -i https://github.com/apache/juddi  -t metric -bp /Users/juhui/Desktop/testMain/BIC_juddi.csv -o /Users/juhui/Desktop/please
 
+	
+//	./BugPatchCollector -i https://github.com/apache/juddi -ik fix -t BIC -o /Users/juhui/Desktop/testMain/keyword
 	private Options createOptions() {// desc 다시쓰자!
 		Options options = new Options();
 
@@ -242,7 +216,7 @@ public class CLIConverter implements InputConverter {
 		options.addOption(Option.builder("ik").longOpt("issue keyword").desc("keyword of commit message")
 				.hasArg().argName("CommitMsgkeyword").build());
 		
-		options.addOption(Option.builder("cp").longOpt("BugIntroducingChange csv file path").desc("Path of csv file")
+		options.addOption(Option.builder("bp").longOpt("BugIntroducingChange csv file path").desc("Path of BIC csv file")
 				.hasArg().argName("BIC csv file path").build());
 		
 		
