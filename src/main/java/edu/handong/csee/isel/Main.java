@@ -58,102 +58,130 @@ public class Main {
 
 		// 3. collect Bug-Fix-Commit
 		List<String> bfcList = null;
-		List<String> bicList = null;
+		List<String> bicList = null;//메트릭스에서 쓰임.
+		MetricCollector metricCollector = null;
 		BFCCollector bfcCollector = null;
-
-		switch (input.referecneType) {
-		case JIRA:
-			bfcCollector = new BFCJiraCollector();
-			bfcCollector.setJiraURL(input.jiraURL);
-			bfcCollector.setJiraProjectKey(input.jiraProjectKey);
-			bfcCollector.setOutPath(input.outPath);
-			bfcList = bfcCollector.collectFrom(commitList);
-
-			break;
-
-		case GITHUB:
-			bfcCollector = new BFCGitHubCollector();
-			bfcCollector.setGitHubURL(input.gitURL);
-			bfcCollector.setGitHubLabel(input.label);
-			bfcList = bfcCollector.collectFrom(commitList);
-
-			break;
-
-		case KEYWORD:
-			bfcCollector = new BFCKeywordCollector();
-			bfcList = bfcCollector.collectFrom(commitList);
-
-			break;
-
-		case BICCSV:
-			File BIC = new File(input.BICpath);
-			if (!BIC.isFile()) {
-				System.out.println("There is no BIC file");
-				System.exit(1);
-			}
-			bicList = Utils.readBICCsvFile(input.BICpath);
-
-			break;
-		}
-
-		// 4. Patch, BIC, Metric
 		List<CSVInfo> csvInfoLst = null;
 
-		PatchCollector patchCollector = null;
-		BICCollector bicCollector = null;
-		MetricCollector metricCollector = null;
+		
 
-		switch (input.mode) {
-		case PATCH:
-			patchCollector = new CPatchCollector(input);
+
+		switch (input.taskType) {
+		case Patch:
+			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);
+		
+			PatchCollector patchCollector = new CPatchCollector(input);
 			patchCollector.setBFC(bfcList);
 			csvInfoLst = patchCollector.collectFrom(commitList);
+			
+			Print_CSV(input, csvInfoLst);
 
 			break;
+
 		case BIC:
-			bicCollector = new CBICCollector(input);
+			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);
+			
+			BICCollector bicCollector = new CBICCollector(input);
 //			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
 			bicCollector.setBFC(bfcList);
 			csvInfoLst = bicCollector.collectFrom(commitList);
-
+			Print_CSV(input, csvInfoLst);//이게 최종 BIC프린트 해주는 메소드-> 손델것은 없다. 알아서 하는 메소드.
 			break;
-		case METRIC: // TODO:
+
+		case Metric:
+			//BIC 파일 읽기
+			bicList= Read_BICcsv(input);			
+			
 			metricCollector = new CMetricCollector(input,false);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
-			return;
+			break;
 			
-		case DEVELOPERMETRIC:
+		case Develop_Metirc:
+			//BIC 파일 읽기
+			bicList=Read_BICcsv(input);
+			
 			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
 			System.out.println("MidDate : "+midDate);
+			
 			metricCollector = new CMetricCollector(input,true);
 			metricCollector.setMidDate(midDate);
 			metricCollector.setBIC(bicList);
 			metricCollector.collectFrom(commitList);
 			
-			
-			return;
+			break;
 		}
 
-		// 5. Print CSV
+
+
+	}
+	
+	
+	
+	public static List<String> Read_BICcsv(Input input){
+		File BIC = new File(input.BICpath);
+		if (!BIC.isFile()) {
+			System.out.println("There is no BIC file");
+			System.exit(1);
+		}
+		 List<String> bicList = Utils.readBICCsvFile(input.BICpath);
+		
+		return bicList;
+		
+	}
+	
+	public static void Print_CSV( Input input, List<CSVInfo> csvInfoLst)  throws IOException {
+
 		if (csvInfoLst.size() < 1) {
+			System.out.println("why is it not working?");
 			return;
 		}
-
+		System.out.println("Really?");
 		CSVMaker printer = new CSVMaker();
 		printer.setDataType(csvInfoLst);
 		printer.setPath(input);
 		printer.print(csvInfoLst);
-
+		
 	}
+	
+	public static List<String> Making_bfcCollector (Input input, List<String> bfcList, List<RevCommit> commitList, BFCCollector bfcCollector)
+			throws IOException,InvalidProjectKeyException, InvalidDomainException{
+		
+		switch (input.mode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
+		case Jira:
+			bfcCollector = new BFCJiraCollector();
+			bfcCollector.setJiraURL(input.jiraURL);
+			bfcCollector.setJiraProjectKey(input.jiraProjectKey);
+			bfcCollector.setOutPath(input.outPath);
+			bfcList = bfcCollector.collectFrom(commitList);
+			break;
+			
+		case KeyWord:
+			bfcCollector = new BFCKeywordCollector();
+			bfcList = bfcCollector.collectFrom(commitList);
+			break;
+			
+		case GitHub:
+			bfcCollector = new BFCGitHubCollector();
+			bfcCollector.setGitHubURL(input.gitURL);
+			bfcCollector.setGitHubLabel(input.label);
+			bfcList = bfcCollector.collectFrom(commitList);
+			break;
+		
+		}
+		
+		return bfcList;
+	}
+
+	
 
 	private static boolean isValidRepository(Input input) {
 		File directory = getGitDirectory(input);
 		try {
-			Git git = Git.open(directory);
+			Git git = Git.open(directory);  //여기가 쓰이는데 왜안쓰인다고 뜨는지 모르겠다.
 			return true;
 		} catch (IOException e) {
 			return false;

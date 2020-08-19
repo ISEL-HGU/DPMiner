@@ -21,8 +21,8 @@ public class CSVMaker {
 	public String path;
 	private Type type = null;
 
-	private static enum Type {
-		PATCH, BIC, METRIC
+	private static enum Type {  //해당 class는 파라미터로 들어온 csvInfo의 첫번째 값의 속성을 instanceof 으로 알아낸 뒤 알아서 파일을 만든다.. 그래서 고칠부분은 없다.
+		PATCH, BIC, METRIC 
 	}
 
 	public void setPath(Input input) {
@@ -103,13 +103,16 @@ public class CSVMaker {
 	public void setDataType(List<CSVInfo> csvInfoLst) {
 		CSVInfo csvInfoFirst = csvInfoLst.get(0);
 		if (csvInfoFirst instanceof PatchInfo) {
+			System.out.println("CSVMAER path");
 			this.type = Type.PATCH;
 		}
 		if (csvInfoFirst instanceof BICInfo) {
 			this.type = Type.BIC;
+			System.out.println("CSVMAER BIC");
 		}
 		if (csvInfoFirst instanceof MetricInfo) {
 			this.type = Type.METRIC;
+			System.out.println("CSVMAER MATRIC");
 		}
 	}
 
