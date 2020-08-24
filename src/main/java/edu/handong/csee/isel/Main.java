@@ -68,8 +68,8 @@ public class Main {
 
 		switch (input.taskType) {
 		case Patch:
-			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);
-		
+			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);	
+			
 			PatchCollector patchCollector = new CPatchCollector(input);
 			patchCollector.setBFC(bfcList);
 			csvInfoLst = patchCollector.collectFrom(commitList);
@@ -91,7 +91,6 @@ public class Main {
 		case Metric:
 			//BIC 파일 읽기
 			bicList= Read_BICcsv(input);			
-			
 			metricCollector = new CMetricCollector(input,false);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
@@ -136,10 +135,10 @@ public class Main {
 	public static void Print_CSV( Input input, List<CSVInfo> csvInfoLst)  throws IOException {
 
 		if (csvInfoLst.size() < 1) {
-			System.out.println("why is it not working?");
+//			System.out.println("why is it not working?");
 			return;
 		}
-		System.out.println("Really?");
+//		System.out.println("Really?");
 		CSVMaker printer = new CSVMaker();
 		printer.setDataType(csvInfoLst);
 		printer.setPath(input);
@@ -152,6 +151,7 @@ public class Main {
 		
 		switch (input.mode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
 		case Jira:
+//			System.out.println("Main Jira part!");
 			bfcCollector = new BFCJiraCollector();
 			bfcCollector.setJiraURL(input.jiraURL);
 			bfcCollector.setJiraProjectKey(input.jiraProjectKey);
@@ -160,11 +160,25 @@ public class Main {
 			break;
 			
 		case KeyWord:
+//			System.out.println("Main KeyWord part!");
 			bfcCollector = new BFCKeywordCollector();
+			if(input.Issue_keyWord != null) {
+//				System.out.println("keyworkds Issue Keywords: "+ input.Issue_keyWord);
+				BFCKeywordCollector.bugKeywords = new String[1];
+				BFCKeywordCollector.bugKeywords[0]="("+input.Issue_keyWord+")";
+//				System.out.println("Main: How about here?");
+			}
+			else {
+				BFCKeywordCollector.bugKeywords = new String[2];
+				BFCKeywordCollector.bugKeywords[0]="(bug)";
+				BFCKeywordCollector.bugKeywords[1]="(fix)"; 
+			}
+//			System.out.println("here to: How about here?");
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 			
 		case GitHub:
+//			System.out.println("Main GitHub part!");
 			bfcCollector = new BFCGitHubCollector();
 			bfcCollector.setGitHubURL(input.gitURL);
 			bfcCollector.setGitHubLabel(input.label);

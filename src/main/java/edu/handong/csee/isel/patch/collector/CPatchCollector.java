@@ -48,7 +48,7 @@ public class CPatchCollector implements PatchCollector {
 
 		for (RevCommit commit : commitList) {
 
-			if (isBFC(commit)) {
+			if (Utils.isBFC(commit, bfcList)) {
 
 				RevCommit parent = commit.getParent(0);
 
@@ -63,11 +63,11 @@ public class CPatchCollector implements PatchCollector {
 				if (patchSize < input.minSize || patchSize > input.maxSize) {
 					continue;
 				}
+//				System.out.println("CPatchCollector collectFrom if Working");
 
 				csvInfoList.addAll(patch);
 			}
 		}
-
 		return csvInfoList;
 	}
 
@@ -192,20 +192,20 @@ public class CPatchCollector implements PatchCollector {
 		return patch;
 	}
 
-	private boolean isBFC(RevCommit commit) {
-
-		for (String bfc : bfcList) {
-			System.out.println(commit.getShortMessage());
-			System.out.println(bfc);
-			System.out.println();
-			if (commit.getShortMessage().contains(bfc)) {
-				System.out.println(commit.getShortMessage());
-				return true;
-			}
-		}
-
-		return false;
-	}
+//	private boolean isBFC(RevCommit commit) {
+//
+//		for (String bfc : bfcList) {
+////			System.out.println(commit.getShortMessage());
+////			System.out.println(bfc);
+////			System.out.println();
+//			if (commit.getShortMessage().contains(bfc)) {
+//				System.out.println(commit.getShortMessage());
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 
 	private Git openGitRepository() {
 		File clonedDirectory = Main.getGitDirectory(input);

@@ -10,13 +10,14 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import edu.handong.csee.isel.bfc.BFCCollector;
 
 public class BFCKeywordCollector extends BFCCollector {
-	static String[] bugKeywords = { "(bug)", "(fix)" };
+	public static String[] bugKeywords;
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
 		List<String> bfcList = new ArrayList<>();
 
 		final Pattern bugMessagePattern = Pattern.compile(String.join("|", bugKeywords), Pattern.CASE_INSENSITIVE);
+//		System.out.println("bug Isskey in BFCKEYWORDS: "+ bugMessagePattern);
 
 		for (RevCommit commit : commitList) {
 			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage());

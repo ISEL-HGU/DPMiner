@@ -101,16 +101,16 @@ public class CSVMaker {
 	public void setDataType(List<CSVInfo> csvInfoLst) {
 		CSVInfo csvInfoFirst = csvInfoLst.get(0);
 		if (csvInfoFirst instanceof PatchInfo) {
-			System.out.println("CSVMAER path");
+//			System.out.println("CSVMAER path");
 			this.type = Type.PATCH;
 		}
 		if (csvInfoFirst instanceof BICInfo) {
 			this.type = Type.BIC;
-			System.out.println("CSVMAER BIC");
+//			System.out.println("CSVMAER BIC");
 		}
 		if (csvInfoFirst instanceof MetricInfo) {
 			this.type = Type.METRIC;
-			System.out.println("CSVMAER MATRIC");
+//			System.out.println("CSVMAER MATRIC");
 		}
 	}
 

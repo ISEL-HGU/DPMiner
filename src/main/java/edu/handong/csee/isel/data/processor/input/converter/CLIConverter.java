@@ -51,12 +51,12 @@ public class CLIConverter implements InputConverter {
 		
 		
 		//각각 옵션이 null아닐때 값을 넣어주고 해당 값에 맞는 input.mode를 정해 주었다!
-		if(!cmd.hasOption("ij")) {
+		if(cmd.hasOption("ij")) {
 			input.jiraURL = cmd.getOptionValue("ij");
 			input.jiraProjectKey = cmd.getOptionValue("jk");
 			input.mode = Input.Mode.Jira;
 		}
-		else if(!cmd.hasOption("ik")) {
+		else if(cmd.hasOption("ik")) {
 			input.Issue_keyWord = cmd.getOptionValue("ik");
 			input.mode = Input.Mode.KeyWord;
 		}
@@ -184,12 +184,16 @@ public class CLIConverter implements InputConverter {
 //	./BugPatchCollector -i https://github.com/apache/metamodel -o /data/metric -t -c /data/BIC/BIC_metamodel.csv
 	
 //바뀐 메인 돌리기 BIC
-//	./BugPatchCollector -i https://github.com/apache/juddi -ij issues.apache.org -jk JUDDI -t BIC -o /Users/juhui/Desktop/testMain/BIC
+//	./BugPatchCollector -i https://github.com/apache/juddi -ik test -t BIC -o /Users/juhui/Desktop/KeyTest
+//	./BugPatchCollector -i https://github.com/apache/camel -ij issues.apache.org -jk CAMEL -t patch -o /Users/juhui/Desktop/PatchTest
+
 //바뀐 메인 메트릭.....
-//	./BugPatchCollector -i https://github.com/apache/juddi  -t metric -bp /Users/juhui/Desktop/testMain/BIC_juddi.csv -o /Users/juhui/Desktop/please
+//	./BugPatchCollector -i https://github.com/apache/juddi  -t metric -bp /Users/juhui/Desktop/TestMain/BIC/BIC_juddi.csv -o /Users/juhui/Desktop/result
 
 	
 //	./BugPatchCollector -i https://github.com/apache/juddi -ik fix -t BIC -o /Users/juhui/Desktop/testMain/keyword
+	//https://commons.apache.org/proper/commons-cli/properties.html 옵션쓰 
+	//https://stackoverflow.com/questions/7739214/command-line-parser-and-lack-of-subcommand-and-grouping
 	private Options createOptions() {// desc 다시쓰자!
 		Options options = new Options();
 
