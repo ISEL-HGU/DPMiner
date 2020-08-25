@@ -21,17 +21,17 @@ public class DeveloperHistory {
 	String midDate;
 	double percent;
 	
-	public DeveloperHistory(Input input){
+	public DeveloperHistory(){
 		try {
-			this.git = Git.open(Main.getGitDirectory(input));
+			this.git = Git.open(Main.getGitDirectory());
 			this.repo = git.getRepository();
-			if(input.startDate == null) startDate = "0000-00-00 00:00:00";
-			else this.startDate = input.startDate;
+			if(Input.startDate == null) startDate = "0000-00-00 00:00:00";
+			else this.startDate = Input.startDate;
 			
-			if(input.endDate == null) endDate = "9999-99-99 99:99:99";
-			else this.endDate = input.endDate;
+			if(Input.endDate == null) endDate = "9999-99-99 99:99:99";
+			else this.endDate = Input.endDate;
 			
-			this.percent = (double)input.percent;
+			this.percent = (double)Input.percent;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

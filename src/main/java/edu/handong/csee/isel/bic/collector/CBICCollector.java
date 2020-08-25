@@ -29,15 +29,15 @@ import edu.handong.csee.isel.data.csv.BICInfo;
 
 public class CBICCollector implements BICCollector {  //도대체 왜 여기서 에러가 뜨는지가 모르겠다. 건든게 일도 없는데?
 
-	Input input;
+//	Input input;
 	List<String> bfcList = null;
 
 	Git git;
 	Repository repo;
 
-	public CBICCollector(Input input) {
-		this.input = input;
-	}
+//	public CBICCollector(Input input) {
+//		this.input = input;
+//	}
 
 	@Override
 	public void setBFC(List<String> bfcList) {
@@ -49,15 +49,15 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 
 		try {
-			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory(input));
+			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		repo = git.getRepository();
 		
-		System.out.println("bfcList:");
-		System.out.println(bfcList);
+//		System.out.println("bfcList:");
+//		System.out.println(bfcList);
 		
 		List<BICInfo> lstBIChanges = new ArrayList<BICInfo>();
 		for (RevCommit commit : commitList) {
@@ -106,7 +106,7 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 			// if minPathsize is defined, check the size and exit a loop if the changes are
 			// bigger than minPatchSize
 			// only consider min <= size <=max
-			if (numLinesChanges < input.minSize || numLinesChanges > input.maxSize) {
+			if (numLinesChanges < Input.minSize || numLinesChanges > Input.maxSize) {
 				continue;
 			}
 

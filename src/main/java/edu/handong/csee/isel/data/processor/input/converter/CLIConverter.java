@@ -54,26 +54,26 @@ public class CLIConverter implements InputConverter {
 		if(cmd.hasOption("ij")) {
 			input.jiraURL = cmd.getOptionValue("ij");
 			input.jiraProjectKey = cmd.getOptionValue("jk");
-			input.mode = Input.Mode.Jira;
+			input.mode = Input.Mode.JIRA;
 		}
 		else if(cmd.hasOption("ik")) {
-			input.Issue_keyWord = cmd.getOptionValue("ik");
-			input.mode = Input.Mode.KeyWord;
+			input.issueKeyWord = cmd.getOptionValue("ik");
+			input.mode = Input.Mode.KEYWORD;
 		}
 		else {
-			input.mode = Input.Mode.GitHub;
+			input.mode = Input.Mode.GITHUB;
 		}
 	
 		String task= cmd.getOptionValue("t");  //무슨 테스크를 할지 값을 비교해서 밑에서 정해줌 
 
 		if (task.equals("patch")) {
-			input.taskType = Input.TaskType.Patch;
+			input.taskType = Input.TaskType.PATCH;
 		} else if (task.equals("BIC")) {
 			input.taskType = Input.TaskType.BIC;
 		} else if (task.equals("metric")) {
-			input.taskType = Input.TaskType.Metric;
+			input.taskType = Input.TaskType.METRIC;
 		} else if (task.equals("Develop_Metric")) {
-			input.taskType = Input.TaskType.Develop_Metirc;
+			input.taskType = Input.TaskType.DEVELOPERMETRIC;
 		}
 		
 		input.BICpath = cmd.getOptionValue("bp");  //metric 만들때 필요한 BIC 인풋 path옵션! 

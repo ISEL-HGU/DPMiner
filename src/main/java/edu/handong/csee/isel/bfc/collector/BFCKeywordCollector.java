@@ -8,9 +8,23 @@ import java.util.regex.Pattern;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.bfc.BFCCollector;
+import edu.handong.csee.isel.data.Input;
 
 public class BFCKeywordCollector extends BFCCollector {
-	public static String[] bugKeywords;
+	public String[] bugKeywords;
+
+	public BFCKeywordCollector() {
+		super();
+		if(Input.issueKeyWord != null) {
+			this.bugKeywords = new String[1];
+			this.bugKeywords[0]="("+Input.issueKeyWord+")";
+		}
+		else {
+			this.bugKeywords = new String[2];
+			this.bugKeywords[0]="(bug)";
+			this.bugKeywords[1]="(fix)"; 
+		}
+	}
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
 

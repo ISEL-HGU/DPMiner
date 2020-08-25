@@ -25,9 +25,9 @@ public class CSVMaker {
 		PATCH, BIC, METRIC 
 	}
 
-	public void setPath(Input input) {
+	public void setPath() {
 
-		String outPath = input.outPath;
+		String outPath = Input.outPath;
 
 		if (this.type != null) {
 			switch (type) {
@@ -45,7 +45,7 @@ public class CSVMaker {
 				break;
 			}
 		}
-		outPath += input.projectName + ".csv";
+		outPath += Input.projectName + ".csv";
 
 		this.path = outPath;
 
