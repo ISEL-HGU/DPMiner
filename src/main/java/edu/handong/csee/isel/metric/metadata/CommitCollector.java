@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -52,6 +54,8 @@ public class CommitCollector {
 	private boolean developerHistory;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 	List<String> bugCommit = null;
+	static ArrayList<String> keys;
+	static String projectName;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
@@ -68,6 +72,7 @@ public class CommitCollector {
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
 		this.developerHistory = developerHistory;
+		this.projectName = projectName;
 	}
 
 	public void countCommitMetrics() {
@@ -128,7 +133,7 @@ public class CommitCollector {
 //					}
 					metaDataInfo = new MetaDataInfo();
 					metaDatas.put(key, metaDataInfo);
-
+					
 					String fileSource = Utils.fetchBlob(repo, commit.getName(), sourcePath);
 
 					//save commit data to metaDataInfo
@@ -178,8 +183,9 @@ public class CommitCollector {
 
 	}
 
-	public void saveResultToCsvFile() {
-
+	public void saveResultToCsvFile() throws Exception {
+		initKey(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv")));
+		ArrayList<String> mykey = new ArrayList<>();
 		BufferedWriter writer;
 		BufferedWriter developerTrainWriter;
 		BufferedWriter developerTestWriter;
@@ -187,15 +193,15 @@ public class CommitCollector {
 		CSVPrinter csvPrinter;
 		CSVPrinter developerCsvPrinterTrain;
 		CSVPrinter developerCsvPrinterTest = null;
-		
+		int i = 0;
 		try {
 			
 			if(developerHistory == false) {
-				writer = new BufferedWriter(new FileWriter(csvOutputPath));
+//				writer = new BufferedWriter(new FileWriter(csvOutputPath));
 				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv"));
 				
-				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-LT","meta_data-Key"));
-				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
+//				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-LT","meta_data-Key"));
+				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Add Lines","Delete Lines","Entropy","SumOfDeveloper","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT"));
 			}else {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
 				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_train_developer.csv"));
@@ -255,10 +261,17 @@ public class CommitCollector {
 				}
 				
 				if(developerHistory == false) {
-					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
-					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
+
+//					if(keys.contains(key)) { //key
+//					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
+//					mykey.add(key);
+//					}else {
+////						System.out.println(key);
+//						i++;
+//					}
 				}else {
-					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
+//					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
 					if(midDate.compareTo(commitTime) > 0) {//commit time이 mid date보다 작으면 train, 크면 test
 						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 					}else {
@@ -267,10 +280,16 @@ public class CommitCollector {
 					}
 				}
 			}
+//System.out.println(i);
 
-			csvPrinter.close();
+//			for(String key : keys) {
+//				if(!mykey.contains(key)) {
+//					System.out.println(key);
+//				}
+//			}
+//			csvPrinter.close();
 			developerCsvPrinterTrain.close();
-			writer.close();
+//			writer.close();
 			developerTrainWriter.close();
 			if(developerHistory == true) {
 				developerCsvPrinterTest.close();
@@ -281,6 +300,21 @@ public class CommitCollector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	private static void initKey(String Y_project_path) throws Exception {
+		keys = new ArrayList<>();
+		System.out.println("/Users/yangsujin/Desktop/Y"+File.separator+"Y_"+projectName+".csv");
+		Reader in = new FileReader("/Users/yangsujin/Desktop/Y"+File.separator+"Y_"+projectName+".csv");
+		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(in);
+
+		for (CSVRecord record : records) {
+			String sha = record.get(4);
+			String path = record.get(2);
+			path = path.replaceAll("/", "-");
+			keys.add(sha+"-"+path);
+		}
+
 	}
 
 	public String CSV2ARFF() {

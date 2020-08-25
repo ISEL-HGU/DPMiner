@@ -91,7 +91,12 @@ public class CMetricCollector implements MetricCollector {
 		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
 		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
-		commitCollector.saveResultToCsvFile();
+		try {
+			commitCollector.saveResultToCsvFile();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String arffOutputPath = commitCollector.CSV2ARFF();
 		
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
