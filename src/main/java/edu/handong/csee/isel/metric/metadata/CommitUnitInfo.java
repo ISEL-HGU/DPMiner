@@ -10,6 +10,8 @@ public class CommitUnitInfo {
 	TreeSet<String> directories;
 	TreeSet<String> files;
 	TreeSet<String> previousCommitHashs;
+	ArrayList<Integer> modifiedLines;
+	double Entropy;
 	
 	
 	public CommitUnitInfo() {
@@ -19,6 +21,8 @@ public class CommitUnitInfo {
 		this.directories = new TreeSet<String>();
 		this.files = new TreeSet<String>();
 		this.previousCommitHashs = new TreeSet<String>();
+		this.modifiedLines = new ArrayList<Integer>();
+		this.Entropy = 0.0;
 	}
 	
 	public ArrayList<String> getKey() {
@@ -58,5 +62,22 @@ public class CommitUnitInfo {
 	public void setPreviousCommitHashs(String previousCommitHash) {
 		this.previousCommitHashs.add(previousCommitHash);
 	}
+
+	public ArrayList<Integer> getModifiedLines() {
+		return modifiedLines;
+	}
+
+	public void setModifiedLines(int modifiedLine) {
+		this.modifiedLines.add(modifiedLine);
+	}
+
+	public double getEntropy() {
+		return Entropy;
+	}
+
+	public void setEntropy(double entropy) {
+		Entropy = entropy;
+	}
+	
 
 }

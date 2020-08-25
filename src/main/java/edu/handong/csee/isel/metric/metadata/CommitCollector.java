@@ -146,14 +146,16 @@ public class CommitCollector {
 						formatter.format(entry);
 
 						String diffContent = byteStream.toString(); // 한 소스파일의 diff를 diffContent에 저장
-						metricParser.parsePatchContents(metaDataInfo, commitHash, diffContent);
+						metricParser.parsePatchContents(metaDataInfo,commitUnitInfo, commitHash, diffContent);
 						metricParser.parseSourceInfo(metaDataInfo, sourceFileInfo, sourcePath, authorId, isBugCommit, commitTime, commitHash, commitUnitInfo, fileSource);
 						metricParser.parseCommitUnitInfo(commitUnitInfo, sourcePath, key);
 
 						byteStream.reset();
 					}
 				}
+				if(numOfentry == 0) continue;
 				metricParser.computeDeveloperInfo(developerExperience, authorId, commitTime);
+				metricParser.computeEntropy(commitUnitInfo);
 
 				for(int j = 0; j < commitUnitInfo.getKey().size(); j++) {
 					String sourceKey = commitUnitInfo.getKey().get(j);
@@ -164,7 +166,7 @@ public class CommitCollector {
 					metaDataInfo.setNumOfUniqueCommitToTheModifyFiles(commitUnitInfo.getPreviousCommitHashs().size());
 					metaDataInfo.setDeveloperExperience(developerExperience.get(authorId).getNumOfCommits());
 					metaDataInfo.setRecentDeveloperExperience(developerExperience.get(authorId).getREXP());
-
+					metaDataInfo.setEntropy(commitUnitInfo.getEntropy());
 				}
 
 			}
@@ -212,7 +214,6 @@ public class CommitCollector {
 				int numOfModifyLines = entry.getValue().getNumOfModifyLines();
 				int numOfAddLines = entry.getValue().getNumOfAddLines();
 				int numOfDeleteLines = entry.getValue().getNumOfDeleteLines();
-				int distributionOfModifiedLines = entry.getValue().getDistributionOfModifiedLines();
 				int numOfBIC= entry.getValue().getNumOfBIC();
 				String commitAuthor = entry.getValue().getCommitAuthor();
 				int fileAge = entry.getValue().getFileAge();
@@ -230,6 +231,7 @@ public class CommitCollector {
 				float recentDeveloperExperience = entry.getValue().getRecentDeveloperExperience();
 				int linesOfCodeBeforeTheChange = entry.getValue().getLinesOfCodeBeforeTheChange();
 				String commitTime = entry.getValue().getCommitTime();
+				double entropy = entry.getValue().getEntropy();
 				
 				//compute LT
 				linesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange - numOfAddLines + numOfDeleteLines;
@@ -253,14 +255,14 @@ public class CommitCollector {
 				}
 				
 				if(developerHistory == false) {
-					csvPrinter.printRecord(MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
-					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 				}else {
-					csvPrinter.printRecord(MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
+					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
 					if(midDate.compareTo(commitTime) > 0) {//commit time이 mid date보다 작으면 train, 크면 test
-						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
+						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 					}else {
-						developerCsvPrinterTest.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
+						developerCsvPrinterTest.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
 
 					}
 				}

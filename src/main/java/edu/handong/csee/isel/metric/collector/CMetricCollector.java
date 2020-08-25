@@ -48,43 +48,46 @@ public class CMetricCollector implements MetricCollector {
 		File bowArff, cVectorArff;
 		
 		// 1. collect BOW arff
-		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
-		bowCollector.setGit(git);
-		bowCollector.setRepository(repo);
-		bowCollector.setBIC(bicList);
-		bowCollector.setCommitList(commitList);
-		bowCollector.setReferencePath(referencePath);
-		bowCollector.setProjectName(input.projectName);
-		bowCollector.setStartDate(startDate);
-		bowCollector.setEndDate(endDate);
-		bowCollector.collect();
-//		bowCollector.makeArff(); //TODO: will be removed
-		bowArff = bowCollector.getArff();
+//		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
+//		bowCollector.setGit(git);
+//		bowCollector.setRepository(repo);
+//		bowCollector.setBIC(bicList);
+//		bowCollector.setCommitList(commitList);
+//		bowCollector.setReferencePath(referencePath);
+//		bowCollector.setProjectName(input.projectName);
+//		bowCollector.setStartDate(startDate);
+//		bowCollector.setEndDate(endDate);
+//		bowCollector.collect();
+////		bowCollector.makeArff(); //TODO: will be removed
+//		bowArff = bowCollector.getArff();
 
 		// 2. collect Characteristic vector arff
-		CharacteristicVectorCollector cVectorCollector = new CharacteristicVectorCollector();
-		cVectorCollector.setGit(git);
-		cVectorCollector.setRepository(repo);
-		cVectorCollector.setBIC(bicList);
-		cVectorCollector.setCommitList(commitList);
-		cVectorCollector.setReferencePath(referencePath);
-		cVectorCollector.setProjectName(input.projectName);
-		cVectorCollector.setStartDate(startDate);
-		cVectorCollector.setEndDate(endDate);
-		cVectorCollector.collect();
-//		cVectorCollector.makeArff();
-		cVectorArff = cVectorCollector.getArff();
+//		CharacteristicVectorCollector cVectorCollector = new CharacteristicVectorCollector();
+//		cVectorCollector.setGit(git);
+//		cVectorCollector.setRepository(repo);
+//		cVectorCollector.setBIC(bicList);
+//		cVectorCollector.setCommitList(commitList);
+//		cVectorCollector.setReferencePath(referencePath);
+//		cVectorCollector.setProjectName(input.projectName);
+//		cVectorCollector.setStartDate(startDate);
+//		cVectorCollector.setEndDate(endDate);
+//		cVectorCollector.collect();
+////		cVectorCollector.makeArff();
+//		cVectorArff = cVectorCollector.getArff();
 
 		// 3. make merged arff between BOW and C-Vector
-		File mergedArff = null;
-
-		ArffHelper arffHelper = new ArffHelper();
-		arffHelper.setReferencePath(referencePath);
-		arffHelper.setProjectName(input.projectName);
-		arffHelper.setOutPath(input.outPath);
-		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
+//		File mergedArff = null;
+//
+//		ArffHelper arffHelper = new ArffHelper();
+//		arffHelper.setReferencePath(referencePath);
+//		arffHelper.setProjectName(input.projectName);
+//		arffHelper.setOutPath(input.outPath);
+//		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
+		File referenceDirectory = new File(referencePath);
+		referenceDirectory.mkdir();
+		
 		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
 		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
@@ -94,19 +97,19 @@ public class CMetricCollector implements MetricCollector {
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
 																					// metadata arff
 
-		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
+//		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
 
 		// 5. Merge 1,2,3, and return csv
 
 		File resultArff = null;
 
-		try {
-			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
-			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);
+//			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 		return resultArff;
 	}
