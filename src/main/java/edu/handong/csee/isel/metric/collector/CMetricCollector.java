@@ -3,6 +3,7 @@ package edu.handong.csee.isel.metric.collector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -22,6 +23,8 @@ public class CMetricCollector implements MetricCollector {
 	String endDate;
 	String midDate;
 	boolean developerHistory;
+	public static HashMap<String,Integer> tooLongName = new HashMap<>();
+	static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
 	

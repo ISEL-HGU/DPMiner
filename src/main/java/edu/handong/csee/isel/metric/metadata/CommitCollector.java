@@ -26,6 +26,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 
+import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitUnitInfo;
 import edu.handong.csee.isel.metric.metadata.DeveloperExperienceInfo;
 import edu.handong.csee.isel.metric.metadata.MetaDataInfo;
@@ -110,15 +111,21 @@ public class CommitCollector {
 
 				for (DiffEntry entry : diff) {// 현재 커밋에 있는 소스파일 하나씩 읽음 
 					String sourcePath = entry.getNewPath().toString();
-					String oldPath = entry.getOldPath();
 					boolean isBugCommit = isBuggy(commit, entry);//현재 커밋-소스가 버그인가? true-false
 					
-					if (oldPath.equals("/dev/null") || sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
+					if (sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
 						continue;
 
 					//key 생성 & 해쉬맵 생성 
 					String keySourcePath = sourcePath.replaceAll("/", "-");
 					String key = commitHash+"-"+keySourcePath;
+//					if(key.length() > 254) {
+//						if(CMetricCollector.tooLongName.containsKey(key)) {
+//							key = CMetricCollector.tooLongName.get(key).toString();
+//						}else {
+//							System.err.println("Error : can not find key");
+//						}
+//					}
 					metaDataInfo = new MetaDataInfo();
 					metaDatas.put(key, metaDataInfo);
 
@@ -183,7 +190,7 @@ public class CommitCollector {
 			
 			if(developerHistory == false) {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
-				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_train_developer.csv"));
+				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv"));
 				
 				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-LT","meta_data-Key"));
 				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT","Key"));
@@ -223,25 +230,28 @@ public class CommitCollector {
 				float recentDeveloperExperience = entry.getValue().getRecentDeveloperExperience();
 				int linesOfCodeBeforeTheChange = entry.getValue().getLinesOfCodeBeforeTheChange();
 				String commitTime = entry.getValue().getCommitTime();
-
+				
 				//compute LT
 				linesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange - numOfAddLines + numOfDeleteLines;
-
+				
 				//normalized
 				float NUC = (float)numOfUniqueCommitToTheModifyFiles/numOfFiles;
 				float LA = (float)numOfAddLines/linesOfCodeBeforeTheChange;
 				float LD = (float)numOfDeleteLines/linesOfCodeBeforeTheChange;
 				float MoL = (float)numOfModifyLines/linesOfCodeBeforeTheChange;
 
-				if(LA == 0 ) LA = 0; ///not error!
-				if(LD == 0 ) LD = 0;///not error!
-				if(MoL == 0) MoL = 0;///not error!
+				if(numOfAddLines == 0 ) LA = 0; 
+				if(numOfDeleteLines == 0) LD = 0;
+				if(numOfModifyLines == 0) MoL = 0;
+				if(numOfUniqueCommitToTheModifyFiles <= 0 ) NUC = 0; 
+				if(numOfFiles == 0) NUC = numOfUniqueCommitToTheModifyFiles;
 				
-				if(linesOfCodeBeforeTheChange == 0) {
+				if(linesOfCodeBeforeTheChange <= 0) {
 					LA = numOfAddLines;
 					LD = numOfDeleteLines;
 					MoL = numOfModifyLines;
 				}
+				
 				if(developerHistory == false) {
 					csvPrinter.printRecord(MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,distributionOfModifiedLines,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);

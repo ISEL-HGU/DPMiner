@@ -64,8 +64,17 @@ public class Utils {
 
 		TimeZone GMT = commit.getCommitterIdent().getTimeZone();
 		ft.setTimeZone(GMT);
-
-		return ft.format(commitDate);
+		String weekDay = ft.format(commitDate);
+		
+		if(weekDay.equals("월요일")) weekDay = "Monday";
+		if(weekDay.equals("화요일")) weekDay = "Tuesday";
+		if(weekDay.equals("수요일")) weekDay = "Wednesday";
+		if(weekDay.equals("목요일")) weekDay = "Thursday";
+		if(weekDay.equals("금요일")) weekDay = "Friday";
+		if(weekDay.equals("토요일")) weekDay = "Saturday";
+		if(weekDay.equals("일요일")) weekDay = "Sunday";
+		
+		return weekDay;
 	}
 	
 	public static String getHourFromCommitTime(RevCommit commit) {
@@ -88,10 +97,12 @@ public class Utils {
 			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
 			for (CSVRecord csvRecord : csvParser) {
-				String hash = csvRecord.get(0);
-				String source = csvRecord.get(1);
-				String key = hash + "-" + source;
-				buggyCommit.add(key);
+				if(csvRecord.get(0) != null || csvRecord.get(1) != null) {
+					String hash = csvRecord.get(0);
+					String source = csvRecord.get(1);
+					String key = hash + "-" + source;
+					buggyCommit.add(key);
+				}
 			}
 
 		} catch (IOException e) {
