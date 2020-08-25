@@ -51,12 +51,12 @@ public class CLIConverter implements InputConverter {
 		
 		
 		//각각 옵션이 null아닐때 값을 넣어주고 해당 값에 맞는 input.mode를 정해 주었다!
-		if(!cmd.hasOption("ij")) {
+		if(cmd.hasOption("ij")) {
 			input.jiraURL = cmd.getOptionValue("ij");
 			input.jiraProjectKey = cmd.getOptionValue("jk");
 			input.mode = Input.Mode.Jira;
 		}
-		else if(!cmd.hasOption("ik")) {
+		else if(cmd.hasOption("ik")) {
 			input.Issue_keyWord = cmd.getOptionValue("ik");
 			input.mode = Input.Mode.KeyWord;
 		}

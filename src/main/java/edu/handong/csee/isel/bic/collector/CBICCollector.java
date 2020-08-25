@@ -42,7 +42,6 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 	@Override
 	public void setBFC(List<String> bfcList) {
 		this.bfcList = bfcList;
-
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		repo = git.getRepository();
+		repo = git.getRepository(); 
 		
 		System.out.println("bfcList:");
 		System.out.println(bfcList);
