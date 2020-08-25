@@ -76,6 +76,9 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+	
+	compile 'info.picocli:picocli:4.5.0'
+    compileOnly 'info.picocli:picocli-codegen:4.5.0'
 
    
 }
