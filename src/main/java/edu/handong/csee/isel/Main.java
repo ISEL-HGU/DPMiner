@@ -121,7 +121,7 @@ public class Main {
 			metricCollector = new CMetricCollector(input,false);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
-			System.out.println("Metric was saved in " + arff.getAbsolutePath());
+//			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
 			return;
 			
