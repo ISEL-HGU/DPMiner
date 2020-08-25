@@ -286,8 +286,8 @@ public class CommitCollector {
 	public String CSV2ARFF() {
 		try {
 			CSVLoader loader = new CSVLoader();
-			loader.setSource(new File(csvOutputPath));
-			System.out.println(csvOutputPath);
+			loader.setSource(new File(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv"));
+			System.out.println(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv");
 			Instances data = loader.getDataSet();
 
 			NonSparseToSparse nonSparseToSparseInstance = new NonSparseToSparse(); 
