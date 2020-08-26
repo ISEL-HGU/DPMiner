@@ -54,7 +54,10 @@ public class CommitCollector {
 	private boolean developerHistory;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 	List<String> bugCommit = null;
+	static ArrayList<String> keyCommit;
+	static ArrayList<String> keyPath;
 	static ArrayList<String> keys;
+	static ArrayList<Integer> labels;
 	static String projectName;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
@@ -197,10 +200,10 @@ public class CommitCollector {
 		try {
 			
 			if(developerHistory == false) {
-//				writer = new BufferedWriter(new FileWriter(csvOutputPath));
+				writer = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_missingCommit.csv"));
 				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_all.csv"));
 				
-//				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-LT","meta_data-Key"));
+				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("sha","path"));
 				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Add Lines","Delete Lines","Entropy","SumOfDeveloper","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","LT"));
 			}else {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
@@ -241,6 +244,7 @@ public class CommitCollector {
 				
 				//compute LT
 				linesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange - numOfAddLines + numOfDeleteLines;
+				if(linesOfCodeBeforeTheChange < 0) linesOfCodeBeforeTheChange = 0;
 				
 				//normalized
 				float NUC = (float)numOfUniqueCommitToTheModifyFiles/numOfFiles;
@@ -261,17 +265,21 @@ public class CommitCollector {
 				}
 				
 				if(developerHistory == false) {
-					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
 
-//					if(keys.contains(key)) { //key
-//					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
-//					mykey.add(key);
-//					}else {
-////						System.out.println(key);
-//						i++;
-//					}
+					if(keys.contains(key)) { //key
+						mykey.add(key);
+						
+						if(isBugCommit != labels.get(keys.indexOf(key))) {
+							isBugCommit = labels.get(keys.indexOf(key));
+						}
+						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
+						
+					}else {
+//						System.out.println(key);
+						i++;
+					}
 				}else {
-//					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
+					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,commitTime,key);
 					if(midDate.compareTo(commitTime) > 0) {//commit time이 mid date보다 작으면 train, 크면 test
 						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange,key);
 					}else {
@@ -280,14 +288,25 @@ public class CommitCollector {
 					}
 				}
 			}
-//System.out.println(i);
-
-//			for(String key : keys) {
-//				if(!mykey.contains(key)) {
+			
+			
+			int le = 0;
+		
+			for(String key : keys) {
+				if(!mykey.contains(key)) {
+					csvPrinter.printRecord(keyCommit.get(keys.indexOf(key)),keyPath.get(keys.indexOf(key)));
 //					System.out.println(key);
-//				}
-//			}
-//			csvPrinter.close();
+					le++;
+				}
+			}
+			
+			System.out.println("before kamei : " +entries.size() );
+			System.out.println("kamei ins : " + mykey.size());
+			System.out.println("Y ins : " + keys.size());
+			System.out.println("delete ins : " + i);
+			System.out.println("where ins : " + le);
+			
+			csvPrinter.close();
 			developerCsvPrinterTrain.close();
 //			writer.close();
 			developerTrainWriter.close();
@@ -304,15 +323,24 @@ public class CommitCollector {
 	
 	private static void initKey(String Y_project_path) throws Exception {
 		keys = new ArrayList<>();
+		labels = new ArrayList<>();
+		keyCommit = new ArrayList<>();
+		keyPath = new ArrayList<>();
+		
 		System.out.println("/Users/yangsujin/Desktop/Y"+File.separator+"Y_"+projectName+".csv");
 		Reader in = new FileReader("/Users/yangsujin/Desktop/Y"+File.separator+"Y_"+projectName+".csv");
 		Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(in);
 
 		for (CSVRecord record : records) {
 			String sha = record.get(4);
-			String path = record.get(2);
-			path = path.replaceAll("/", "-");
-			keys.add(sha+"-"+path);
+			String realpath = record.get(2);
+			String path = realpath.replaceAll("/", "-");
+			if(!keys.contains(sha+"-"+path)) {
+				keys.add(sha+"-"+path);
+				labels.add(Integer.parseInt(record.get(11)));
+				keyCommit.add(sha);
+				keyPath.add(realpath);
+			}
 		}
 
 	}
