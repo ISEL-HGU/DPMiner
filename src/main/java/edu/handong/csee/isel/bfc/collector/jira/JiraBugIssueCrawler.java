@@ -43,6 +43,8 @@ public class JiraBugIssueCrawler {
 		
 		boolean flag1 = requestSucceed(response.statusCode());  //flag1 is an indicator that checks whether a response was succeeded when approached linkUrl with encoded JQL1.
 		
+		System.out.println("\n		checking flag1 for issueKeys if 1 => true ..." + flag1);
+		
 		while(!flag1) {
 			encodedJql = jqlManager.getEncodedJQL(jqlManager.getJQL2(period.getStart(), period.getEnd()));
 			linkUrl = urlManager.getURL(encodedJql);

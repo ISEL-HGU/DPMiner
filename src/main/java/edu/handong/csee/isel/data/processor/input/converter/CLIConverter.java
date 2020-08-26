@@ -57,8 +57,13 @@ public class CLIConverter implements InputConverter {
 			input.mode = Input.Mode.JIRA;
 		}
 		else if(cmd.hasOption("ik")) {
+<<<<<<< HEAD
 			input.issueKeyWord = cmd.getOptionValue("ik");
 			input.mode = Input.Mode.KEYWORD;
+=======
+			input.Issue_keyWord = cmd.getOptionValue("ik");
+			input.mode = Input.Mode.KeyWord;
+>>>>>>> refactoring_JW
 		}
 		else {
 			input.mode = Input.Mode.GITHUB;

@@ -24,9 +24,11 @@ public class BFCJiraCollector extends BFCCollector {
 	}
 
 	public List<String> collectFrom(List<RevCommit> commitList) {
-
+		
 		Pattern pattern = Pattern.compile(key + "-\\d+", Pattern.CASE_INSENSITIVE);
-
+		
+		// JUDDI-1013 을 뜻한다. juddi or JUDDI
+		
 		List<String> bfcList = new ArrayList<>();
 		List<String> keywordList = new ArrayList<>();
 
