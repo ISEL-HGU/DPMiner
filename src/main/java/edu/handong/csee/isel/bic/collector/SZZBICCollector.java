@@ -37,7 +37,7 @@ import edu.handong.csee.isel.Utils;
 //import edu.handong.csee.isel.data.csv.BICInfo;
 import edu.handong.csee.isel.bic.szz.data.BICInfo;
 
-public class szzBICCollector implements BICCollector{
+public class SZZBICCollector implements BICCollector{
 	
 	Input input;
 	List<String> bfcommitList = null;
@@ -45,13 +45,13 @@ public class szzBICCollector implements BICCollector{
 	Git git;
 	Repository repo;
 	
-	public szzBICCollector(Input input) {
+	public SZZBICCollector(Input input) {
 		this.input = input;
 	}
 	
-	// 이건 그냥 bfcList라는 틀을 받아온거임. 
 	@Override
 	public void setBFC(List<String> bfcList) {
+		// 7a26bedd92cff633d641118d19b5237ac8474105 리스트가 넘겨짐. 
 		this.bfcommitList = bfcList;
 	}
 
@@ -66,25 +66,43 @@ public class szzBICCollector implements BICCollector{
 		}
 		repo = git.getRepository();
 		
-		// Colleting BFCs
-		ArrayList<RevCommit> bfcList = GitUtils.getBFCLIST(bfcommitList, commitList);
+		// Colleting BFCs 
+		List<RevCommit> bfcList = new ArrayList<RevCommit>();
+		
+		for (RevCommit commit : commitList) {
+
+			if (commit.getParentCount() < 1) {
+				System.err.println("WARNING: Parent commit does not exist: " + commit.name());
+				continue;
+			}
+			
+			if(!Utils.isBFC(commit, bfcommitList)) {
+				continue;
+			}
+			
+			bfcList.add(commit);
+		}
+		
+		// Colleting BFCs 
+		//ArrayList<RevCommit> bfcList = GitUtils.getBFCLIST(bfcommitList, commitList);
 		
 		// Pre-step for building annotation graph
 		
 		// 파일이 고쳐진 새로운 getNewPath가 나온다. filter 가 된거. (.java 파일이고, test가 아닌것) (
-		List<String> targetPaths = GitUtils.getTargetPaths(repo, bfcList);
+		List<String> targetPaths = GitUtils.getTargetPaths(repo, bfcList); 
 		
 		// bfcList에서 계속 이어지는거임. BFCs는 jiraCrawler를 사용하여 얻은 targetPaths와 일치하는 것을 찾아냄. 이건 모든 이슈커밋리스트에서 
 		// Wrong(X) -> 여기 안에 configurePathRevisionList(repo, revs) 이건 filter가 안된 부분이다. 
-		RevsWithPath revsWithPath = GitUtils
+		RevsWithPath revsWithPath = GitUtils 
 				.collectRevsWithSpecificPath(GitUtils.configurePathRevisionList(repo, commitList), targetPaths);
-		// 한 path당 커밋 리스트를 부여해줌.  
+		// 한 path당 커밋 리스트를 부여해줌.  	
+			
 		
 		// Phase 1 : Build the annotation graph
 		final long startBuildingTime = System.currentTimeMillis();
 		
 		// 수진님한테 물어볼것 
-		AnnotationGraphBuilder agb = new AnnotationGraphBuilder();
+		AnnotationGraphBuilder agb = new AnnotationGraphBuilder(); 
 		// set debug mode = false for a while
 		AnnotationGraphModel agm = agb.buildAnnotationGraph(repo, revsWithPath, false);
 

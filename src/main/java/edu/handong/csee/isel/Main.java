@@ -21,7 +21,7 @@ import edu.handong.csee.isel.bfc.collector.jira.InvalidDomainException;
 import edu.handong.csee.isel.bfc.collector.jira.InvalidProjectKeyException;
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
-import edu.handong.csee.isel.bic.collector.szzBICCollector;
+import edu.handong.csee.isel.bic.collector.SZZBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.data.processor.CSVMaker;
@@ -34,7 +34,7 @@ import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
-//import edu.handong.csee.isel.bic.collector.szzBICCollector;
+//import edu.handong.csee.isel.bic.collector.SZZBICCollector;
 
 public class Main {
 
@@ -83,15 +83,15 @@ public class Main {
 			//아 여기서 만들어 준넨엥에엥 
 			bfcList=Making_bfcCollector(input,bfcList,commitList,bfcCollector);
 			
-			BICCollector bicCollector = new szzBICCollector(input);
+			BICCollector bicCollector = new SZZBICCollector(input);
 //			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
 			bicCollector.setBFC(bfcList);
 			csvInfoLst = bicCollector.collectFrom(commitList);
 //			Print_CSV(input, csvInfoLst);//이게 최종 BIC프린트 해주는 메소드-> 손델것은 없다. 알아서 하는 메소드.
 
 //			위에걸 해줘야 apacheJUDDIIssueKeys.csv가 나오기 때문에 위에를 일단 실행시킨다. 
-//			BICCollector bicCollector = new szzBICCollector(input);
-//		    파일 저장해주는 것까지 szzBICCollector에서 처리해주기. 
+//			BICCollector bicCollector = new SZZBICCollector(input);
+//		    파일 저장해주는 것까지 SZZBICCollector에서 처리해주기. 
 //			Phase 3: Utils.storeOutputFile(GIT_URL, BILines); 
 			
 			break;
