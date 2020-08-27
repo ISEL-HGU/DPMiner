@@ -5,46 +5,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.blame.BlameResult;
-import org.eclipse.jgit.diff.DiffAlgorithm;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.Edit;
-import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.bic.BICCollector;
-import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.data.Input;
-
+import edu.handong.csee.isel.bic.szz.data.BICInfo;
 import edu.handong.csee.isel.bic.szz.graph.AnnotationGraphBuilder;
 import edu.handong.csee.isel.bic.szz.graph.AnnotationGraphModel;
 import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 import edu.handong.csee.isel.bic.szz.trace.Tracer;
 import edu.handong.csee.isel.bic.szz.util.GitUtils;
+import edu.handong.csee.isel.data.CSVInfo;
+import edu.handong.csee.isel.data.Input;
 
-import edu.handong.csee.isel.Utils;
-//import edu.handong.csee.isel.bic.szz.util.Utils;
-
-//import edu.handong.csee.isel.data.csv.BICInfo;
-import edu.handong.csee.isel.bic.szz.data.BICInfo;
-
-public class SZZBICCollector implements BICCollector{
+public class AGBICCollector implements BICCollector{
 	
 	List<String> bfcommitList = null;
 
 	Git git;
 	Repository repo;
 	
-	public SZZBICCollector() {
+	public AGBICCollector() {
 	}
 	
 	@Override
