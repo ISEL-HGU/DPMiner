@@ -13,7 +13,7 @@ import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 
 public class AnnotationGraphBuilder {
 
-	public AnnotationGraphModel buildAnnotationGraph(Repository repo, RevsWithPath revsWithPath, boolean debug) {
+	public AnnotationGraphModel buildAnnotationGraph(Repository repo, RevsWithPath revsWithPath) {
 		// Phase 1 : split Map (i.e. RevsWithPath)
 		int mapSize = revsWithPath.size();  // ?? 
 		int arrSize = 10;
@@ -44,7 +44,7 @@ public class AnnotationGraphBuilder {
 		ExecutorService executor = Executors.newFixedThreadPool(numOfCoresInMyCPU);
 
 		for (int i = 0; i < arrSize; i++) {
-			Runnable worker = new AnnotationGraphBuilderThread(repo, revsWithPathArr[i], debug);
+			Runnable worker = new AnnotationGraphBuilderThread(repo, revsWithPathArr[i]);
 			// AnnotationGraphBuilderThread 안에서 run을 실행해준다. 
 			executor.execute(worker);
 			AGRunners.add((AnnotationGraphBuilderThread) worker);

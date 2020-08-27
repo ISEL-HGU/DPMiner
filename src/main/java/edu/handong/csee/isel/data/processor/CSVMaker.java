@@ -37,7 +37,7 @@ public class CSVMaker {
 				break;
 
 			case BIC:
-				outPath += File.separator + "BIC_";
+				outPath += File.separator + "BIC_BSZZ_";
 				break;
 
 			case METRIC:

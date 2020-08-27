@@ -7,7 +7,8 @@ package edu.handong.csee.isel.data.processor.input.command;
  
  import edu.handong.csee.isel.data.Input;
  import edu.handong.csee.isel.data.Input.Mode;
- import edu.handong.csee.isel.data.Input.TaskType;
+import edu.handong.csee.isel.data.Input.SZZMode;
+import edu.handong.csee.isel.data.Input.TaskType;
  import picocli.CommandLine.ArgGroup;
  import picocli.CommandLine.Option;
  
@@ -58,6 +59,9 @@ package edu.handong.csee.isel.data.processor.input.command;
          private String keyWord;
      }   
      
+     @Option(names = "-s", description = "--szz mode <BSZZ or AGSZZ> (default: 'BSZZ')") 
+     private String szzMode = "BSZZ";
+     
      @ArgGroup(exclusive = false) 
      DependentMaxMin dependentMaxMin = new DependentMaxMin();
      
@@ -90,7 +94,13 @@ package edu.handong.csee.isel.data.processor.input.command;
              Input.issueKeyWord = exclusive.keyWord;
              Input.mode = Mode.KEYWORD;
          }   
-     
+         
+         if(szzMode.equals("BSZZ")) {
+        	 Input.szzMode = SZZMode.BSZZ;
+         }else {
+        	 Input.szzMode = SZZMode.AGSZZ;
+         }
+
          if (dependentMaxMin.max > dependentMaxMin.min) {
               Input.maxSize = dependentMaxMin.max;
               Input.minSize = dependentMaxMin.min;

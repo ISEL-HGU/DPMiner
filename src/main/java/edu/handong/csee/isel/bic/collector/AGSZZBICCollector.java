@@ -20,35 +20,33 @@ import edu.handong.csee.isel.bic.szz.util.GitUtils;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 
-public class AGBICCollector implements BICCollector{
+public class AGSZZBICCollector implements BICCollector{
 	
-	List<String> bfcommitList = null;
+	List<String> bfcList = null;
 
 	Git git;
 	Repository repo;
 	
-	public AGBICCollector() {
+	public AGSZZBICCollector() {
 	}
 	
 	@Override
 	public void setBFC(List<String> bfcList) {
-		// 7a26bedd92cff633d641118d19b5237ac8474105 리스트가 넘겨짐. 
-		this.bfcommitList = bfcList;
+		this.bfcList = bfcList;
 	}
 
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) throws IOException {
-		// TODO Auto-generated method stub
 		try {
 			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		repo = git.getRepository();
 		
-		// Colleting BFCs 
-		List<RevCommit> bfcList = new ArrayList<RevCommit>();
+		// Pre-step for building annotation graph
+		// Colleting BFC (BFC is RevCommit)
+		List<RevCommit> bfcCommitList = new ArrayList<RevCommit>();
 		
 		for (RevCommit commit : commitList) {
 
@@ -57,56 +55,32 @@ public class AGBICCollector implements BICCollector{
 				continue;
 			}
 			
-			if(!Utils.isBFC(commit, bfcommitList)) {
+			if(!Utils.isBFC(commit, bfcList)) {
 				continue;
 			}
 			
-			bfcList.add(commit);
+			bfcCommitList.add(commit);
 		}
+			
+		List<String> targetPaths = GitUtils.getTargetPaths(repo, bfcCommitList); 
 		
-		// Colleting BFCs 
-		//ArrayList<RevCommit> bfcList = GitUtils.getBFCLIST(bfcommitList, commitList);
-		
-		// Pre-step for building annotation graph
-		
-		// 파일이 고쳐진 새로운 getNewPath가 나온다. filter 가 된거. (.java 파일이고, test가 아닌것) (
-		List<String> targetPaths = GitUtils.getTargetPaths(repo, bfcList); 
-		
-		// bfcList에서 계속 이어지는거임. BFCs는 jiraCrawler를 사용하여 얻은 targetPaths와 일치하는 것을 찾아냄. 이건 모든 이슈커밋리스트에서 
-		// Wrong(X) -> 여기 안에 configurePathRevisionList(repo, revs) 이건 filter가 안된 부분이다. 
 		RevsWithPath revsWithPath = GitUtils 
 				.collectRevsWithSpecificPath(GitUtils.configurePathRevisionList(repo, commitList), targetPaths);
-		// 한 path당 커밋 리스트를 부여해줌.  	
-			
 		
 		// Phase 1 : Build the annotation graph
-		final long startBuildingTime = System.currentTimeMillis();
-		
-		// 수진님한테 물어볼것 
 		AnnotationGraphBuilder agb = new AnnotationGraphBuilder(); 
-		// set debug mode = false for a while
-		AnnotationGraphModel agm = agb.buildAnnotationGraph(repo, revsWithPath, false);
-
-		final long endBuildingTime = System.currentTimeMillis();
-		System.out.println("\nBuilding Annotation Graph takes " + (endBuildingTime - startBuildingTime) / 1000.0 + "s\n");
+		AnnotationGraphModel agm = agb.buildAnnotationGraph(repo, revsWithPath);
 
 		// Phase 2 : Trace and collect BIC candidates and filter out format changes, comments, etc among candidates
-		final long startTracingTime = System.currentTimeMillis();
 		
-		// 일단은 analysis, debug option은 false 로 세팅 
-		Tracer tracer = new Tracer(false, false);
-		List<BICInfo> BILines = tracer.collectBILines(repo, bfcList, agm, revsWithPath);
-
-		final long endTracingTime = System.currentTimeMillis();
-		System.out.println("\nCollecting BICs takes " + (endTracingTime - startTracingTime) / 1000.0 + "s\n");
-
+		Tracer tracer = new Tracer();
+		List<BICInfo> BILines = tracer.collectBILines(repo, bfcCommitList, agm, revsWithPath);
 		// Sort BICs in the order FixSha1, BISha1, BIContent, biLineIdx
 		Collections.sort(BILines);
 
 		// Phase 3 : store outputs
 		// GIT_URL : input.
 		Utils.storeOutputFile(Input.outPath, Input.gitURL, BILines);
-		
 		
 		return null;
 	}

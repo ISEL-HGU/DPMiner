@@ -131,30 +131,6 @@ public class BICInfo implements Comparable<BICInfo> {
 			}
 		}
 
-		// order by BIDate, path, FixDate, lineNum
-//		if (BIDate.compareTo(o.BIDate) < 0)
-//			return -1;
-//		else if (BIDate.compareTo(o.BIDate) > 0)
-//			return 1;
-//		else {
-//			if (path.compareTo(o.path) < 0)
-//				return -1;
-//			else if (path.compareTo(o.path) > 0)
-//				return 1;
-//			else {
-//				if (FixDate.compareTo(o.FixDate) < 0)
-//					return -1;
-//				else if (FixDate.compareTo(o.FixDate) > 0)
-//					return 1;
-//				else {
-//					if (biLineIdx < o.biLineIdx)
-//						return -1;
-//					else if (biLineIdx > o.biLineIdx)
-//						return 1;
-//				}
-//			}
-//		}
-
 		return 0;
 	}
 }

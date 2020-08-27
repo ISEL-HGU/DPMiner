@@ -20,15 +20,12 @@ import edu.handong.csee.isel.bfc.collector.BFCKeywordCollector;
 import edu.handong.csee.isel.bfc.collector.jira.InvalidDomainException;
 import edu.handong.csee.isel.bfc.collector.jira.InvalidProjectKeyException;
 import edu.handong.csee.isel.bic.BICCollector;
-import edu.handong.csee.isel.bic.collector.AGBICCollector;
+import edu.handong.csee.isel.bic.collector.AGSZZBICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
-import edu.handong.csee.isel.bic.collector.SZZBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.data.processor.CSVMaker;
-import edu.handong.csee.isel.data.processor.input.InputConverter;
 import edu.handong.csee.isel.data.processor.input.command.Task;
-import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.metric.collector.DeveloperHistory;
@@ -37,7 +34,6 @@ import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 import picocli.CommandLine;
 
-//import edu.handong.csee.isel.bic.collector.SZZBICCollector;
 
 public class Main {
 
@@ -87,13 +83,23 @@ public class Main {
 
 		case BIC:
 			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector);
+			BICCollector bicCollector;
 			
-//			BICCollector bicCollector = new CBICCollector();
-			BICCollector bicCollector = new AGBICCollector();
-//			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
-			bicCollector.setBFC(bfcList);
-			csvInfoLst = bicCollector.collectFrom(commitList);
-			printCSV(csvInfoLst);//이게 최종 BIC프린트 해주는 메소드-> 손델것은 없다. 알아서 하는 메소드.
+			switch (Input.szzMode) {
+			case BSZZ:
+				bicCollector = new CBICCollector();
+				bicCollector.setBFC(bfcList);
+				csvInfoLst = bicCollector.collectFrom(commitList);
+				printCSV(csvInfoLst);
+				break;
+				
+			case AGSZZ:
+				bicCollector = new AGSZZBICCollector();
+				bicCollector.setBFC(bfcList);
+				bicCollector.collectFrom(commitList);
+				break;
+			}
+			
 			break;
 
 		case METRIC:
@@ -139,10 +145,8 @@ public class Main {
 	public static void printCSV(List<CSVInfo> csvInfoLst)  throws IOException {
 
 		if (csvInfoLst.size() < 1) {
-//			System.out.println("why is it not working?");
 			return;
 		}
-//		System.out.println("Really?");
 		CSVMaker printer = new CSVMaker();
 		printer.setDataType(csvInfoLst);
 		printer.setPath();

@@ -24,20 +24,18 @@ import edu.handong.csee.isel.bic.szz.util.Utils;
 public class AnnotationGraphBuilderThread implements Runnable {
 	private Repository repo;
 	private RevsWithPath revsWithPath;
-	private boolean debug;
 	public AnnotationGraphModel partitionedAnnotationGraph;
 
-	public AnnotationGraphBuilderThread(Repository repo, RevsWithPath revsWithPath, boolean debug) {
+	public AnnotationGraphBuilderThread(Repository repo, RevsWithPath revsWithPath) {
 		super();
 		this.repo = repo;
 		this.revsWithPath = revsWithPath;
-		this.debug = debug;
 	}
 
 	@Override
 	public void run() {
 		try {
-			partitionedAnnotationGraph = buildPartitionedAnnotationGraph(repo, revsWithPath, debug);
+			partitionedAnnotationGraph = buildPartitionedAnnotationGraph(repo, revsWithPath);
 
 		} catch (IOException | EmptyHunkTypeException e) {
 			e.printStackTrace();
@@ -47,7 +45,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 		}
 	}
 
-	private AnnotationGraphModel buildPartitionedAnnotationGraph(Repository repo, RevsWithPath revsWithPath, boolean debug)
+	private AnnotationGraphModel buildPartitionedAnnotationGraph(Repository repo, RevsWithPath revsWithPath)
 			throws IOException, EmptyHunkTypeException {
 		// Generate Annotation Graph
 		AnnotationGraphModel partitionedAnnotationGraph = new AnnotationGraphModel();
@@ -86,8 +84,8 @@ public class AnnotationGraphBuilderThread implements Runnable {
 			ArrayList<Line> childLineList = new ArrayList<>();
 
 			// Logging
-			System.out.println("\n" + Thread.currentThread().getName() + " In progress (" + pathCnt + " / " + numOfPaths + ")");
-			System.out.println("\tBuilding Annotation Graph of " + path);
+//			System.out.println("\n" + Thread.currentThread().getName() + " In progress (" + pathCnt + " / " + numOfPaths + ")");
+//			System.out.println("\tBuilding Annotation Graph of " + path);
 
 			for (RevCommit childRev : revs) {
 				// Escape from the loop when there is no parent rev anymore
@@ -99,12 +97,6 @@ public class AnnotationGraphBuilderThread implements Runnable {
 				String parentContent = Utils.removeComments(GitUtils.fetchBlob(repo, parentRev, path)).trim();
 				String childContent = Utils.removeComments(GitUtils.fetchBlob(repo, childRev, path)).trim();
 
-				if (debug) {
-					System.out.println("path : " + path);
-					System.out.println("\tparent rev : " + parentRev.getName());
-					System.out.println("\tchild rev : " + childRev.getName());
-				}
-
 
 				// get the parent line list from content
 				configureLineList(parentLineList, path, parentRev, parentContent);
@@ -112,17 +104,6 @@ public class AnnotationGraphBuilderThread implements Runnable {
 				// get the child line list only when initial iteration
 				if (revs.indexOf(childRev) == 0)
 					configureLineList(childLineList, path, childRev, childContent);
-
-				if (debug) {
-					System.out.println("\nParent");
-					for (int i = 0; i < parentLineList.size(); i++) {
-						System.out.println(i + "th idx : " + parentLineList.get(i).getContent());
-					}
-					System.out.println("\nChild");
-					for (int i = 0; i < childLineList.size(); i++) {
-						System.out.println(i + "th idx : " + childLineList.get(i).getContent());
-					}
-				}
 
 				ArrayList<Hunk> hunkList = configureHunkList(GitUtils.getEditListFromDiff(parentContent, childContent));
 
@@ -135,18 +116,8 @@ public class AnnotationGraphBuilderThread implements Runnable {
 					boolean isIgnorable = false;
 					childLine = childLineList.get(childIdx);
 
-					if (debug) {
-						System.out.println("\nHunk Rate : " + (hunkIdx + 1) + " / " + hunkList.size());
-						System.out.println("Child Index Rate : " + childIdx + " / " + (childLineList.size() - 1));
-						System.out.println("Offset : " + offset);
-					}
-
 					// Case 1 - when there is no hunk anymore
 					if (hunkList.size() <= hunkIdx) {
-						if (debug) {
-							System.out.println("Connected parent index : " + (childIdx + offset) + " / " + (parentLineList.size() - 1));
-							System.out.println("No Hunk anymore\n");
-						}
 						childLine.setLineType(LineType.CONTEXT);
 
 						mapChildLineWithAncestor(childIdx, offset, parentLineList, childLine);
@@ -160,21 +131,9 @@ public class AnnotationGraphBuilderThread implements Runnable {
 					endOfChild = hunk.getEndOfChild();
 					hunkType = hunk.getHunkType();
 
-					if (debug) {
-						System.out.println("Hunk Type : " + hunk.getHunkType());
-						System.out.println("bA : " + hunk.getBeginOfParent());
-						System.out.println("eA : " + hunk.getEndOfParent());
-						System.out.println("bB : " + hunk.getBeginOfChild());
-						System.out.println("eB : " + hunk.getEndOfChild());
-					}
 
 					// Case 2 - child index is out of hunk range
 					if (childIdx < beginOfChild) {
-						if (debug) {
-							System.out.println("Connected parent index : " + (childIdx + offset) + " / " + (parentLineList.size() - 1));
-							System.out.println("Out of Hunk range\n");
-
-						}
 						childLine.setLineType(LineType.CONTEXT);
 						mapChildLineWithAncestor(childIdx, offset, parentLineList, childLine);
 
@@ -183,10 +142,6 @@ public class AnnotationGraphBuilderThread implements Runnable {
 					else {
 						switch (hunkType) {
 						case "INSERT":
-							if (debug) {
-								System.out.println("INSERT\n");
-							}
-
 							// When childIdx is the last index in hunk, increment hunk index
 							if (childIdx == endOfChild - 1) 
 								hunkIdx++;
@@ -199,10 +154,6 @@ public class AnnotationGraphBuilderThread implements Runnable {
 							break;
 
 						case "REPLACE":
-							if (debug) {
-								System.out.println("REPLACE\n");
-							}
-
 							// When childIdx is the last index in hunk, update offset and increment hunk index
 							if (childIdx == endOfChild - 1) {
 								offset += (hunk.getRangeOfParent() - hunk.getRangeOfChild());
@@ -245,11 +196,6 @@ public class AnnotationGraphBuilderThread implements Runnable {
 							mapChildLineWithAncestor(childIdx, offset, parentLineList, childLine);
 
 							hunkIdx++;
-
-							if (debug) {
-								System.out.println("Connected parent index : " + (childIdx + offset) + " / " + (parentLineList.size() - 1));
-								System.out.println("DELETE\n");
-							}
 
 							break;
 

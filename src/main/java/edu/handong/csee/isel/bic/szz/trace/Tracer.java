@@ -20,16 +20,12 @@ import edu.handong.csee.isel.bic.szz.util.Utils;
 import edu.handong.csee.isel.bic.szz.data.BICInfo;
 
 public class Tracer {
-	private boolean analysis;
-	private boolean debug;
 	private static final int REFACTOIRNG_THRESHOLD = 10;
 	private HashSet<Line> BILines = new HashSet<>();
 	private List<BICInfo> bicList = new ArrayList<>();
 	private static ArrayList<Line> formatChangedLineList = new ArrayList<Line>();
 
-	public Tracer(boolean analysis, boolean debug) {
-		this.analysis = analysis;
-		this.debug = debug;
+	public Tracer() {
 	}
 
 	public List<BICInfo> collectBILines(Repository repo, List<RevCommit> BFCList, AnnotationGraphModel annotationGraph,
@@ -48,11 +44,6 @@ public class Tracer {
 				break;
 			}
 
-			if (debug) {
-				System.out.println("\nParent Revision : " + parentRev.getName());
-				System.out.println("Child Revision (BFC) : " + BFC.getName());
-			}
-
 			List<DiffEntry> diffs = GitUtils.diff(repo, parentRev.getTree(), BFC.getTree());
 
 			/*
@@ -69,19 +60,6 @@ public class Tracer {
 				// Ignore non-java file and test file
 				if (!path.endsWith(".java") || path.contains("test"))
 					continue;
-
-				if (debug) {
-					System.out.println("\nParent Revision : " + parentRev.getName());
-					System.out.println("Child Revision (BFC) : " + BFC.getName());
-
-					System.out.println("\nChanged Path : " + path);
-					System.out.println("Graph contains " + path + "? " + annotationGraph.containsKey(path));
-
-					HashMap<RevCommit, ArrayList<Line>> subAG = annotationGraph.get(path);
-					if (subAG != null) {
-						System.out.println("Sub Graph contains " + BFC.getName() + "? " + subAG.containsKey(BFC));
-					}
-				}
 
 				// get subAnnotationGraph 
 				// path 는 key 값이다.
@@ -106,15 +84,6 @@ public class Tracer {
 				for (Edit edit : editList) {
 					int begin = -1;
 					int end = -1;
-
-					if (debug) {
-						System.out.println("\nHunk Info");
-						System.out.println("\tType : " + edit.getType());
-						System.out.println("\tbA : " + edit.getBeginA());
-						System.out.println("\teA : " + edit.getEndA());
-						System.out.println("\tbB : " + edit.getBeginB());
-						System.out.println("\teB : " + edit.getEndB());
-					}
 					
 					// edit.getType() 를 사용하게 되면 자동으로 해당 커밋은 어떤 타입의 커밋이었는지, delete인지, replace인지 등을 나타내다ㅣ. 
 					switch (edit.getType()) {
@@ -154,33 +123,12 @@ public class Tracer {
 						break;
 					}
 
-					if (debug) {
-						System.out.println("\nTraced Line Info : " + begin);
-						System.out.println("Begin : " + begin);
-						System.out.println("End : " + end);
-
-						System.out.println("\nSize of lines to trace : " + linesToTrace.size());
-
-						for (Line line : linesToTrace) {
-							int lindIdx = line.getIdx();
-							
-							if (lindIdx >= begin && lindIdx < end) {
-								System.out.println("\nLine Idx : " + line.getIdx());
-								System.out.println("Content : " + line.getContent());
-							}
-						}
-					}
-
 					// Phase 2 : trace
 					if (0 <= begin && 0 <= end) {
 						for (int i = begin; i < end; i++) {
 							Line line = linesToTrace.get(i);
 							// analysiz는 cli 모드이다. 
-							if (analysis) {
-								traceWithAnalysis(line, BFC.getName());
-							} else {
-								trace(line);
-							}
+							trace(line);			
 						}
 					}
 				}
@@ -204,13 +152,7 @@ public class Tracer {
 		// The fact that there are no ancestors means that the type of this line is INSERT
 		// However, due to the limit of building AG algorithm, the type of line can be CONTEXT if the line is initially inserted in commit history.
 		if (line.getAncestors().size() == 0) {
-			if (!Utils.isWhitespace(line.getContent())) {
-				if (debug) {
-					System.out.println(String.format(
-							"Add line into BIC (Commit : %s, Line Idx : %s, content : %s, type : %s, cosmetic? : %s, in hunk? : %s\n",
-							line.getRev(), line.getIdx(), line.getContent(), line.getLineType(), line.isFormatChange(), line.isWithinHunk()));
-				}
-				
+			if (!Utils.isWhitespace(line.getContent())) {			
 				BILines.add(line);
 			}
 		}
@@ -219,21 +161,8 @@ public class Tracer {
 			// Lines that are not white space, not format change, and within hunk are BI Lines.
 			if (!Utils.isWhitespace(ancestor.getContent())) {
 				if (ancestor.isFormatChange() || !ancestor.isWithinHunk()) {
-					// 둘다 false false 로 나옴 
-					if (debug) {
-						System.out.println(String.format(
-								"From commit : %s, Lind idx : %s, content : %s, type : %s, cosmetic? : %s, in hunk? : %s\n=> To commit : %s, Lind idx : %s, content : %s, type : %s, cometic? : %s, in hunk? : %s",
-								line.getRev(), line.getIdx(), line.getContent(), line.getLineType(), line.isFormatChange(), line.isWithinHunk(), ancestor.getRev(), ancestor.getIdx(), ancestor.getContent(), ancestor.getLineType(), ancestor.isFormatChange(),ancestor.isWithinHunk()));
-					}
-					
 					trace(ancestor);
-				} else {
-					if (debug) {
-						System.out.println(String.format(
-								"From commit : %s, Lind idx : %s, content : %s, type : %s, cosmetic? : %s, in hunk? : %s\n=>Add line into BIC (Commit : %s, Line Idx : %s, content : %s, type : %s, cosmetic? : %s, in hunk? : %s\n",
-								line.getRev(), line.getIdx(), line.getContent(), line.getLineType(), line.isFormatChange(), line.isWithinHunk(), ancestor.getRev(), ancestor.getIdx(), ancestor.getContent(), ancestor.getLineType(), ancestor.isFormatChange(),ancestor.isWithinHunk()));
-					}
-					
+				} else {				
 					BILines.add(ancestor);
 				}
 			}
@@ -250,7 +179,6 @@ public class Tracer {
 
 						formatChangedLineList.add(line);
 					}
-
 					traceWithAnalysis(ancestor, BFC);
 
 				} else if (!ancestor.isWithinHunk()) {
