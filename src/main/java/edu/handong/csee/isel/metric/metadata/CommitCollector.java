@@ -86,7 +86,7 @@ public class CommitCollector {
 		int count = 0;
 
 		try {
-			Iterable<RevCommit> initialCommits = git.log().call();
+			Iterable<RevCommit> initialCommits = git.log().all().call();
 			repo = git.getRepository();
 
 			for (RevCommit initialCommit : initialCommits) {
@@ -241,6 +241,7 @@ public class CommitCollector {
 				int linesOfCodeBeforeTheChange = entry.getValue().getLinesOfCodeBeforeTheChange();
 				String commitTime = entry.getValue().getCommitTime();
 				double entropy = entry.getValue().getEntropy();
+				int distributionOfModifiedLines = entry.getValue().getDistributionOfModifiedLines();
 				
 				//compute LT
 				linesOfCodeBeforeTheChange = linesOfCodeBeforeTheChange - numOfAddLines + numOfDeleteLines;
@@ -270,6 +271,9 @@ public class CommitCollector {
 						mykey.add(key);
 						
 						if(isBugCommit != labels.get(keys.indexOf(key))) {
+							System.out.println(key);
+							System.out.println(isBugCommit);
+							System.out.println(labels.get(keys.indexOf(key)));
 							isBugCommit = labels.get(keys.indexOf(key));
 						}
 						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",LA,LD,entropy,sumOfDeveloper,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,linesOfCodeBeforeTheChange);
@@ -295,7 +299,7 @@ public class CommitCollector {
 			for(String key : keys) {
 				if(!mykey.contains(key)) {
 					csvPrinter.printRecord(keyCommit.get(keys.indexOf(key)),keyPath.get(keys.indexOf(key)));
-//					System.out.println(key);
+					System.out.println(key);
 					le++;
 				}
 			}
