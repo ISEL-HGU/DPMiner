@@ -22,6 +22,7 @@ public class MetaDataInfo {
 	float recentDeveloperExperience;//ok
 	int LinesOfCodeBeforeTheChange;//ok
 	String commitTime;
+	double entropy;
 
 	public MetaDataInfo() {
 		this.numOfBIC = 0;
@@ -43,6 +44,7 @@ public class MetaDataInfo {
 		this.recentDeveloperExperience = 0;
 		this.LinesOfCodeBeforeTheChange = 0;
 		this.commitTime = null;
+		this.entropy = 0.0;
 	}
 
 	public int getNumOfBIC() {
@@ -199,6 +201,13 @@ public class MetaDataInfo {
 
 	public void setCommitTime(String commitTime) {
 		this.commitTime = commitTime;
+	}
+	public double getEntropy() {
+		return entropy;
+	}
+
+	public void setEntropy(double entropy) {
+		this.entropy = entropy;
 	}
 	
 }

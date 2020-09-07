@@ -1,5 +1,6 @@
 package edu.handong.csee.isel.metric.metadata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +17,10 @@ import edu.handong.csee.isel.metric.metadata.SourceFileInfo;
 import edu.handong.csee.isel.metric.metadata.Utils;
 
 public class MetricParser {
-	public void parsePatchContents(MetaDataInfo metaDataInfo, String commitHash,String diffContent) {
+	public void parsePatchContents(MetaDataInfo metaDataInfo,CommitUnitInfo commitUnitInfo, String commitHash,String diffContent) {
 
 		int numOfDeleteLines = 0; // metricVariable.getNumOfDeleteLines();
 		int numOfAddLines = 0; // metricVariable.getNumOfAddLines();
-		int distributionOfModifiedLines = 0; // metricVariable.getDistributionOfModifiedLines();
 
 		List<String> diffLines = Arrays.asList(diffContent.split("\\n"));
 
@@ -28,13 +28,15 @@ public class MetricParser {
 			String line = diffLines.get(i);
 			if(line.startsWith("-")) numOfDeleteLines++;
 			else if(line.startsWith("+")) numOfAddLines++;
-			else if(line.startsWith("@@")) distributionOfModifiedLines++;
 		}
 		
-		metaDataInfo.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
+		int numOfModifyLines = numOfDeleteLines + numOfAddLines;
+
+		metaDataInfo.setNumOfModifyLines(numOfModifyLines);
 		metaDataInfo.setNumOfAddLines(numOfAddLines);
 		metaDataInfo.setNumOfDeleteLines(numOfDeleteLines);
-		metaDataInfo.setDistributionOfModifiedLines(distributionOfModifiedLines);
+		commitUnitInfo.setModifiedLines(numOfModifyLines);
+		commitUnitInfo.setEntropy(commitUnitInfo.getEntropy() + (double)numOfModifyLines);
 	}
 
 
@@ -119,5 +121,21 @@ public class MetricParser {
 		}
 		developerExperience.get(authorId).setREXP(REXP);
 		
+	}
+	
+	public void computeEntropy(CommitUnitInfo commitUnitInfo) {
+		ArrayList<Integer> modifiedLines = commitUnitInfo.getModifiedLines();
+
+		double allNum = commitUnitInfo.getEntropy();
+		double entropy = 0.0;
+
+		for(int modifiedLine : modifiedLines) {
+			if(modifiedLine == 0) continue;
+			double value = (double)modifiedLine/(double)allNum;
+			double log = Math.log(value) / Math.log(2);
+			entropy += (value * log) * -1;
+		}
+		commitUnitInfo.setEntropy((double)Math.round(entropy*1000)/1000);
+
 	}
 }
