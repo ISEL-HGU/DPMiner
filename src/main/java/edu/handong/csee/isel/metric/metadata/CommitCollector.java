@@ -52,12 +52,13 @@ public class CommitCollector {
 	private boolean developerHistory;
 	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 	List<String> bugCommit = null;
+	boolean allGitLog;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
 	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
 
-	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory) { // String strStartDate,String strEndDate,boolean test
+	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory, boolean allGitLog) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
 
 		this.startDate = startDate;
@@ -68,6 +69,7 @@ public class CommitCollector {
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
 		this.developerHistory = developerHistory;
+		this.allGitLog = allGitLog;
 	}
 
 	public void countCommitMetrics() {
@@ -78,7 +80,14 @@ public class CommitCollector {
 		int count = 0;
 
 		try {
-			Iterable<RevCommit> initialCommits = git.log().call();
+			Iterable<RevCommit> initialCommits = null;
+			
+			if(allGitLog == true) {
+				initialCommits = git.log().all().call();
+			}else {
+				initialCommits = git.log().call();
+			}
+			
 			repo = git.getRepository();
 
 			for (RevCommit initialCommit : initialCommits) {
@@ -372,5 +381,8 @@ public class CommitCollector {
 	public void setMidDate(String midDate) {
 		this.midDate = midDate;
 	}
-
+	
+	public void setAllGitLog(boolean allGitLog) {
+		this.allGitLog = allGitLog;
+	}
 }

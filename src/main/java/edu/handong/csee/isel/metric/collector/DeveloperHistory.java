@@ -20,6 +20,7 @@ public class DeveloperHistory {
 	String endDate;
 	String midDate;
 	double percent;
+	boolean allGitLog;
 	
 	public DeveloperHistory(Input input){
 		try {
@@ -32,6 +33,7 @@ public class DeveloperHistory {
 			else this.endDate = input.endDate;
 			
 			this.percent = (double)input.percent;
+			this.allGitLog = input.allGitLog;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -46,7 +48,11 @@ public class DeveloperHistory {
 		
 		Iterable<RevCommit> initialCommits = null;
 		try {
-			initialCommits = git.log().call();
+			if(allGitLog == true) {
+				initialCommits = git.log().all().call();
+			}else {
+				initialCommits = git.log().call();
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

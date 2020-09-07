@@ -73,6 +73,12 @@ public class CLIConverter implements InputConverter {
 			}
 		}
 		input.percent = inputPercent;
+		
+		if(cmd.hasOption("a")) {
+			input.allGitLog = true;
+		}else {
+			input.allGitLog = false;
+		}
 
 		input.outPath = cmd.getOptionValue("o");
 		if (input.outPath.endsWith(File.separator)) {
@@ -194,6 +200,11 @@ public class CLIConverter implements InputConverter {
 		options.addOption(Option.builder("d").longOpt("developer")
 				.desc("collecting metrics for developer history scenario")
 				.argName("developer history")
+				.build());
+		
+		options.addOption(Option.builder("a").longOpt("git.log().all().call()")
+				.desc("call all git log option. defalt : git.log().call()")
+				.argName("git call all")
 				.build());
 		
 		options.addOption(Option.builder("p").longOpt("percent")

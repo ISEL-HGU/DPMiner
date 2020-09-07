@@ -54,7 +54,7 @@ public class Main {
 		} else {
 			gitDirectory = GitClone(input);
 		}
-		commitList = getCommitListFrom(gitDirectory);
+		commitList = getCommitListFrom(gitDirectory,input.allGitLog);
 
 		// 3. collect Bug-Fix-Commit
 		List<String> bfcList = null;
@@ -160,9 +160,16 @@ public class Main {
 		}
 	}
 
-	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
+	public static List<RevCommit> getCommitListFrom(File gitDir, boolean allGitLog) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().call();
+		Iterable<RevCommit> walk = null;
+		
+		if(allGitLog == true) {
+			walk = git.log().all().call();
+		}else {
+			walk = git.log().call();
+		}
+		
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;

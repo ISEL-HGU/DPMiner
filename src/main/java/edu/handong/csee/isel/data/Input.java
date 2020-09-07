@@ -33,6 +33,8 @@ public class Input {
 	
 	public int percent;
 	
+	public boolean allGitLog;
+	
 	
 	
 	public static enum ReferenceType {

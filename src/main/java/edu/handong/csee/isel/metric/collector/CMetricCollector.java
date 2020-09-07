@@ -26,6 +26,7 @@ public class CMetricCollector implements MetricCollector {
 	boolean developerHistory;
 	public static HashMap<String,Integer> tooLongName = new HashMap<>();
 	static int tooLongNameIndex = 0;
+	boolean allGitLog;
 	
 	List<String> bicList;
 	
@@ -41,6 +42,7 @@ public class CMetricCollector implements MetricCollector {
 		else this.endDate = input.endDate;
 		
 		this.developerHistory = developerHistory;
+		this.allGitLog = input.allGitLog;
 	}
 
 	@Override
@@ -85,10 +87,11 @@ public class CMetricCollector implements MetricCollector {
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector);
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, input.projectName, startDate, endDate, developerHistory, allGitLog); //StartDate, strEndDate, test
 		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();
+		commitCollector.setAllGitLog(allGitLog);
 		String arffOutputPath = commitCollector.CSV2ARFF();
 		
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
