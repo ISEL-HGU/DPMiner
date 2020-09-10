@@ -23,6 +23,7 @@ public class MetaDataInfo {
 	int LinesOfCodeBeforeTheChange;//ok
 	String commitTime;
 	double entropy;
+	int developerSubsystem;
 
 	public MetaDataInfo() {
 		this.numOfBIC = 0;
@@ -45,6 +46,7 @@ public class MetaDataInfo {
 		this.LinesOfCodeBeforeTheChange = 0;
 		this.commitTime = null;
 		this.entropy = 0.0;
+		this.developerSubsystem = 0;
 	}
 
 	public int getNumOfBIC() {
@@ -209,5 +211,15 @@ public class MetaDataInfo {
 	public void setEntropy(double entropy) {
 		this.entropy = entropy;
 	}
+
+	public int getDeveloperSubsystem() {
+		return developerSubsystem;
+	}
+
+	public void setDeveloperSubsystem(int developerSubsystem) {
+		this.developerSubsystem = developerSubsystem;
+	}
+	
+	
 	
 }

@@ -85,7 +85,7 @@ public class MetricParser {
 
 	}
 
-	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key) {
+	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key,HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId) {
 		String[] pathToken = sourcePath.split("/");
 		String subsystem = pathToken[0];
 		String file = pathToken[pathToken.length-1];
@@ -96,14 +96,18 @@ public class MetricParser {
 		while(matcher.find()) {
 			directorie = matcher.group(1);
 		}
+		
+		if(!subsystem.startsWith("src")) {
+			commitUnitInfo.setSubsystems(subsystem);
+			developerExperience.get(authorId).setNumOfSubsystem(subsystem);
+		}
 
 		commitUnitInfo.setKey(key);
-		commitUnitInfo.setSubsystems(subsystem);
 		commitUnitInfo.setDirectories(directorie);
 		commitUnitInfo.setFiles(file);
 	}
 	
-	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime) {
+	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime, int numOfSubsystem) {
 		String[] TimeToken = commitTime.split("-");
 		int year =  Integer.parseInt(TimeToken[0]) + 1;
 		float REXP = 0;
@@ -120,7 +124,6 @@ public class MetricParser {
 			REXP = REXP + (float)numerator/denominator;
 		}
 		developerExperience.get(authorId).setREXP(REXP);
-		
 	}
 	
 	public void computeEntropy(CommitUnitInfo commitUnitInfo) {
