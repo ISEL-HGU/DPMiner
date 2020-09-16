@@ -29,8 +29,8 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitUnitInfo;
 import edu.handong.csee.isel.metric.metadata.DeveloperExperienceInfo;
-import edu.handong.csee.isel.metric.metadata.MetaDataInfo;
-import edu.handong.csee.isel.metric.metadata.MetricParser;
+import edu.handong.csee.isel.metric.metadata.Metrics;
+import edu.handong.csee.isel.metric.metadata.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.SourceFileInfo;
 import edu.handong.csee.isel.metric.metadata.Utils;
 import weka.core.Instances;
@@ -39,7 +39,7 @@ import weka.core.converters.CSVLoader;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.NonSparseToSparse;
 
-public class CommitCollector {
+public class CommitCollector { 
 //	private String inputPath;
 	private String outputPath;
 	private String startDate;
@@ -56,7 +56,7 @@ public class CommitCollector {
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
-	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
+	public static HashMap<String,Metrics> metaDatas = new HashMap<String,Metrics>();//////이놈!!!
 
 	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory, boolean allGitLog) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
@@ -74,8 +74,8 @@ public class CommitCollector {
 
 	public void countCommitMetrics() {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		MetricParser metricParser = new MetricParser();
-		MetaDataInfo metaDataInfo;
+		MetricCollector metricParser = new MetricCollector();
+		Metrics metaDataInfo;
 
 		int count = 0;
 
@@ -136,7 +136,7 @@ public class CommitCollector {
 //							System.err.println("Error : can not find key");
 //						}
 //					}
-					metaDataInfo = new MetaDataInfo();
+					metaDataInfo = new Metrics();
 					metaDatas.put(key, metaDataInfo);
 
 					String fileSource = Utils.fetchBlob(repo, commit.getName(), sourcePath);
@@ -218,9 +218,9 @@ public class CommitCollector {
 			}
 			
 			//no is bug commit
-			Set<Map.Entry<String, MetaDataInfo>> entries = metaDatas.entrySet();
+			Set<Map.Entry<String, Metrics>> entries = metaDatas.entrySet();
 
-			for (Map.Entry<String,MetaDataInfo> entry : entries) {
+			for (Map.Entry<String,Metrics> entry : entries) {
 				String key = entry.getKey();
 				int numOfModifyLines = entry.getValue().getNumOfModifyLines();
 				int numOfAddLines = entry.getValue().getNumOfAddLines();

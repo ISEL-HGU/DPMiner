@@ -12,12 +12,12 @@ import java.util.regex.Pattern;
 
 import edu.handong.csee.isel.metric.metadata.CommitUnitInfo;
 import edu.handong.csee.isel.metric.metadata.DeveloperExperienceInfo;
-import edu.handong.csee.isel.metric.metadata.MetaDataInfo;
+import edu.handong.csee.isel.metric.metadata.Metrics;
 import edu.handong.csee.isel.metric.metadata.SourceFileInfo;
 import edu.handong.csee.isel.metric.metadata.Utils;
 
-public class MetricParser {
-	public void parsePatchContents(MetaDataInfo metaDataInfo,CommitUnitInfo commitUnitInfo, String commitHash,String diffContent) {
+public class MetricCollector { //metric Collector
+	public void parsePatchContents(Metrics metaDataInfo,CommitUnitInfo commitUnitInfo, String commitHash,String diffContent) {
 
 		int numOfDeleteLines = 0; // metricVariable.getNumOfDeleteLines();
 		int numOfAddLines = 0; // metricVariable.getNumOfAddLines();
@@ -40,7 +40,7 @@ public class MetricParser {
 	}
 
 
-	public void parseSourceInfo(MetaDataInfo metaDataInfo, HashMap<String,SourceFileInfo> sourceFileInfo, String sourceFileName, String authorId,boolean isBuggyCommit,String commitTime,String commitHash, CommitUnitInfo commitUnitInfo, String fileSource) throws Exception {
+	public void parseSourceInfo(Metrics metaDataInfo, HashMap<String,SourceFileInfo> sourceFileInfo, String sourceFileName, String authorId,boolean isBuggyCommit,String commitTime,String commitHash, CommitUnitInfo commitUnitInfo, String fileSource) throws Exception {
 		SourceFileInfo aSourceFileInfo;//소스파일 정보 인스탄스 
 
 		if(sourceFileInfo.containsKey(sourceFileName) == false) {//처음 만들어진 소스 파일 일 때 
@@ -73,7 +73,7 @@ public class MetricParser {
 		aSourceFileInfo.setPreviousCommitHash(commitHash);
 	}
 
-	public void parseDeveloperInfo(MetaDataInfo metaDataInfo, HashMap<String,Integer> developerExperience, String authorId) {
+	public void parseDeveloperInfo(Metrics metaDataInfo, HashMap<String,Integer> developerExperience, String authorId) {
 
 		if(developerExperience.containsKey(authorId) == false) {
 			developerExperience.put(authorId, 1);

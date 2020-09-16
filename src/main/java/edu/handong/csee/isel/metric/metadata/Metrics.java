@@ -1,6 +1,6 @@
 package edu.handong.csee.isel.metric.metadata;
 
-public class MetaDataInfo {
+public class Metrics { //Metrics
 	int numOfBIC;        //ok
 	String commitAuthor; //ok
 	int numOfUniqueCommitToTheModifyFiles; //ok
@@ -25,7 +25,7 @@ public class MetaDataInfo {
 	double entropy;
 	int developerSubsystem;
 
-	public MetaDataInfo() {
+	public Metrics() {
 		this.numOfBIC = 0;
 		this.commitAuthor = null;
 		this.commitHour = null;
