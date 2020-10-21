@@ -56,7 +56,7 @@ public class CommitCollector {
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
-	public static HashMap<String,Metrics> metaDatas = new HashMap<String,Metrics>();//////이놈!!!
+	public static HashMap<String,Metrics> metrics = new HashMap<String,Metrics>();//////이놈!!!
 
 	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory, boolean allGitLog) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
@@ -75,7 +75,7 @@ public class CommitCollector {
 	public void countCommitMetrics() {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		MetricCollector metricParser = new MetricCollector();
-		Metrics metaDataInfo;
+		Metrics metric;
 
 		int count = 0;
 
@@ -136,17 +136,17 @@ public class CommitCollector {
 //							System.err.println("Error : can not find key");
 //						}
 //					}
-					metaDataInfo = new Metrics();
-					metaDatas.put(key, metaDataInfo);
+					metric = new Metrics();
+					metrics.put(key, metric);
 
 					String fileSource = Utils.fetchBlob(repo, commit.getName(), sourcePath);
 
 					//save commit data to metaDataInfo
-					metaDataInfo.setCommitHour(commitHour);//metaDataInfo에 commit Time 저장 
-					metaDataInfo.setCommitDay(commitDay);//metaDataInfo에 commit Day 저장 
-					metaDataInfo.setCommitAuthor(authorId);//metaDataInfo에 author 저장 
-					metaDataInfo.setIsBugCommit((isBugCommit) ? 1 : 0);//metaDataInfo에 isBugCommit을 integer로 저장 
-					metaDataInfo.setCommitTime(commitTime);
+					metric.setCommitHour(commitHour);//metaDataInfo에 commit Time 저장 
+					metric.setCommitDay(commitDay);//metaDataInfo에 commit Day 저장 
+					metric.setCommitAuthor(authorId);//metaDataInfo에 author 저장 
+					metric.setIsBugCommit((isBugCommit) ? 1 : 0);//metaDataInfo에 isBugCommit을 integer로 저장 
+					metric.setCommitTime(commitTime);
 
 					if(numOfentry == 0) Utils.countDeveloperCommit(developerExperience,authorId,commitTime);// test와 .java를 포함하지 않은 커밋의 개발자 정보만 count 한다.
 					numOfentry++;
@@ -156,8 +156,8 @@ public class CommitCollector {
 						formatter.format(entry);
 
 						String diffContent = byteStream.toString(); // 한 소스파일의 diff를 diffContent에 저장
-						metricParser.parsePatchContents(metaDataInfo,commitUnitInfo, commitHash, diffContent);
-						metricParser.parseSourceInfo(metaDataInfo, sourceFileInfo, sourcePath, authorId, isBugCommit, commitTime, commitHash, commitUnitInfo, fileSource);
+						metricParser.parsePatchContents(metric,commitUnitInfo, commitHash, diffContent);
+						metricParser.parseSourceInfo(metric, sourceFileInfo, sourcePath, authorId, isBugCommit, commitTime, commitHash, commitUnitInfo, fileSource);
 						metricParser.parseCommitUnitInfo(commitUnitInfo, sourcePath, key,developerExperience,authorId);
 
 						byteStream.reset();
@@ -169,15 +169,15 @@ public class CommitCollector {
 
 				for(int j = 0; j < commitUnitInfo.getKey().size(); j++) {
 					String sourceKey = commitUnitInfo.getKey().get(j);
-					metaDataInfo = metaDatas.get(sourceKey);
-					metaDataInfo.setNumOfSubsystems(commitUnitInfo.getSubsystems().size());
-					metaDataInfo.setNumOfDirectories(commitUnitInfo.getDirectories().size());
-					metaDataInfo.setNumOfFiles(commitUnitInfo.getFiles().size());
-					metaDataInfo.setNumOfUniqueCommitToTheModifyFiles(commitUnitInfo.getPreviousCommitHashs().size());
-					metaDataInfo.setDeveloperExperience(developerExperience.get(authorId).getNumOfCommits());
-					metaDataInfo.setRecentDeveloperExperience(developerExperience.get(authorId).getREXP());
-					metaDataInfo.setDeveloperSubsystem(developerExperience.get(authorId).getNumOfSubsystem().size());
-					metaDataInfo.setEntropy(commitUnitInfo.getEntropy());
+					metric = metrics.get(sourceKey);
+					metric.setNumOfSubsystems(commitUnitInfo.getSubsystems().size());
+					metric.setNumOfDirectories(commitUnitInfo.getDirectories().size());
+					metric.setNumOfFiles(commitUnitInfo.getFiles().size());
+					metric.setNumOfUniqueCommitToTheModifyFiles(commitUnitInfo.getPreviousCommitHashs().size());
+					metric.setDeveloperExperience(developerExperience.get(authorId).getNumOfCommits());
+					metric.setRecentDeveloperExperience(developerExperience.get(authorId).getREXP());
+					metric.setDeveloperSubsystem(developerExperience.get(authorId).getNumOfSubsystem().size());
+					metric.setEntropy(commitUnitInfo.getEntropy());
 				}
 
 			}
@@ -218,7 +218,7 @@ public class CommitCollector {
 			}
 			
 			//no is bug commit
-			Set<Map.Entry<String, Metrics>> entries = metaDatas.entrySet();
+			Set<Map.Entry<String, Metrics>> entries = metrics.entrySet();
 
 			for (Map.Entry<String,Metrics> entry : entries) {
 				String key = entry.getKey();
@@ -289,7 +289,7 @@ public class CommitCollector {
 			if(developerHistory == true) {
 				developerCsvPrinterTest.close();
 			}
-			metaDatas.clear();
+			metrics.clear();
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
