@@ -61,10 +61,9 @@ public class SZZRunner implements BICCollector {
 	public SZZRunner(Iterable<String> BFCommitList) {
 		this.BFCommitList.addAll(IterableUtils.toList(BFCommitList));
 	}
-
 	/**
 	 * TODO Let's just print out BIC information and then change return type as
-	 * ArrayList<RevCommit> (i.e. BIC list)
+	 * (i.e. BIC list)
 	 */
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 

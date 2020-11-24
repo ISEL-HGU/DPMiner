@@ -13,13 +13,18 @@ import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.Utils;
 
+/**
+ * 
+ * @author 
+ *
+ */
 public class DeveloperHistory {
 	private Git git;
 	private Repository repo;
-	String startDate;
-	String endDate;
-	String midDate;
-	double percent;
+	private String startDate;
+	private String endDate;
+	private String midDate;
+	private double percent;
 	
 	public DeveloperHistory(){
 		try {
@@ -38,6 +43,10 @@ public class DeveloperHistory {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String findDeveloperDate() {
 		midDate = null;
 		ArrayList<String> newDeveloper = new ArrayList<String>();
@@ -98,14 +107,26 @@ public class DeveloperHistory {
 		return midDate = dateOfCameIn.get((int)halfDeveloper);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public String getMidDate() {
 		return midDate;
 	}
 
+	/**
+	 * 
+	 * @param git
+	 */
 	public void setGit(Git git) {
 		this.git = git;
 	}
 
+	/**
+	 * 
+	 * @param repo
+	 */
 	public void setRepo(Repository repo) {
 		this.repo = repo;
 	}

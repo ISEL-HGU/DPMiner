@@ -1,4 +1,4 @@
-package edu.handong.csee.isel.data.processor;
+package edu.handong.csee.isel.data.csv;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,9 +12,6 @@ import org.apache.commons.csv.CSVPrinter;
 
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
-import edu.handong.csee.isel.data.csv.BICInfo;
-import edu.handong.csee.isel.data.csv.MetricInfo;
-import edu.handong.csee.isel.data.csv.PatchInfo;
 
 public class CSVMaker {
 	public CSVPrinter printer = null;

@@ -3,9 +3,9 @@ package edu.handong.csee.isel.metric.metadata;
 import java.util.TreeMap;
 
 public class DeveloperExperienceInfo {
-	TreeMap<Integer, Integer> recentExperiences;
-	int numOfCommits;
-	float REXP;
+	private TreeMap<Integer, Integer> recentExperiences;
+	private int numOfCommits;
+	private float REXP;
 	
 	public DeveloperExperienceInfo() {
 		this.recentExperiences = new TreeMap<Integer, Integer>();

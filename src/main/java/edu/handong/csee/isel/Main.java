@@ -3,6 +3,7 @@ package edu.handong.csee.isel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -13,7 +14,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollector;
+import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.BFCGitHubCollector;
 import edu.handong.csee.isel.bfc.collector.BFCJiraCollector;
 import edu.handong.csee.isel.bfc.collector.BFCKeywordCollector;
@@ -24,7 +25,7 @@ import edu.handong.csee.isel.bic.collector.AGSZZBICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
-import edu.handong.csee.isel.data.processor.CSVMaker;
+import edu.handong.csee.isel.data.csv.CSVMaker;
 import edu.handong.csee.isel.data.processor.input.command.Task;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
@@ -32,13 +33,14 @@ import edu.handong.csee.isel.metric.collector.DeveloperHistory;
 import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
+import edu.handong.csee.isel.repo.collector.RepoCollector;
+import edu.handong.csee.isel.repo.collector.RepoCommitCollector;
 import picocli.CommandLine;
 
 
 public class Main {
-
 	public static void main(String[] args)
-			throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException {
+			throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException, InterruptedException {
 
 		// 1. Input
 		Task task = new Task();
@@ -46,31 +48,44 @@ public class Main {
 		int exitCode = cmd.execute(args);
 		if(exitCode != 0)
 			System.exit(exitCode);	
-
+	
 		// 2. get all commits from GIT directory
-		List<RevCommit> commitList;
-		File gitDirectory = null;
-		if (isCloned() && isValidRepository()) {
-			gitDirectory = getGitDirectory();
-		} else if (isCloned() && (!isValidRepository())) {
-			File directory = getGitDirectory();
-			directory.delete();
-			gitDirectory = GitClone();
-		} else {
-			gitDirectory = GitClone();
-		}
-		commitList = getCommitListFrom(gitDirectory);
+//		List<RevCommit> commitList;
+//		File gitDirectory = null;
+//		if (isCloned() && isValidRepository()) {
+//			gitDirectory = getGitDirectory();
+//		} else if (isCloned() && (!isValidRepository())) {
+//			File directory = getGitDirectory();
+//			directory.delete();
+//			gitDirectory = GitClone();
+//		} else {
+//			gitDirectory = GitClone();
+//		}
+//		commitList = getCommitListFrom(gitDirectory);
 
 		// 3. collect Bug-Fix-Commit
+		List<RevCommit> commitList = null;
 		List<String> bfcList = null;
 		List<String> bicList = null;//메트릭스에서 쓰임.
 		MetricCollector metricCollector = null;
-		BFCCollector bfcCollector = null;
+		BFCCollectable bfcCollector = null;
 		List<CSVInfo> csvInfoLst = null;
-
+		HashSet<String> repoResult= null;
+		HashSet<String> repoCommitResult= null;
 
 		switch (Input.taskType) {
+		case FINDREPO:
+			RepoCollector searchRepo = new RepoCollector(); //git token 받아오기 아아 얘가 리파지토리 찾아오는 
+			repoResult = searchRepo.collectFrom();
+			
+			if(Input.commitCountBase != null) {
+				RepoCommitCollector searchCommit = new RepoCommitCollector(repoResult);
+				repoCommitResult = searchCommit.collectFrom();
+			}
+			
+			break;
 		case PATCH:
+			commitList = getAllCommitList();
 			bfcList=makeBFCCollector(bfcList,commitList,bfcCollector);	
 			
 			PatchCollector patchCollector = new CPatchCollector();
@@ -82,6 +97,7 @@ public class Main {
 			break;
 
 		case BIC:
+			commitList = getAllCommitList();
 			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector);
 			BICCollector bicCollector;
 			
@@ -104,6 +120,7 @@ public class Main {
 
 		case METRIC:
 			//BIC 파일 읽기
+			commitList = getAllCommitList();
 			bicList= readBICcsv();			
 			metricCollector = new CMetricCollector(false);
 			metricCollector.setBIC(bicList);
@@ -114,6 +131,7 @@ public class Main {
 			
 		case DEVELOPERMETRIC:
 			//BIC 파일 읽기
+			commitList = getAllCommitList();
 			bicList=readBICcsv();
 			
 			DeveloperHistory developerHistory = new DeveloperHistory();
@@ -127,6 +145,21 @@ public class Main {
 			
 			break;
 		}
+	}
+	
+	private static List<RevCommit> getAllCommitList() throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+		File gitDirectory = null;
+		if (isCloned() && isValidRepository()) {
+			gitDirectory = getGitDirectory();
+		} else if (isCloned() && (!isValidRepository())) {
+			File directory = getGitDirectory();
+			directory.delete();
+			gitDirectory = GitClone();
+		} else {
+			gitDirectory = GitClone();
+		}
+		return getCommitListFrom(gitDirectory);
+		
 	}
 
 	
@@ -142,6 +175,7 @@ public class Main {
 		
 	}
 	
+	
 	public static void printCSV(List<CSVInfo> csvInfoLst)  throws IOException {
 
 		if (csvInfoLst.size() < 1) {
@@ -154,16 +188,13 @@ public class Main {
 		
 	}
 	
-	public static List<String> makeBFCCollector (List<String> bfcList, List<RevCommit> commitList, BFCCollector bfcCollector)
+	public static List<String> makeBFCCollector (List<String> bfcList, List<RevCommit> commitList, BFCCollectable bfcCollector)
 			throws IOException,InvalidProjectKeyException, InvalidDomainException{
 		
 		switch (Input.mode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
 		case JIRA:
 //			System.out.println("Main Jira part!");
 			bfcCollector = new BFCJiraCollector();
-			bfcCollector.setJiraURL(Input.jiraURL);
-			bfcCollector.setJiraProjectKey(Input.jiraProjectKey);
-			bfcCollector.setOutPath(Input.outPath);
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 			
@@ -176,8 +207,6 @@ public class Main {
 		case GITHUB:
 //			System.out.println("Main GitHub part!");
 			bfcCollector = new BFCGitHubCollector();
-			bfcCollector.setGitHubURL(Input.gitURL);
-			bfcCollector.setGitHubLabel(Input.label);
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 		

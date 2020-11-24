@@ -20,21 +20,44 @@ import edu.handong.csee.isel.bic.szz.util.GitUtils;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
 
+/**
+ * The {@code AGSZZBICCollector} class do collect BIC(bug introducing commit)<br>
+ * using the annotation graph.<br>
+ * It implements BICColletor which is interface about collecting BIC <br>
+ * 
+ * @author SJ
+ * @author JY
+ * @version 1.0
+ */
 public class AGSZZBICCollector implements BICCollector{
 	
-	List<String> bfcList = null;
+	private List<String> bfcList = null;
 
-	Git git;
-	Repository repo;
+	private Git git;
+	private Repository repo;
 	
 	public AGSZZBICCollector() {
 	}
 	
+	/**
+     * setting BFC(bug fixing commit)
+     *
+     * @param bfcList The list that is only bug fixing commit name list.
+     */
 	@Override
 	public void setBFC(List<String> bfcList) {
 		this.bfcList = bfcList;
 	}
-
+	/**
+	 * Make the annotation graph and than create bic csv file using annotation graph.
+     * 
+     * @param commitList The list that is all commit list from github project. 
+     * @return null 
+     * @see "AnnotationGraphBuilder" 
+     * @see "AnnotationGraphModel" 
+     * @see "RevCommit" 
+     * 
+     */
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) throws IOException {
 		try {

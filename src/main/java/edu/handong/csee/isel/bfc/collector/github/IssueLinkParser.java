@@ -81,7 +81,7 @@ public class IssueLinkParser {
 	/**
 	 * Using issueAddress in another class.
 	 * 
-	 * @return ArrayList<String>
+	 * 
 	 */
 	public static ArrayList<String> getIssueAddress() {
 		return issueAddress;

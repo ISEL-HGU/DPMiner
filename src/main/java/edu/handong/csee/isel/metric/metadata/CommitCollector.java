@@ -50,12 +50,14 @@ public class CommitCollector {
 	private Git git;
 	private Repository repo;
 	private boolean developerHistory;
-	ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
-	List<String> bugCommit = null;
+	private ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
+	private List<String> bugCommit = null;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
-	public HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
-	public static HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
+	//여기 바꿈 public
+	private HashMap<String,SourceFileInfo> sourceFileInfo = new HashMap<String,SourceFileInfo>();//source file information
+	//여기 바꿈 public static
+	private HashMap<String,MetaDataInfo> metaDatas = new HashMap<String,MetaDataInfo>();//////이놈!!!
 
 	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
@@ -304,8 +306,8 @@ public class CommitCollector {
 		}
 		return arffOutputPath;
 	}
-
-	public void parsing(String csvOutputPath) {
+	//여기 바꿈 public
+	private void parsing(String csvOutputPath) {
 		//csvOutputPath = arff 파일 경로  
 		ArrayList<String> arffContents = new ArrayList<String>();
 		ArrayList<String> firstCommitInformation = new ArrayList<String>();

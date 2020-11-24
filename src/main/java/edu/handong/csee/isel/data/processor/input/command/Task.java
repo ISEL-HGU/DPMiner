@@ -7,6 +7,7 @@ package edu.handong.csee.isel.data.processor.input.command;
  
  @Command(
            subcommands = { 
+        	   FindRepoCommand.class,
                BICCommand.class,
                PatchCommand.class,
                MetricCommand.class,

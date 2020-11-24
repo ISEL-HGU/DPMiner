@@ -20,18 +20,30 @@ import edu.handong.csee.isel.bic.szz.model.LineType;
 import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 import edu.handong.csee.isel.bic.szz.util.GitUtils;
 import edu.handong.csee.isel.bic.szz.util.Utils;
-
+// call function in collectFrom method of AGSZZBICCollector class 
+/**
+ * Create AnnotationGraphBuilder Thread
+ * 
+ * @author SJ
+ * @author JY
+ *
+ */
 public class AnnotationGraphBuilderThread implements Runnable {
 	private Repository repo;
 	private RevsWithPath revsWithPath;
 	public AnnotationGraphModel partitionedAnnotationGraph;
 
+	/**
+	 * 
+	 * @param repo Github project repository
+	 * @param revsWithPath revs With Path
+	 */
 	public AnnotationGraphBuilderThread(Repository repo, RevsWithPath revsWithPath) {
 		super();
 		this.repo = repo;
 		this.revsWithPath = revsWithPath;
 	}
-
+	
 	@Override
 	public void run() {
 		try {
@@ -44,7 +56,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 
 		}
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private AnnotationGraphModel buildPartitionedAnnotationGraph(Repository repo, RevsWithPath revsWithPath)
 			throws IOException, EmptyHunkTypeException {
 		// Generate Annotation Graph
@@ -223,7 +235,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 
 		return partitionedAnnotationGraph;
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private boolean belongsToBothDELETEAndINSERT(ArrayList<Hunk> hunkList, int currHunkIdx, int currBeginOfChild) {
 		int nextHunkIdx = currHunkIdx + 1;
 
@@ -238,7 +250,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 
 		return false;
 	}
-	
+	// 1. call function in AnnotationGraphBuilderThread
 	private boolean belongsToBothDELETEAndREPLACE(ArrayList<Hunk> hunkList, int currHunkIdx, int currBeginOfChild) {
 		int nextHunkIdx = currHunkIdx + 1;
 
@@ -253,7 +265,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 		
 		return false;
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private void configureLineList(ArrayList<Line> lst, String path, RevCommit rev, String content) {
 		String[] contentArr = content.split("\r\n|\r|\n");
 
@@ -269,7 +281,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 			lst.add(line);
 		}
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private ArrayList<Hunk> configureHunkList(EditList editList) {
 		ArrayList<Hunk> hunkList = new ArrayList<>();
 
@@ -281,7 +293,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 
 		return hunkList;
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private void mapChildLineWithAncestor(int childIdx, int offset, List<Line> parentLineList, Line childLine) {
 		Line ancestor = parentLineList.get(childIdx + offset);
 		List<Line> ancestorsOfChild = childLine.getAncestors();
@@ -289,7 +301,7 @@ public class AnnotationGraphBuilderThread implements Runnable {
 		ancestorsOfChild.add(ancestor);
 		childLine.setAncestors(ancestorsOfChild);
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
 	private void mapChildLineWithAncestors(Hunk hunk, List<Line> parentLineList, Line childLine) {
 		List<Line> ancestorsOfChild = parentLineList.subList(hunk.getBeginOfParent(), hunk.getEndOfParent());
 		

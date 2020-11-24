@@ -1,27 +1,27 @@
 package edu.handong.csee.isel.metric.metadata;
 
 public class MetaDataInfo {
-	int numOfBIC;        //ok
-	String commitAuthor; //ok
-	int numOfUniqueCommitToTheModifyFiles; //ok
-	int numOfModifyLines; //ok
-	int numOfDeleteLines; //ok
-	int numOfAddLines; //ok
-	int distributionOfModifiedLines; //ok
-	int sumOfSourceRevision; //ok
-	int sumOfDeveloper; //ok
-	String commitHour; //ok
-	String commitDay; //ok
-	int fileAge; //ok
-	int isBugCommit; //ok
-	int timeBetweenLastAndCurrentCommitDate; //ok
-	int numOfSubsystems; //ok
-	int numOfDirectories;//ok
-	int numOfFiles;//ok
-	int developerExperience;//ok
-	float recentDeveloperExperience;//ok
-	int LinesOfCodeBeforeTheChange;//ok
-	String commitTime;
+	private int numOfBIC;        //ok
+	private String commitAuthor; //ok
+	private int numOfUniqueCommitToTheModifyFiles; //ok
+	private int numOfModifyLines; //ok
+	private int numOfDeleteLines; //ok
+	private int numOfAddLines; //ok
+	private int distributionOfModifiedLines; //ok
+	private int sumOfSourceRevision; //ok
+	private int sumOfDeveloper; //ok
+	private String commitHour; //ok
+	private String commitDay; //ok
+	private int fileAge; //ok
+	private int isBugCommit; //ok
+	private int timeBetweenLastAndCurrentCommitDate; //ok
+	private int numOfSubsystems; //ok
+	private int numOfDirectories;//ok
+	private int numOfFiles;//ok
+	private int developerExperience;//ok
+	private float recentDeveloperExperience;//ok
+	private int LinesOfCodeBeforeTheChange;//ok
+	private String commitTime;
 
 	public MetaDataInfo() {
 		this.numOfBIC = 0;

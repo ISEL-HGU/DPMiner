@@ -1,9 +1,10 @@
 package edu.handong.csee.isel.data;
 
+import java.util.HashMap;
 
 public class Input {
 
-	public static String gitURL = null;
+	public static String gitURL;
 
 	public static String outPath;
 
@@ -38,10 +39,27 @@ public class Input {
 	public static String endDate;
 	
 	public static int percent;
+	/*
+	
+	public static String languageType;
+	
+	public static String forkNum;
+	
+	public static String recentDate;
+	
+	public static String createDate;
+	
+	public static String commitCountBase;*/
+	
+	public static String authToken;
+	
+	public static HashMap<String, String> findRepoOpt;
+	
+	public static String commitCountBase;
 	
 	
 	public static enum TaskType {
-		PATCH, BIC, METRIC, DEVELOPERMETRIC
+		PATCH, BIC, METRIC, DEVELOPERMETRIC, FINDREPO
 	}
 
 	public static enum Mode {

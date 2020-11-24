@@ -10,19 +10,21 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollector;
+import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.jira.JiraBugIssueCrawler;
+import edu.handong.csee.isel.data.Input;
 
-public class BFCJiraCollector extends BFCCollector {
+public class BFCJiraCollector implements BFCCollectable {
 
-	String url;
-	String key;
-	String path;
+	String url = Input.jiraURL;
+	String key = Input.jiraProjectKey;
+	String path = Input.outPath;
 
 	public BFCJiraCollector() {
 
 	}
 
+	@Override
 	public List<String> collectFrom(List<RevCommit> commitList) {
 		
 		Pattern pattern = Pattern.compile(key + "-\\d+", Pattern.CASE_INSENSITIVE);
@@ -71,21 +73,6 @@ public class BFCJiraCollector extends BFCCollector {
 		}
 
 		return bfcList;
-	}
-
-	@Override
-	public void setJiraProjectKey(String key) {
-		this.key = key;
-	}
-
-	@Override
-	public void setJiraURL(String url) {
-		this.url = url;
-	}
-
-	@Override
-	public void setOutPath(String outPath) {
-		this.path = outPath;
 	}
 
 }

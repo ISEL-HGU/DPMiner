@@ -14,17 +14,21 @@ import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
-
+/**
+ * 
+ * @author 
+ *
+ */
 public class CMetricCollector implements MetricCollector {
-	Git git;
-	Repository repo;
-	String referencePath;
-	String startDate;
-	String endDate;
-	String midDate;
-	boolean developerHistory;
+	private Git git;
+	private Repository repo;
+	private String referencePath;
+	private String startDate;
+	private String endDate;
+	private String midDate;
+	private boolean developerHistory;
 	public static HashMap<String,Integer> tooLongName = new HashMap<>();
-	static int tooLongNameIndex = 0;
+	private static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
 	
@@ -41,6 +45,9 @@ public class CMetricCollector implements MetricCollector {
 		this.developerHistory = developerHistory;
 	}
 
+	/**
+	 * @param commitList
+	 */
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
@@ -109,12 +116,20 @@ public class CMetricCollector implements MetricCollector {
 		return resultArff;
 	}
 
+	/**
+	 * @param bicList
+	 * @return
+	 */
 	@Override
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 
 	}
 	
+	/**
+	 * @param bicList
+	 * @return
+	 */
 	public void setMidDate(String midDate) {
 		this.midDate = midDate;
 	}

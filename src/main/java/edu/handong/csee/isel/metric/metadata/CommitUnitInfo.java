@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class CommitUnitInfo {
-	ArrayList<String> key;
-	String authorId;
-	TreeSet<String> subsystems;
-	TreeSet<String> directories;
-	TreeSet<String> files;
-	TreeSet<String> previousCommitHashs;
+	private ArrayList<String> key;
+	private String authorId;
+	private TreeSet<String> subsystems;
+	private TreeSet<String> directories;
+	private TreeSet<String> files;
+	private TreeSet<String> previousCommitHashs;
 	
 	
 	public CommitUnitInfo() {

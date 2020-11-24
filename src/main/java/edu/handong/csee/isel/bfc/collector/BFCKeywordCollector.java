@@ -7,10 +7,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollector;
+import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.data.Input;
 
-public class BFCKeywordCollector extends BFCCollector {
+public class BFCKeywordCollector implements BFCCollectable {
 	public String[] bugKeywords;
 
 	public BFCKeywordCollector() {
@@ -26,6 +26,7 @@ public class BFCKeywordCollector extends BFCCollector {
 		}
 	}
 
+	@Override
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
 		List<String> bfcList = new ArrayList<>();

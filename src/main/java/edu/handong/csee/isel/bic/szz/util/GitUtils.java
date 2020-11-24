@@ -2,6 +2,7 @@ package edu.handong.csee.isel.bic.szz.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,11 +33,20 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import edu.handong.csee.isel.bic.szz.model.PathRevision;
 import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 
+/**
+ * The {@code GitUtils} class <br>
+ * collects of functions necessary to execute AG_SZZ
+ * 
+ * @author SJ
+ * @author JY
+ * @version 1.0
+ *
+ */
 public class GitUtils {
 
 	public static DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
 	public static RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
-	
+	// 1. call function in AnnotationGraphBuilderThread - same function edu.handong.csee.isel.getEditListFromDiff <이미존재>
 	public static EditList getEditListFromDiff(String file1, String file2) {
 		RawText rt1 = new RawText(file1.getBytes());
 		RawText rt2 = new RawText(file2.getBytes());
@@ -46,7 +56,16 @@ public class GitUtils {
 		return diffList;
 	}
 	
-	
+	// call function in Tracer class
+	/**
+	 * Conduct diff using diffAlgorithm that is MYERS Algorithm and diffComparator that is white space ignore all.
+	 * 
+	 * @param repo Github repository 
+	 * @param parentTree parent commit tree
+	 * @param childTree child commit tree
+	 * @return diffs file path with change
+	 * @throws IOException repository open faild
+	 */
 	public static List<DiffEntry> diff(Repository repo, RevTree parentTree, RevTree childTree) throws IOException {
 		List<DiffEntry> diffs;
 
@@ -63,7 +82,15 @@ public class GitUtils {
 
 		return diffs;  // paths 를 리턴한다. 
 	}
-
+	// 2. call function in collectFrom method of AGSZZBICCollector class 
+	/**
+	 * Get the path where change exists for all commit lists.
+	 * 
+	 * @param repo Github repository 
+	 * @param commits all commit list from input github project
+	 * @return paths java file path with change
+	 * @throws IOException IOException
+	 */
 	public static List<PathRevision> configurePathRevisionList(Repository repo, List<RevCommit> commits)
 			throws IOException {
 		List<PathRevision> paths = new ArrayList<>();
@@ -92,7 +119,14 @@ public class GitUtils {
 
 		return paths;
 	}
-
+	// 3. call function in collectFrom method of AGSZZBICCollector class 
+	/**
+	 * Collect commit list related specific path 
+	 * 
+	 * @param pathRevisions information commit and path 
+	 * @param targetPaths target Paths
+	 * @return revsWithPath revs With Path 
+	 */
 	public static RevsWithPath collectRevsWithSpecificPath(List<PathRevision> pathRevisions, List<String> targetPaths) {
 		RevsWithPath revsWithPath = new RevsWithPath();
 
@@ -116,7 +150,18 @@ public class GitUtils {
 
 		return revsWithPath;
 	}
-
+	// 1. call function in AnnotationGraphBuilderThread
+	/**
+	 * get the file content using path info and commit info 
+	 * 
+	 * @param repo Github repository
+	 * @param commit commit 
+	 * @param path target path 
+	 * @return string All file content 
+	 * @throws LargeObjectException LargeObjectException
+	 * @throws MissingObjectException MissingObjectException
+	 * @throws IOException IOException
+	 */
 	public static String fetchBlob(Repository repo, RevCommit commit, String path)
 			throws LargeObjectException, MissingObjectException, IOException {
 
@@ -137,7 +182,8 @@ public class GitUtils {
 			return "";
 		}
 	}
-
+	
+	// edu.handong.csee.isel여기에 있음 <이미존재>
 	public static String fetchBlob(Repository repo, String revSpec, String path)
 			throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException {
 
@@ -167,7 +213,7 @@ public class GitUtils {
 		}
 
 	}
-
+	// 뭐하는 함수? 안불림 
 	public static List<RevCommit> getRevs(Git git) throws NoHeadException, GitAPIException {
 		List<RevCommit> commits = new ArrayList<>();
 
@@ -182,7 +228,7 @@ public class GitUtils {
 
 		return commits;
 	}
-
+	// 뭐하는 함수? 안불림 
 	public static ArrayList<RevCommit> getBFCList(List<String> issueKeys, List<RevCommit> revs) {
 		// To avoid duplicate BFCs
 		HashSet<RevCommit> BFCSet = new HashSet<RevCommit>();
@@ -195,20 +241,17 @@ public class GitUtils {
 		
 		return new ArrayList<RevCommit>(BFCSet);
 	}
-	
-	public static ArrayList<RevCommit> getBFCLIST(List<String> BFCID, List<RevCommit> revs) {
-		// To avoid duplicate BFCs
-		HashSet<RevCommit> BFCSet = new HashSet<RevCommit>();
 
-		for (String commitID : BFCID) {
-			for (RevCommit rev : revs)
-				if (rev.getFullMessage().contains(commitID))
-					BFCSet.add(rev);
-		}
-		
-		return new ArrayList<RevCommit>(BFCSet);
-	}
-
+	// 1. call function in collectFrom method of AGSZZBICCollector class 
+	/**
+	 * collect target path from bug fixing commit list.<br>
+	 * only java file path and file with change.
+	 * 
+	 * @param repo Github repository 
+	 * @param BFCList bug fixing list
+	 * @return targetPaths path from bfc list 
+	 * @throws IOException IOException
+	 */
 	public static List<String> getTargetPaths(Repository repo, List<RevCommit> BFCList) throws IOException {
 		List<String> targetPaths = new ArrayList<>();
 

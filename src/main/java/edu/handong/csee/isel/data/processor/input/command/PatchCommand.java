@@ -13,7 +13,7 @@
  
  @Command(
            name = "patch",
-           description = "Making the patch.csv using the issue. If you want to get bug introducing changes, use this command.",
+           description = "Making the patch.csv using the issue. If you want to get bug fixing changes, use this command.",
            usageHelpAutoWidth = true,
            usageHelpWidth = 200,
            sortOptions = false,

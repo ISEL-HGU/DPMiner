@@ -6,29 +6,21 @@ import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollector;
+import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.github.CommitParser;
 import edu.handong.csee.isel.bfc.collector.github.IssueLinkParser;
 import edu.handong.csee.isel.bfc.collector.github.NoIssuePagesException;
+import edu.handong.csee.isel.data.Input;
 
-public class BFCGitHubCollector extends BFCCollector {
+public class BFCGitHubCollector implements BFCCollectable {
 
-	String url;
-	String label;
+	String url = Input.gitURL;
+	String label = Input.label;
 
 	public BFCGitHubCollector() {
 	}
 
 	@Override
-	public void setGitHubURL(String url) {
-		this.url = url;
-	}
-
-	@Override
-	public void setGitHubLabel(String label) {
-		this.label = label;
-	}
-
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
 		try {
