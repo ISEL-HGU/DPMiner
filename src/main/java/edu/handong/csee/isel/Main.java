@@ -140,6 +140,7 @@ public class Main {
 
 		// 5. Print CSV
 		if (csvInfoLst.size() < 1) {
+			System.out.println("no csvInfoLst");
 			return;
 		}
 
