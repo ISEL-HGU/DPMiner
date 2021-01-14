@@ -55,11 +55,18 @@ import edu.handong.csee.isel.data.Input.TaskType;
              private String githubLabel = "bug";
          }   
      
-         @Option(names = "-ik", required = true, description = "--issue keyword") 
-         private String keyWord;
+         @ArgGroup(exclusive = false)
+         DependentKeyword dependentKeyword = new DependentKeyword();
+     
+         static class DependentKeyword {
+             @Option(names = "-ik", required = true, description = "--issue keyword")
+             private boolean keyword;
+             @Option(names = "-k", required = false, description = "--label <Find coincident commit with label> \n Set a bug label of github (default: 'bug').")
+             private String keywordContent = null;
+         }
      }   
      
-     @Option(names = "-s", description = "--szz mode <BSZZ or AGSZZ> (default: 'BSZZ')") 
+     @Option(names = "-z", description = "--szz mode <BSZZ or AGSZZ> (default: 'BSZZ')") 
      private String szzMode = "BSZZ";
      
      @ArgGroup(exclusive = false) 
@@ -72,6 +79,10 @@ import edu.handong.csee.isel.data.Input.TaskType;
          private int max = 500; 
      }   
      
+     @Option(names = "-s", description = "--startdate <Start date> \nStart date for collecting training data. \nFormat:\"yyyy-MM-dd HH:mm:ss\".")
+     private String startDate = "0000-00-00 00:00:00";
+     @Option(names = "-e", description = "--enddate <End date> \nEnd date for collecting test data. \nFormat:\"yyyy-MM-dd HH:mm:ss\".")
+     private String endDate = "9999-99-99 99:99:99";
    
      @Override
      public void run() {
@@ -90,10 +101,15 @@ import edu.handong.csee.isel.data.Input.TaskType;
              if(exclusive.dependentGithub.githubLabel != null) {
                  Input.label = exclusive.dependentGithub.githubLabel;
              }   
-         }else if(exclusive.keyWord != null) {
-             Input.issueKeyWord = exclusive.keyWord;
-             Input.mode = Mode.KEYWORD;
-         }   
+         }else if(exclusive.dependentKeyword.keyword) {
+        	 Input.mode = Mode.KEYWORD;
+        	 if(exclusive.dependentKeyword.keywordContent != null) {
+        		 Input.issueKeyWord = exclusive.dependentKeyword.keywordContent;
+             }
+        	 else {
+        		 Input.issueKeyWord = null;
+        	 }
+         } 
          
          if(szzMode.equals("BSZZ")) {
         	 Input.szzMode = SZZMode.BSZZ;
@@ -109,6 +125,9 @@ import edu.handong.csee.isel.data.Input.TaskType;
              Input.maxSize = 500;
              Input.minSize = 0;
          }   
+         
+         Input.startDate = startDate;
+         Input.endDate = endDate;
      
      }   
  

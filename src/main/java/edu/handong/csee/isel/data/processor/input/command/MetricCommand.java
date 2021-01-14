@@ -30,9 +30,9 @@ import java.util.regex.Matcher;
  
  
      @Option(names = "-s", description = "--startdate <Start date> \nStart date for collecting training data. \nFormat:\"yyyy-MM-dd HH:mm:ss\".")
-     private String startDate;
+     private String startDate = "0000-00-00 00:00:00";
      @Option(names = "-e", description = "--enddate <End date> \nEnd date for collecting test data. \nFormat:\"yyyy-MM-dd HH:mm:ss\".")
-     private String endDate;
+     private String endDate = "9999-99-99 99:99:99";
  
      @Option(names = "-p", description = "--percent <percent of developer> \nPercent of developer. Range : 2 ~ 9. (default:5)")
      private int percent = 5;
@@ -57,6 +57,8 @@ import java.util.regex.Matcher;
              System.out.println("percent value is out of range (Range : 2 ~ 9). set to default value 5....");
              Input.percent = 5;
          }
+         Input.startDate = startDate;
+         Input.endDate = endDate;
      }
  
      private String getProjectName(String gitURI) {
