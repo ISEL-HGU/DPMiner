@@ -13,11 +13,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
 
-/**
- * 
- * @author 
- *
- */
 public class BagOfWordsCollector {
 	private Git git;
 	private Repository repo;
@@ -31,9 +26,6 @@ public class BagOfWordsCollector {
 
 	private File arff = null;
 
-	/**
-	 * 
-	 */
 	public void collect() {
 
 		File cleanDirectory = getCleanDirectory();
@@ -120,9 +112,6 @@ public class BagOfWordsCollector {
 
 	}
 
-	/**
-	 * 
-	 */
 	public void makeArff() {
 
 		String bowDirectoryPath = getBOWDirectoryPath();
@@ -148,18 +137,10 @@ public class BagOfWordsCollector {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	public String getBOWDirectoryPath() {
+	private String getBOWDirectoryPath() {
 		return referencePath + File.separator + projectName + "-bow";
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getBuggyDirectory() {
 
 		String directoryPath = getBOWDirectoryPath();
@@ -167,93 +148,49 @@ public class BagOfWordsCollector {
 		return new File(path);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getCleanDirectory() {
 		String directoryPath = getBOWDirectoryPath();
 		String path = directoryPath + File.separator + "clean";
 		return new File(path);
 	}
 
-	/**
-	 * 
-	 * @param commitList
-	 */
 	public void setCommitList(List<RevCommit> commitList) {
 		this.commitList = commitList;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getArff() {
 		return arff;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getReferencePath() {
-		return referencePath;
-	}
 
-	/**
-	 * 
-	 * @param git
-	 */
 	public void setGit(Git git) {
 		this.git = git;
 	}
 
-	/**
-	 * 
-	 * @param repo
-	 */
 	public void setRepository(Repository repo) {
 		this.repo = repo;
 	}
 
-	/**
-	 * 
-	 * @param bicList
-	 */
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 	}
 
-	/**
-	 * 
-	 * @param referencePath
-	 */
 	public void setReferencePath(String referencePath) {
 		this.referencePath = referencePath;
 	}
 
-	/**
-	 * 
-	 * @param projectName
-	 */
+	public String getReferencePath() {
+		return referencePath;
+	}
+
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 
 	}
-	
-	/**
-	 * 
-	 * @param startDate
-	 */
+
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	/**
-	 * 
-	 * @param endDate
-	 */
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}

@@ -7,32 +7,16 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollectable;
-import edu.handong.csee.isel.data.Input;
+import edu.handong.csee.isel.bfc.BFCCollector;
 
-public class BFCKeywordCollector implements BFCCollectable {
-	public String[] bugKeywords;
+public class BFCKeywordCollector extends BFCCollector {
+	static String[] bugKeywords = { "(bug)", "(fix)" };
 
-	public BFCKeywordCollector() {
-		super();
-		if(Input.issueKeyWord != null) {
-			this.bugKeywords = new String[1];
-			this.bugKeywords[0]="("+Input.issueKeyWord+")";
-		}
-		else {
-			this.bugKeywords = new String[2];
-			this.bugKeywords[0]="(bug)";
-			this.bugKeywords[1]="(fix)"; 
-		}
-	}
-
-	@Override
 	public List<String> collectFrom(List<RevCommit> commitList) {
 
 		List<String> bfcList = new ArrayList<>();
 
 		final Pattern bugMessagePattern = Pattern.compile(String.join("|", bugKeywords), Pattern.CASE_INSENSITIVE);
-//		System.out.println("bug Isskey in BFCKEYWORDS: "+ bugMessagePattern);
 
 		for (RevCommit commit : commitList) {
 			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage());

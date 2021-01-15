@@ -26,11 +26,11 @@ import edu.handong.csee.isel.patch.PatchCollector;
 public class CPatchCollector implements PatchCollector {
 
 	List<String> bfcList = null;
-//	private Input input;
-//
-//	public CPatchCollector(Input input) {
-//		this.input = input;
-//	}
+	private Input input;
+
+	public CPatchCollector(Input input) {
+		this.input = input;
+	}
 
 	public CPatchCollector() {
 		// TODO Auto-generated constructor stub
@@ -48,7 +48,7 @@ public class CPatchCollector implements PatchCollector {
 
 		for (RevCommit commit : commitList) {
 
-			if (Utils.isBFC(commit, bfcList)) {
+			if (isBFC(commit)) {
 
 				RevCommit parent = commit.getParent(0);
 
@@ -60,14 +60,14 @@ public class CPatchCollector implements PatchCollector {
 				List<CSVInfo> patch = getPatchBetween(parent, commit);
 				int patchSize = getPatchSize(patch);
 
-				if (patchSize < Input.minSize || patchSize > Input.maxSize) {
+				if (patchSize < input.minSize || patchSize > input.maxSize) {
 					continue;
 				}
-//				System.out.println("CPatchCollector collectFrom if Working");
 
 				csvInfoList.addAll(patch);
 			}
 		}
+
 		return csvInfoList;
 	}
 
@@ -103,7 +103,7 @@ public class CPatchCollector implements PatchCollector {
 					continue;
 
 				PatchInfo patch = new PatchInfo();
-				patch.project = Input.projectName;
+				patch.project = input.projectName;
 				patch.commitName = commit.getName();
 				patch.commitMessage = commit.getFullMessage();
 				patch.date = Utils.getStringDateTimeFromCommit(commit);
@@ -192,23 +192,23 @@ public class CPatchCollector implements PatchCollector {
 		return patch;
 	}
 
-//	private boolean isBFC(RevCommit commit) {
-//
-//		for (String bfc : bfcList) {
-////			System.out.println(commit.getShortMessage());
-////			System.out.println(bfc);
-////			System.out.println();
-//			if (commit.getShortMessage().contains(bfc)) {
-//				System.out.println(commit.getShortMessage());
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
+	private boolean isBFC(RevCommit commit) {
+
+		for (String bfc : bfcList) {
+			System.out.println(commit.getShortMessage());
+			System.out.println(bfc);
+			System.out.println();
+			if (commit.getShortMessage().contains(bfc)) {
+				System.out.println(commit.getShortMessage());
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	private Git openGitRepository() {
-		File clonedDirectory = Main.getGitDirectory();
+		File clonedDirectory = Main.getGitDirectory(input);
 		Git git = null;
 		try {
 			git = Git.open(clonedDirectory);

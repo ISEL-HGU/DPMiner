@@ -65,7 +65,6 @@ public class FileManager {
 		String teamName = validateTeamName(this.domain);
 		String dir = this.path + File.separator + teamName + this.projectKey + File.separator;
 		String savedFileName = dir + teamName + this.projectKey + "IssueKeys.csv";
-		// 
 		System.out.println("\n\tCollecting Issue keys into " + savedFileName);
 		File savedFile = new File(savedFileName);
 		savedFile.getParentFile().mkdirs();

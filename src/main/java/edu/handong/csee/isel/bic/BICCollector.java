@@ -1,6 +1,5 @@
 package edu.handong.csee.isel.bic;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -11,6 +10,6 @@ public interface BICCollector {
 
 	void setBFC(List<String> bfcList);
 
-	List<CSVInfo> collectFrom(List<RevCommit> commitList) throws IOException;
+	List<CSVInfo> collectFrom(List<RevCommit> commitList);
 
 }

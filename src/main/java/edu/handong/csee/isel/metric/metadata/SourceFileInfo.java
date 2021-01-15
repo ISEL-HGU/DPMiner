@@ -3,12 +3,12 @@ package edu.handong.csee.isel.metric.metadata;
 import java.util.TreeSet;
 
 public class SourceFileInfo {
-	private TreeSet<String> developer;
-	private int numOfModify;
-	private int numOfBIC;
-	private String makeDate;
-	private String previousCommitDate;
-	private String previousCommitHash;
+	TreeSet<String> developer;
+	int numOfModify;
+	int numOfBIC;
+	String makeDate;
+	String previousCommitDate;
+	String previousCommitHash;
 
 	public SourceFileInfo() {
 		this.developer = new TreeSet<String>();

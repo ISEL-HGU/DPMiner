@@ -3,7 +3,6 @@ package edu.handong.csee.isel;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.SimpleDateFormat;
@@ -15,7 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jgit.api.Git;
@@ -50,8 +48,6 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import edu.handong.csee.isel.bfc.collector.github.CommitParser;
 import edu.handong.csee.isel.bfc.collector.github.IssueLinkParser;
 import edu.handong.csee.isel.bfc.collector.github.NoIssuePagesException;
-import edu.handong.csee.isel.bic.szz.data.BICInfo;
-import edu.handong.csee.isel.data.Input;
 
 public class Utils {
 
@@ -338,7 +334,7 @@ public class Utils {
 
 		return commitName + "-" + newPath;
 	}
-	// call
+
 	public static boolean isBFC(RevCommit commit, List<String> bfcList) {
 
 		return bfcList.contains(commit.getId().getName());
@@ -361,40 +357,5 @@ public class Utils {
 			authorId = matcher.group(1);
 		}
 		return authorId;
-	}
-	// call function in collectFrom method of AGSZZBICCollecor class 
-	// added part because of ag-szz
-	/**
-	 * 
-	 * @param outPath output local path 
-	 * @param GIT_URL input github url 
-	 * @param BICLines bug introducing commit information 
-	 * @throws IOException
-	 */
-	public static void storeOutputFile(String outPath, String GIT_URL, List<BICInfo> BICLines) throws IOException {
-		// Set file name
-		String[] arr = GIT_URL.split("/");
-		String projName = arr[arr.length - 1];
-		
-		//System.getProperty("user.dir") : 현재위치 반환 해줌. 
-//		String fName = System.getProperty("user.dir") + File.separator + "results" + File.separator + projName + ".csv";
-//		String fName = outPath + File.separator + "AGSZZ_"+ Input.projectName + ".csv";	
-		String fName = outPath + File.separator + "BIC_AGSZZ_" + Input.projectName + ".csv";
-		
-		File savedFile = new File(fName);
-		savedFile.getParentFile().mkdirs();
-
-		FileWriter writer = new FileWriter(savedFile);
-
-		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("BISha1", "BIPath", "FixSha1",
-				"BIDate", "FixDate", "biLineIdx", "BIContent", "Commiter", "Author"));
-
-		for (BICInfo BICInfo : BICLines) {
-			csvPrinter.printRecord(BICInfo.getBISha1(), BICInfo.getBiPath(), BICInfo.getFixSha1(), BICInfo.getBIDate(),
-					BICInfo.getFixDate(), BICInfo.getBiLineIdx(), BICInfo.getBIContent(), BICInfo.getCommiter(),
-					BICInfo.getAuthor());
-		}
-
-		csvPrinter.close();
 	}
 }

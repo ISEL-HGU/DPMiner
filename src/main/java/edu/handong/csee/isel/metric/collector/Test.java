@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
+
 public class Test {
 	final static String patternStr = "\\{.+\\,\\d+\\s(.+)\\}"; 
 	public static void main(String[] args) throws IOException {

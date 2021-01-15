@@ -3,7 +3,6 @@ package edu.handong.csee.isel;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -14,242 +13,184 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.bfc.BFCCollectable;
+import edu.handong.csee.isel.bfc.BFCCollector;
 import edu.handong.csee.isel.bfc.collector.BFCGitHubCollector;
 import edu.handong.csee.isel.bfc.collector.BFCJiraCollector;
 import edu.handong.csee.isel.bfc.collector.BFCKeywordCollector;
 import edu.handong.csee.isel.bfc.collector.jira.InvalidDomainException;
 import edu.handong.csee.isel.bfc.collector.jira.InvalidProjectKeyException;
 import edu.handong.csee.isel.bic.BICCollector;
-import edu.handong.csee.isel.bic.collector.AGSZZBICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
-import edu.handong.csee.isel.data.csv.CSVMaker;
-import edu.handong.csee.isel.data.processor.input.command.Task;
+import edu.handong.csee.isel.data.processor.CSVMaker;
+import edu.handong.csee.isel.data.processor.input.InputConverter;
+import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
 import edu.handong.csee.isel.metric.collector.DeveloperHistory;
 import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
-import edu.handong.csee.isel.repo.collector.RepoCollector;
-import edu.handong.csee.isel.repo.collector.RepoCommitCollector;
-import picocli.CommandLine;
-
 
 public class Main {
+
 	public static void main(String[] args)
-			throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException, InterruptedException {
+			throws NoHeadException, IOException, GitAPIException, InvalidProjectKeyException, InvalidDomainException {
 
 		// 1. Input
-		Task task = new Task();
-		CommandLine cmd = new CommandLine(task);
-		int exitCode = cmd.execute(args);
-		if(exitCode != 0)
-			System.exit(exitCode);	
-	
+		InputConverter inputConverter = new CLIConverter();
+		Input input = inputConverter.getInputFrom(args);
+
 		// 2. get all commits from GIT directory
-//		List<RevCommit> commitList;
-//		File gitDirectory = null;
-//		if (isCloned() && isValidRepository()) {
-//			gitDirectory = getGitDirectory();
-//		} else if (isCloned() && (!isValidRepository())) {
-//			File directory = getGitDirectory();
-//			directory.delete();
-//			gitDirectory = GitClone();
-//		} else {
-//			gitDirectory = GitClone();
-//		}
-//		commitList = getCommitListFrom(gitDirectory);
+		List<RevCommit> commitList;
+		File gitDirectory = null;
+		if (isCloned(input) && isValidRepository(input)) {
+			gitDirectory = getGitDirectory(input);
+		} else if (isCloned(input) && (!isValidRepository(input))) {
+			File directory = getGitDirectory(input);
+			directory.delete();
+			gitDirectory = GitClone(input);
+		} else {
+			gitDirectory = GitClone(input);
+		}
+		commitList = getCommitListFrom(gitDirectory,input.allGitLog);
 
 		// 3. collect Bug-Fix-Commit
-		List<RevCommit> commitList = null;
 		List<String> bfcList = null;
-		List<String> bicList = null;//메트릭스에서 쓰임.
-		MetricCollector metricCollector = null;
-		BFCCollectable bfcCollector = null;
-		List<CSVInfo> csvInfoLst = null;
-		HashSet<String> repoResult= null;
-		HashSet<String> repoCommitResult= null;
+		List<String> bicList = null;
+		BFCCollector bfcCollector = null;
 
-		switch (Input.taskType) {
-		case FINDREPO:
-			RepoCollector searchRepo = new RepoCollector(); //git token 받아오기 아아 얘가 리파지토리 찾아오는 
-			repoResult = searchRepo.collectFrom();
-			
-			if(Input.commitCountBase != null) {
-				RepoCommitCollector searchCommit = new RepoCommitCollector(repoResult);
-				repoCommitResult = searchCommit.collectFrom();
-			}
-			
+		switch (input.referecneType) {
+		case JIRA:
+			bfcCollector = new BFCJiraCollector();
+			bfcCollector.setJiraURL(input.jiraURL);
+			bfcCollector.setJiraProjectKey(input.jiraProjectKey);
+			bfcCollector.setOutPath(input.outPath);
+			bfcList = bfcCollector.collectFrom(commitList);
+
 			break;
+
+		case GITHUB:
+			bfcCollector = new BFCGitHubCollector();
+			bfcCollector.setGitHubURL(input.gitURL);
+			bfcCollector.setGitHubLabel(input.label);
+			bfcList = bfcCollector.collectFrom(commitList);
+
+			break;
+
+		case KEYWORD:
+			bfcCollector = new BFCKeywordCollector();
+			bfcList = bfcCollector.collectFrom(commitList);
+
+			break;
+
+		case BICCSV:
+			File BIC = new File(input.BICpath);
+			if (!BIC.isFile()) {
+				System.out.println("There is no BIC file");
+				System.exit(1);
+			}
+			bicList = Utils.readBICCsvFile(input.BICpath);
+
+			break;
+		}
+
+		// 4. Patch, BIC, Metric
+		List<CSVInfo> csvInfoLst = null;
+
+		PatchCollector patchCollector = null;
+		BICCollector bicCollector = null;
+		MetricCollector metricCollector = null;
+
+		switch (input.mode) {
 		case PATCH:
-			commitList = getAllCommitList();
-			bfcList=makeBFCCollector(bfcList,commitList,bfcCollector);	
-			
-			PatchCollector patchCollector = new CPatchCollector();
+			patchCollector = new CPatchCollector(input);
 			patchCollector.setBFC(bfcList);
 			csvInfoLst = patchCollector.collectFrom(commitList);
-			
-			printCSV(csvInfoLst);
 
 			break;
-
 		case BIC:
-			commitList = getAllCommitList();
-			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector);
-			BICCollector bicCollector;
-			
-			switch (Input.szzMode) {
-			case BSZZ:
-				bicCollector = new CBICCollector();
-				bicCollector.setBFC(bfcList);
-				csvInfoLst = bicCollector.collectFrom(commitList);
-				printCSV(csvInfoLst);
-				break;
-				
-			case AGSZZ:
-				bicCollector = new AGSZZBICCollector();
-				bicCollector.setBFC(bfcList);
-				bicCollector.collectFrom(commitList);
-				break;
-			}
-			
-			break;
+			bicCollector = new CBICCollector(input);
+//			bicCollector = new SZZRunner(getGitDirectory(input).getAbsolutePath());
+			bicCollector.setBFC(bfcList);
+			csvInfoLst = bicCollector.collectFrom(commitList);
 
-		case METRIC:
-			//BIC 파일 읽기
-			commitList = getAllCommitList();
-			bicList= readBICcsv();			
-			metricCollector = new CMetricCollector(false);
+			break;
+		case METRIC: // TODO:
+			metricCollector = new CMetricCollector(input,false);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
-			break;
+			return;
 			
 		case DEVELOPERMETRIC:
-			//BIC 파일 읽기
-			commitList = getAllCommitList();
-			bicList=readBICcsv();
-			
-			DeveloperHistory developerHistory = new DeveloperHistory();
+			DeveloperHistory developerHistory = new DeveloperHistory(input);
 			String midDate = developerHistory.findDeveloperDate();
 			System.out.println("MidDate : "+midDate);
-			
-			metricCollector = new CMetricCollector(true);
+			metricCollector = new CMetricCollector(input,true);
 			metricCollector.setMidDate(midDate);
 			metricCollector.setBIC(bicList);
 			metricCollector.collectFrom(commitList);
 			
-			break;
-		}
-	}
-	
-	private static List<RevCommit> getAllCommitList() throws InvalidRemoteException, TransportException, GitAPIException, IOException{
-		File gitDirectory = null;
-		if (isCloned() && isValidRepository()) {
-			gitDirectory = getGitDirectory();
-		} else if (isCloned() && (!isValidRepository())) {
-			File directory = getGitDirectory();
-			directory.delete();
-			gitDirectory = GitClone();
-		} else {
-			gitDirectory = GitClone();
-		}
-		return getCommitListFrom(gitDirectory);
-		
-	}
-
-	
-	public static List<String> readBICcsv(){
-		File BIC = new File(Input.BICpath);
-		if (!BIC.isFile()) {
-			System.out.println("There is no BIC file");
-			System.exit(1);
-		}
-		 List<String> bicList = Utils.readBICCsvFile(Input.BICpath);
-		
-		return bicList;
-		
-	}
-	
-	
-	public static void printCSV(List<CSVInfo> csvInfoLst)  throws IOException {
-
-		if (csvInfoLst.size() < 1) {
+			
 			return;
 		}
+
+		// 5. Print CSV
+		if (csvInfoLst.size() < 1) {
+			System.out.println("no csvInfoLst");
+			return;
+		}
+
 		CSVMaker printer = new CSVMaker();
 		printer.setDataType(csvInfoLst);
-		printer.setPath();
+		printer.setPath(input);
 		printer.print(csvInfoLst);
-		
-	}
-	
-	public static List<String> makeBFCCollector (List<String> bfcList, List<RevCommit> commitList, BFCCollectable bfcCollector)
-			throws IOException,InvalidProjectKeyException, InvalidDomainException{
-		
-		switch (Input.mode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
-		case JIRA:
-//			System.out.println("Main Jira part!");
-			bfcCollector = new BFCJiraCollector();
-			bfcList = bfcCollector.collectFrom(commitList);
-			break;
-			
-		case KEYWORD:
-//			System.out.println("Main KeyWord part!");
-			bfcCollector = new BFCKeywordCollector();
-			bfcList = bfcCollector.collectFrom(commitList);
-			break;
-			
-		case GITHUB:
-//			System.out.println("Main GitHub part!");
-			bfcCollector = new BFCGitHubCollector();
-			bfcList = bfcCollector.collectFrom(commitList);
-			break;
-		
-		}
-		
-		return bfcList;
+
 	}
 
-	
-
-	private static boolean isValidRepository() {
-		File directory = getGitDirectory();
+	private static boolean isValidRepository(Input input) {
+		File directory = getGitDirectory(input);
 		try {
-			Git git = Git.open(directory);  //여기가 쓰이는데 왜안쓰인다고 뜨는지 모르겠다.
+			Git git = Git.open(directory);
 			return true;
 		} catch (IOException e) {
 			return false;
 		}
 	}
 
-	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
+	public static List<RevCommit> getCommitListFrom(File gitDir, boolean allGitLog) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().call();
+		Iterable<RevCommit> walk = null;
+		
+		if(allGitLog == true) {
+			walk = git.log().all().call();
+		}else {
+			walk = git.log().call();
+		}
+		
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;
 	}
 
-	public static String getReferencePath() {
-		return Input.outPath + File.separator + "reference";
+	public static String getReferencePath(Input input) {
+		return input.outPath + File.separator + "reference";
 	}
 
-	public static File getGitDirectory() {
-		String referencePath = getReferencePath();
+	public static File getGitDirectory(Input input) {
+		String referencePath = getReferencePath(input);
 		File clonedDirectory = new File(
-				referencePath + File.separator + "repositories" + File.separator + Input.projectName);
+				referencePath + File.separator + "repositories" + File.separator + input.projectName);
 		return clonedDirectory;
 	}
 
-	private static File GitClone() throws InvalidRemoteException, TransportException, GitAPIException {
-		String remoteURI = Input.gitRemoteURI;
-		String projectName = Input.projectName;
-		File clonedDirectory = getGitDirectory();
+	private static File GitClone(Input input) throws InvalidRemoteException, TransportException, GitAPIException {
+		String remoteURI = input.gitRemoteURI;
+		String projectName = input.projectName;
+		File clonedDirectory = getGitDirectory(input);
 		clonedDirectory.mkdirs();
 		System.out.println("cloning " + projectName + "...");
 		Git git = Git.cloneRepository().setURI(remoteURI).setDirectory(clonedDirectory).setCloneAllBranches(true)
@@ -258,8 +199,8 @@ public class Main {
 		return git.getRepository().getDirectory();
 	}
 
-	private static boolean isCloned() {
-		File clonedDirectory = getGitDirectory();
+	private static boolean isCloned(Input input) {
+		File clonedDirectory = getGitDirectory(input);
 		return clonedDirectory.exists();
 	}
 }

@@ -19,12 +19,6 @@ import weka.core.stemmers.SnowballStemmer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-/**
- * 
- * @author sujin
- * @author seongbin
- *
- */
 public class ArffHelper {
 	private String projectName;
 	private String referencePath;
@@ -47,27 +41,14 @@ public class ArffHelper {
 	private final static String commitTimePatternStr = "\\{.+\\,\\d+\\s'(.+)'";
 	private final static Pattern commitTimePattern = Pattern.compile(commitTimePatternStr);
 
-	/**
-	 * 
-	 * @param projectName
-	 */
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
 	
-	/**
-	 * 
-	 * @param outPath
-	 */
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
 	}
 
-	/**
-	 * 
-	 * @param bowDirectoryPath
-	 * @return
-	 */
 	public File getArffFromDirectory(String bowDirectoryPath) {
 		File arff = null;
 
@@ -105,12 +86,6 @@ public class ArffHelper {
 		return arff;
 	}
 
-	/**
-	 * 
-	 * @param bowCollector
-	 * @param cVectorCollector
-	 * @return
-	 */
 	public File getMergedBOWArffBetween(BagOfWordsCollector bowCollector,
 			CharacteristicVectorCollector cVectorCollector) {
 
@@ -208,27 +183,15 @@ public class ArffHelper {
 		return arff;
 	}
 
-	/**
-	 * 
-	 * @param referencePath
-	 */
 	public void setReferencePath(String referencePath) {
 		this.referencePath = referencePath;
 
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public String getMergedDirectoryPath() {
 		return referencePath + File.separator + projectName + "-merged-bow";
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getBuggyDirectory() {
 
 		String directoryPath = getMergedDirectoryPath();
@@ -236,10 +199,6 @@ public class ArffHelper {
 		return new File(path);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getCleanDirectory() {
 		String directoryPath = getMergedDirectoryPath();
 		String path = directoryPath + File.separator + "clean";
@@ -249,7 +208,6 @@ public class ArffHelper {
 	/*
 	 * main for metric arff parser
 	 */
-	/*
 	public static void main(String[] args) throws IOException {
 
 		String arffPath1 = "/Users/yangsujin/Desktop/incubator-hivemall.arff";
@@ -258,16 +216,9 @@ public class ArffHelper {
 		File arff2 = new File(arffPath2);
 
 
-	}*/
+	}
 
-	/**
-	 * 
-	 * @param oldStr
-	 * @param newStr
-	 * @return
-	 */
-	//여기 바꿈 private static
-	private String mergeData(String oldStr, String newStr) {
+	private static String mergeData(String oldStr, String newStr) {
 		StringBuffer mergedBuf = new StringBuffer();
 
 		mergedBuf.append(oldStr.substring(0, oldStr.indexOf('}')));
@@ -277,14 +228,7 @@ public class ArffHelper {
 		return mergedBuf.toString();
 	}
 
-	/**
-	 * 
-	 * @param dataLineList
-	 * @param plusSize
-	 * @return
-	 */
-	//여기 바꿈 private static
-	private List<String> plusAttributeSize(List<String> dataLineList, int plusSize) {
+	private static List<String> plusAttributeSize(List<String> dataLineList, int plusSize) {
 
 		ArrayList<String> dataPlusLineList = new ArrayList<>();
 
@@ -297,14 +241,7 @@ public class ArffHelper {
 		return dataPlusLineList;
 	}
 
-	/**
-	 * 
-	 * @param line
-	 * @param plusSize
-	 * @return
-	 */
-	//여기 바꿈 private static
-	private String plusAttributeSize(String line, int plusSize) {
+	private static String plusAttributeSize(String line, int plusSize) {
 		StringBuffer newLineBuf = new StringBuffer();
 
 		Matcher m = attributeNumPattern.matcher(line);
@@ -326,16 +263,8 @@ public class ArffHelper {
 
 		return newLineBuf.toString();
 	}
-	
-	/**
-	 * 
-	 * @param arff1
-	 * @param arff2
-	 * @return
-	 * @throws IOException
-	 */
-	//여기 바꿈 private static
-	private File makeMergedArff(File arff1, File arff2) throws IOException {
+
+	private static File makeMergedArff(File arff1, File arff2) throws IOException {
 		File newFile = new File(arff1.getParentFile().getAbsolutePath() + File.separator + "merged.arff");
 
 		String content1 = FileUtils.readFileToString(arff1, "UTF-8");
@@ -380,14 +309,6 @@ public class ArffHelper {
 		return newFile;
 	}
 
-	/**
-	 * 
-	 * @param arff1
-	 * @param arff2
-	 * @param keyOrder
-	 * @return
-	 * @throws IOException
-	 */
 	public File makeMergedArff(File arff1, File arff2, List<String> keyOrder) throws IOException {
 		File newFile = new File(outPath + File.separator + projectName +"-data.arff");
 
@@ -493,11 +414,6 @@ public class ArffHelper {
 		return newFile;
 	}
 
-	/**
-	 * 
-	 * @param attributeLineList2
-	 * @return
-	 */
 	private ArrayList<String> preprocessAttribute(ArrayList<String> attributeLineList2) {
 		ArrayList<String> firstCommitInformation = new ArrayList<String>();
 		
@@ -515,11 +431,6 @@ public class ArffHelper {
 		return firstCommitInformation;
 	}
 	
-	/**
-	 * 
-	 * @param dataLineList2
-	 * @param firstCommitInformation
-	 */
 	private void preprocessData(ArrayList<String> dataLineList2, ArrayList<String> firstCommitInformation) {
 		TreeMap<Integer,String> metrics = new TreeMap<Integer,String>();
 		
@@ -548,13 +459,8 @@ public class ArffHelper {
 			}
 		}
 	}
-	/**
-	 * 
-	 * @param content
-	 * @return
-	 */
-	//여기 바꿈 private static
-	public ArrayList<String> getDataLinesFrom(String content) {
+
+	private static ArrayList<String> getDataLinesFrom(String content) {
 		ArrayList<String> dataLineList = new ArrayList<>();
 		String[] lines = content.split("\n");
 
@@ -571,14 +477,7 @@ public class ArffHelper {
 		return dataLineList;
 	}
 
-	/**
-	 * 
-	 * @param content
-	 * @return
-	 * @throws IOException
-	 */
-	//여기 바꿈 private static
-	public ArrayList<String> getAttributeLinesFrom(String content) throws IOException {
+	private static ArrayList<String> getAttributeLinesFrom(String content) throws IOException {
 		ArrayList<String> attributeLineList = new ArrayList<>();
 
 		String[] lines = content.split("\n");
@@ -602,10 +501,6 @@ public class ArffHelper {
 		return attributeLineList;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public ArrayList<String> getKeyOrder() {
 
 		ArrayList<String> fileOrder = new ArrayList<>();
@@ -633,15 +528,6 @@ public class ArffHelper {
 		return fileOrder;
 	}
 	
-	/**
-	 * 
-	 * @param arff1
-	 * @param arff2
-	 * @param keyOrder
-	 * @param midDate
-	 * @return
-	 * @throws IOException
-	 */
 	public File makeMergedDeveloperHistoryArff(File arff1, File arff2, List<String> keyOrder, String midDate) throws IOException {
 		File newFileTrain = new File(referencePath + File.separator + projectName +"-train-data.arff");
 		File newFileTest = new File(referencePath + File.separator + projectName +"-test-data.arff");

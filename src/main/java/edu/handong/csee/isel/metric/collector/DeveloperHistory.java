@@ -13,40 +13,33 @@ import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.Utils;
 
-/**
- * 
- * @author 
- *
- */
 public class DeveloperHistory {
 	private Git git;
 	private Repository repo;
-	private String startDate;
-	private String endDate;
-	private String midDate;
-	private double percent;
+	String startDate;
+	String endDate;
+	String midDate;
+	double percent;
+	boolean allGitLog;
 	
-	public DeveloperHistory(){
+	public DeveloperHistory(Input input){
 		try {
-			this.git = Git.open(Main.getGitDirectory());
+			this.git = Git.open(Main.getGitDirectory(input));
 			this.repo = git.getRepository();
-			if(Input.startDate == null) startDate = "0000-00-00 00:00:00";
-			else this.startDate = Input.startDate;
+			if(input.startDate == null) startDate = "0000-00-00 00:00:00";
+			else this.startDate = input.startDate;
 			
-			if(Input.endDate == null) endDate = "9999-99-99 99:99:99";
-			else this.endDate = Input.endDate;
+			if(input.endDate == null) endDate = "9999-99-99 99:99:99";
+			else this.endDate = input.endDate;
 			
-			this.percent = (double)Input.percent;
+			this.percent = (double)input.percent;
+			this.allGitLog = input.allGitLog;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
 	public String findDeveloperDate() {
 		midDate = null;
 		ArrayList<String> newDeveloper = new ArrayList<String>();
@@ -55,7 +48,11 @@ public class DeveloperHistory {
 		
 		Iterable<RevCommit> initialCommits = null;
 		try {
-			initialCommits = git.log().call();
+			if(allGitLog == true) {
+				initialCommits = git.log().all().call();
+			}else {
+				initialCommits = git.log().call();
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -107,26 +104,14 @@ public class DeveloperHistory {
 		return midDate = dateOfCameIn.get((int)halfDeveloper);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public String getMidDate() {
 		return midDate;
 	}
 
-	/**
-	 * 
-	 * @param git
-	 */
 	public void setGit(Git git) {
 		this.git = git;
 	}
 
-	/**
-	 * 
-	 * @param repo
-	 */
 	public void setRepo(Repository repo) {
 		this.repo = repo;
 	}
