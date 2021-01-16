@@ -1,5 +1,6 @@
 package edu.handong.csee.isel.metric.metadata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -11,34 +12,72 @@ import java.util.regex.Pattern;
 
 import edu.handong.csee.isel.metric.metadata.CommitUnitInfo;
 import edu.handong.csee.isel.metric.metadata.DeveloperExperienceInfo;
-import edu.handong.csee.isel.metric.metadata.MetaDataInfo;
+import edu.handong.csee.isel.metric.metadata.Metrics;
 import edu.handong.csee.isel.metric.metadata.SourceFileInfo;
 import edu.handong.csee.isel.metric.metadata.Utils;
 
-public class MetricParser {
-	public void parsePatchContents(MetaDataInfo metaDataInfo, String commitHash,String diffContent) {
+public class MetricCollector { //metric Collector
+	public void parsePatchContents(Metrics metric,CommitUnitInfo commitUnitInfo, String commitHash,String diffContent) {
 
 		int numOfDeleteLines = 0; // metricVariable.getNumOfDeleteLines();
 		int numOfAddLines = 0; // metricVariable.getNumOfAddLines();
-		int distributionOfModifiedLines = 0; // metricVariable.getDistributionOfModifiedLines();
+		
+		int numOfAddChunk = 0;
+		int numOfDeleteChunk = 0;
+		
+		String beforeLine = "E";
 
 		List<String> diffLines = Arrays.asList(diffContent.split("\\n"));
 
 		for(int i = 5; i < diffLines.size(); i++) {
 			String line = diffLines.get(i);
-			if(line.startsWith("-")) numOfDeleteLines++;
-			else if(line.startsWith("+")) numOfAddLines++;
-			else if(line.startsWith("@@")) distributionOfModifiedLines++;
+			
+			if(line.startsWith("-")) {
+				if(beforeLine.equals("+")) {
+					numOfDeleteChunk++;
+				}
+				numOfDeleteLines++;
+				beforeLine = "-";
+			}
+			else if(line.startsWith("+")) {
+				if(beforeLine.equals("-")) {
+					numOfDeleteChunk++;
+				}
+				numOfAddLines++;
+				beforeLine = "+";
+			}
+			else if(line.startsWith("@@")){
+				beforeLine = "E";
+			}else {
+				if(beforeLine.equals("-")) {
+					numOfDeleteChunk++;
+					beforeLine = "E";
+				}else if(beforeLine.equals("+")) {
+					numOfAddChunk++;
+					beforeLine = "E";
+				}
+			}
 		}
 		
-		metaDataInfo.setNumOfModifyLines(numOfDeleteLines + numOfAddLines);
-		metaDataInfo.setNumOfAddLines(numOfAddLines);
-		metaDataInfo.setNumOfDeleteLines(numOfDeleteLines);
-		metaDataInfo.setDistributionOfModifiedLines(distributionOfModifiedLines);
+		if(beforeLine.equals("-")) {
+			numOfDeleteChunk++;
+		}else if(beforeLine.equals("+")) {
+			numOfAddChunk++;
+		}
+		
+		int numOfModifyLines = numOfDeleteLines + numOfAddLines;
+		metric.setNumOfModifyLines(numOfModifyLines);
+		metric.setNumOfAddLines(numOfAddLines);
+		metric.setNumOfDeleteLines(numOfDeleteLines);
+		metric.setNumOfAddChunk(numOfAddChunk);
+		metric.setNumOfDeleteChunk(numOfDeleteChunk);
+		metric.setNumOfModifyChunk(numOfAddChunk + numOfDeleteChunk);
+		commitUnitInfo.setModifiedLines(numOfModifyLines);
+		commitUnitInfo.setEntropy(commitUnitInfo.getEntropy() + (double)numOfModifyLines);
 	}
 
 
-	public void parseSourceInfo(MetaDataInfo metaDataInfo, HashMap<String,SourceFileInfo> sourceFileInfo, String sourceFileName, String authorId,boolean isBuggyCommit,String commitTime,String commitHash, CommitUnitInfo commitUnitInfo, String fileSource) throws Exception {
+	public void parseSourceInfo(Metrics metaDataInfo, HashMap<String,SourceFileInfo> sourceFileInfo, String sourceFileName, String authorId,boolean isBuggyCommit,String commitTime,String commitHash, CommitUnitInfo commitUnitInfo, String fileSource) throws Exception {
 		SourceFileInfo aSourceFileInfo;//소스파일 정보 인스탄스 
 
 		if(sourceFileInfo.containsKey(sourceFileName) == false) {//처음 만들어진 소스 파일 일 때 
@@ -71,7 +110,7 @@ public class MetricParser {
 		aSourceFileInfo.setPreviousCommitHash(commitHash);
 	}
 
-	public void parseDeveloperInfo(MetaDataInfo metaDataInfo, HashMap<String,Integer> developerExperience, String authorId) {
+	public void parseDeveloperInfo(Metrics metaDataInfo, HashMap<String,Integer> developerExperience, String authorId) {
 
 		if(developerExperience.containsKey(authorId) == false) {
 			developerExperience.put(authorId, 1);
@@ -83,7 +122,7 @@ public class MetricParser {
 
 	}
 
-	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key) {
+	public void parseCommitUnitInfo(CommitUnitInfo commitUnitInfo, String sourcePath, String key,HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId) {
 		String[] pathToken = sourcePath.split("/");
 		String subsystem = pathToken[0];
 		String file = pathToken[pathToken.length-1];
@@ -94,14 +133,18 @@ public class MetricParser {
 		while(matcher.find()) {
 			directorie = matcher.group(1);
 		}
+		
+		if(!subsystem.startsWith("src")) {
+			commitUnitInfo.setSubsystems(subsystem);
+			developerExperience.get(authorId).setNumOfSubsystem(subsystem);
+		}
 
 		commitUnitInfo.setKey(key);
-		commitUnitInfo.setSubsystems(subsystem);
 		commitUnitInfo.setDirectories(directorie);
 		commitUnitInfo.setFiles(file);
 	}
 	
-	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime) {
+	public void computeDeveloperInfo(HashMap<String,DeveloperExperienceInfo> developerExperience,String authorId, String commitTime, int numOfSubsystem) {
 		String[] TimeToken = commitTime.split("-");
 		int year =  Integer.parseInt(TimeToken[0]) + 1;
 		float REXP = 0;
@@ -118,6 +161,21 @@ public class MetricParser {
 			REXP = REXP + (float)numerator/denominator;
 		}
 		developerExperience.get(authorId).setREXP(REXP);
-		
+	}
+	
+	public void computeEntropy(CommitUnitInfo commitUnitInfo) {
+		ArrayList<Integer> modifiedLines = commitUnitInfo.getModifiedLines();
+
+		double allNum = commitUnitInfo.getEntropy();
+		double entropy = 0.0;
+
+		for(int modifiedLine : modifiedLines) {
+			if(modifiedLine == 0) continue;
+			double value = (double)modifiedLine/(double)allNum;
+			double log = Math.log(value) / Math.log(2);
+			entropy += (value * log) * -1;
+		}
+		commitUnitInfo.setEntropy((double)Math.round(entropy*1000)/1000);
+
 	}
 }

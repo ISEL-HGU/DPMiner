@@ -1,29 +1,37 @@
 package edu.handong.csee.isel.metric.metadata;
 
-public class MetaDataInfo {
-	private int numOfBIC;        //ok
-	private String commitAuthor; //ok
-	private int numOfUniqueCommitToTheModifyFiles; //ok
-	private int numOfModifyLines; //ok
-	private int numOfDeleteLines; //ok
-	private int numOfAddLines; //ok
-	private int distributionOfModifiedLines; //ok
-	private int sumOfSourceRevision; //ok
-	private int sumOfDeveloper; //ok
-	private String commitHour; //ok
-	private String commitDay; //ok
-	private int fileAge; //ok
-	private int isBugCommit; //ok
-	private int timeBetweenLastAndCurrentCommitDate; //ok
-	private int numOfSubsystems; //ok
-	private int numOfDirectories;//ok
-	private int numOfFiles;//ok
-	private int developerExperience;//ok
-	private float recentDeveloperExperience;//ok
-	private int LinesOfCodeBeforeTheChange;//ok
-	private String commitTime;
+public class Metrics { //Metrics
+	int numOfBIC;        //ok
+	String commitAuthor; //ok
+	int numOfUniqueCommitToTheModifyFiles; //ok
+	int numOfModifyLines; //ok
+	int numOfDeleteLines; //ok
+	int numOfAddLines; //ok
+	int distributionOfModifiedLines; //ok
+	int sumOfSourceRevision; //ok
+	int sumOfDeveloper; //ok
+	String commitHour; //ok
+	String commitDay; //ok
+	int fileAge; //ok
+	int isBugCommit; //ok
+	int timeBetweenLastAndCurrentCommitDate; //ok
+	int numOfSubsystems; //ok
+	int numOfDirectories;//ok
+	int numOfFiles;//ok
+	int developerExperience;//ok
+	float recentDeveloperExperience;//ok
+	int LinesOfCodeBeforeTheChange;//ok
+	String commitTime;
+	double entropy;
+	int developerSubsystem;
+	String fullFilePath; 
+	String filename;
+	int numOfModifyChunk;
+	int numOfAddChunk;
+	int numOfDeleteChunk;
+	
 
-	public MetaDataInfo() {
+	public Metrics() {
 		this.numOfBIC = 0;
 		this.commitAuthor = null;
 		this.commitHour = null;
@@ -43,6 +51,53 @@ public class MetaDataInfo {
 		this.recentDeveloperExperience = 0;
 		this.LinesOfCodeBeforeTheChange = 0;
 		this.commitTime = null;
+		this.entropy = 0.0;
+		this.developerSubsystem = 0;
+		this.fullFilePath = null;
+		this.filename = null;
+		this.numOfModifyChunk = 0;
+		this.numOfAddChunk = 0;
+		this.numOfDeleteChunk = 0;
+	}
+
+	public String getFullFilePath() {
+		return fullFilePath;
+	}
+
+	public void setFullFilePath(String fullFilePath) {
+		this.fullFilePath = fullFilePath;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public int getNumOfModifyChunk() {
+		return numOfModifyChunk;
+	}
+
+	public void setNumOfModifyChunk(int numOfModifyChunk) {
+		this.numOfModifyChunk = numOfModifyChunk;
+	}
+
+	public int getNumOfAddChunk() {
+		return numOfAddChunk;
+	}
+
+	public void setNumOfAddChunk(int numOfAddChunk) {
+		this.numOfAddChunk = numOfAddChunk;
+	}
+
+	public int getNumOfDeleteChunk() {
+		return numOfDeleteChunk;
+	}
+
+	public void setNumOfDeleteChunk(int numOfDeleteChunk) {
+		this.numOfDeleteChunk = numOfDeleteChunk;
 	}
 
 	public int getNumOfBIC() {
@@ -200,5 +255,22 @@ public class MetaDataInfo {
 	public void setCommitTime(String commitTime) {
 		this.commitTime = commitTime;
 	}
+	public double getEntropy() {
+		return entropy;
+	}
+
+	public void setEntropy(double entropy) {
+		this.entropy = entropy;
+	}
+
+	public int getDeveloperSubsystem() {
+		return developerSubsystem;
+	}
+
+	public void setDeveloperSubsystem(int developerSubsystem) {
+		this.developerSubsystem = developerSubsystem;
+	}
+	
+	
 	
 }

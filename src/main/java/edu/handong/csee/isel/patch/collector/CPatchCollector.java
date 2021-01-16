@@ -192,21 +192,7 @@ public class CPatchCollector implements PatchCollector {
 		return patch;
 	}
 
-//	private boolean isBFC(RevCommit commit) {
-//
-//		for (String bfc : bfcList) {
-////			System.out.println(commit.getShortMessage());
-////			System.out.println(bfc);
-////			System.out.println();
-//			if (commit.getShortMessage().contains(bfc)) {
-//				System.out.println(commit.getShortMessage());
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
-
+	
 	private Git openGitRepository() {
 		File clonedDirectory = Main.getGitDirectory();
 		Git git = null;
