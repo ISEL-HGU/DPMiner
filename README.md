@@ -6,8 +6,8 @@ BugPatchCollector parses bug commits and saves them as .csv files. To know the b
 ## Contents of DPMiner
 
 - [What is DPMiner](#what-is-DPMiner)
-- [How to build: Gradle](#how-to-build:-Gradle)
-- [Options](##options)
+- [How to build: Gradle](#how-to-build-Gradle)
+- [Options](#options)
 
 ## What is DPMiner 
 
@@ -44,7 +44,7 @@ BIC 설명~~ (jira와 github, commit message 설명은 위에서 했으니 BFC�
 
 Metric 설명 ~~
 
-## How to build: Gradle
+## How to build Gradle
 <pre><code> $ ./gradlew distZip </code></pre>
 or
 <pre><code> $ gradle distZip </code></pre>
@@ -91,20 +91,17 @@ If you have trouble to build using gradlew, enter
 * One of `-ij`, `-ik` and `-ig` is mandatory
 * \* : `-jk` is required when using option `-ij`.
 
-
-<pre><code> //Jira example
- //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
+###### Jira example
+<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
 patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij issues.apache.org -jk JUDDI </code></pre>
-<pre><code> //Github example
- //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+###### Github example (-l option)
+<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
 patch -i https://github.com/apache/camel-quarkus -o /Users/Desktop/camel-quarkus/patch -ig 
- //Github example (-l option)
 patch -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect
 </code></pre>
-<pre><code> //Patch example
- //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+###### Keyword example (-k option)
+<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik
- //Patch example(-k option)
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik -k help </code></pre>
 
 ### 3. BIC
@@ -118,16 +115,14 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 | `-z AGSZZ` | Annotation Graph |
 - `-z` option is not required.
 
-
-<pre><code> //Jira example (BSZZ)
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
-<pre><code> //Github example (BSZZ)
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
-<pre><code> //Patch example (BSZZ)
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
-<pre><code> //AG-SZZ example (Jira)
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
- //B-SZZ example (Jira)
+###### Jira example (BSZZ)
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
+###### Github example (BSZZ)
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
+###### Keyword example (BSZZ)
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
+###### AG-SZZ and B-SZZ example (Jira)
+<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
  
 
@@ -139,4 +134,6 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 |:--------:|:----------------:|
 |  `-bp*` |     bic csv file path   |
 - The metric can only be collected using file BIC_BSZZ.csv
-<pre><code>metric  -i https://github.com/apache/juddi -o /Users/Desktop -bp /Users/Desktop/BIC_BSZZ_juddi.csv </code></pre>
+###### Metric example
+<pre><code> //metric  -i "Github URL" -o "local directory path"/metric -bp "BIC file path"/BIC_BSZZ_"ProjectName.csv"
+metric  -i https://github.com/apache/juddi -o /Users/Desktop/metric -bp /Users/Desktop/BIC_BSZZ_juddi.csv </code></pre>
