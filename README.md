@@ -1,12 +1,12 @@
-# DPMiner : Mining repotory tool
-BugPatchCollector parses bug commits and saves them as .csv files. To know the bug commit, we need to get information about the commit.
+# DPMiner : Mining Repository Tool
+DPMiner parses bug commits and saves them as .csv files. To know the bug commit, we need to get information about the commit. (수정)
 
 
 **![](https://lh5.googleusercontent.com/bwjMBR5oG7lcSKPQsph9GTpT0OFa-JPFMTpQON_umhxzaqj4TEAMlBIVVyeeTjHe4XPRiZFhegHSqBpBSh7qzhZwsWsDu12_WY-TuDAJLae__nowPoRHhQU52irbmk4wB1YIRRs)**
 ## Contents of DPMiner
 
 - [What is DPMiner](#what-is-DPMiner)
-- [How to build: Gradle](#how-to-build-Gradle)
+- [How to build Gradle](#how-to-build-Gradle)
 - [Options](#options)
 
 ## What is DPMiner 
@@ -48,8 +48,11 @@ Metric 설명 ~~
 <pre><code> $ ./gradlew distZip </code></pre>
 or
 <pre><code> $ gradle distZip </code></pre>
-After the command, unzip "build/distributions/BugPatchCollector.zip"<br>
-The executable file is in build/distributions/BugPatchCollector/bin<br><br>
+After the command, unzip "build/distributions/DPMiner.zip"<br>
+The executable file is in build/distributions/DPMiner/bin<br>
+There are two executable files. One is DPMiner.bat, the other is DPMiner.<br>
+Window use DPMiner.bat, Linux or Mac OS use DPMiner.<br><br>
+
 If you have trouble to build using gradlew, enter
 <pre><code>$ gradle wrap</code></pre>
 
@@ -86,8 +89,8 @@ If you have trouble to build using gradlew, enter
 | Option |               | Option |                                 |
 |:------:|:-------------:|:------:|:-------------------------------:|
 |  `-ij`  |    jira url   |  `-jk*`  |           jira keyword          |
-|  `-ik`  |     keyword   |   `-k`   | bug keyword (default : bug,fix) |
-|  `-ig`  | issue keyword |   `-l`   | issue bug label (default : big) |
+|  `-ik`  |     commit message   |   `-k`   | bug keyword (default : bug,fix) |
+|  `-ig`  | github issue |   `-l`   | issue bug label (default : big) |
 * One of `-ij`, `-ik` and `-ig` is mandatory
 * \* : `-jk` is required when using option `-ij`.
 
@@ -99,7 +102,7 @@ patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij issue
 patch -i https://github.com/apache/camel-quarkus -o /Users/Desktop/camel-quarkus/patch -ig 
 patch -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect
 </code></pre>
-###### Keyword example (-k option)
+###### Commit message example (-k option)
 <pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik -k help </code></pre>
@@ -119,11 +122,11 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 <pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
 ###### Github example (BSZZ)
 <pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
-###### Keyword example (BSZZ)
+###### Commit message example (BSZZ)
 <pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
 ###### AG-SZZ and B-SZZ example (Jira)
-<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
+<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key" -z BSZZ
+ //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key" -z AGSZZ</code></pre>
  
 
 ### 4. Metric
