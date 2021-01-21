@@ -47,7 +47,17 @@ BIC 설명~~ (jira와 github, commit message 설명은 위에서 했으니 BFC�
 
 ![](https://lh6.googleusercontent.com/WU16C8pIyqoshlu-GoXm7u4lqq7-xLOjSp84rq15vUHPNbsD0ySlDot0g_dcctTgUjmtX08asTkZ75bzyeCMhIBNEh7976iB-Sw3XrQl2ZFIsR8dYEveSZYxp-eZockRlClOqTRpb10)
 
-Metric 설명 ~~
+The metric is information of source code for defect prediction.
+* **Characteristic Vector**<br>
+Characteristic Vector is a metric representing the structural change of the source code.
+
+* **Bag of Words**<br>
+Bag of Words is a metric that measures the frequency of occurrences of words after breaking up sentences into word units in source code and commit messages.
+
+* **Meta data**<br>
+Meta data consists of 25 types of data such as modified lines and added lines.
+
+
 
 ## How to build Gradle
 <pre><code> $ ./gradlew distZip </code></pre>
