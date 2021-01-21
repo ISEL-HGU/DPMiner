@@ -15,11 +15,19 @@ DPMiner parses bug commits and saves them as .csv files. To know the bug commit,
 
 ![](https://lh4.googleusercontent.com/zYPwBbqpRVcsT3Qwl737KN8pncUSuIILx60DHDbR1gk-4vSwfJn8SWD5C1oxDIMg9HFH2DD5-0inKeiry8hS-9xMtOdUshfl38RWKwbAH29z_jkzJP32Q7kCrOrWbBEvC65tCv9InzU)
 
-There are cases where a developer needs an open source project with specific conditions for his or her research and experimentation. Accordingly, a list of repository URLs matching the conditions desired by the user is extracted from the version control system and the open source repository, GitHub.
+A list of repository URLs matching the conditions desired by the user is extracted from the version control system and the open source repository, GitHub.
 
-To extract the URL list, DPminer use Search API among GitHub REST APIs. Search API provided by GitHub can receive a list of 100 repository URLs per page by sending information about conditions in query format. 
+To extract the URL list, DPminer use <u>**Search API**</u> among GitHub REST APIs. Search API provided by GitHub can receive a list of 100 repository URLs per page by sending information about conditions in query format. This framework can collect all of the project repository URLs corresponding to the condition by collecting a list of repository URLs for several queries.
 
-This framework can collect all of the project repository URLs corresponding to the condition by collecting a list of repository URLs for several queries.
+
+> Possible conditions
+>
+> - commit Count Base
+> - recent Date
+> - fork Number
+> - language Type
+> - author Token
+
 
 ### 2. Patch
 
@@ -42,7 +50,14 @@ Commit messages are recorded using keywords important to each commit for develop
 
 ![](https://lh3.googleusercontent.com/snJMhnNZigWXnEZgN7ThanUpe5bFGsSDShlRB_4Lzl7KgWM7yZdwxK6n3jmibYdU10hmIdHPsQ1sE8gTEBHLxkPDLj1alrWDcrJoIbd5vIu2XxtUxVLTqfNEdBeKE1qd1gnXjJPv6Uk)
 
-BIC 설명~~ (jira와 github, commit message 설명은 위에서 했으니 BFC에서 szz알고리즘을 통하여 BIC를 파싱하는 부분 설명)
+After collecting BFC (Bug Fix Commits) by the method described in Patch, BIC (Bug Introducing Commits) is collected by using SZZ algorithm. In this framework, two SZZ algorithm are used.
+
+- **B-SZZ**
+  The B-SZZ algorithm is an algorithm that finds the commit that introduced the bug by executing <u>git blame</u> on the modified line of the commit that fixed the bug. It is a basic szz algorithm.
+
+- **AG-SZZ**
+  The AG-SZZ algorithm uses <u>Annotation Graph</u> to correct blank lines, format changes, comments, and remove outlier BFCs that modify too many files at once. The annotation graph is created from the first commit to the commit that contains the defect correction information, and then the DFS algorithm is applied to the line where the defect is corrected to find the line causing the defect.
+  
 ### 4. Metic
 
 ![](https://lh6.googleusercontent.com/WU16C8pIyqoshlu-GoXm7u4lqq7-xLOjSp84rq15vUHPNbsD0ySlDot0g_dcctTgUjmtX08asTkZ75bzyeCMhIBNEh7976iB-Sw3XrQl2ZFIsR8dYEveSZYxp-eZockRlClOqTRpb10)
