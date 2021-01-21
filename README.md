@@ -25,16 +25,17 @@ This framework can collect all of the project repository URLs corresponding to t
 
 ![](https://lh3.googleusercontent.com/2HEAr6r_uE5EUV_0hnG4AfYsQOlQZxbG25q-jAl34SPbb5m6X60TXM0dZV71UR_IJUpgG-BczbNfxllgOlJi0UQm8iUghbY0CU3jpyn9Tus1SA0LXWOiT6CHZjvL5oG56cBMMQ2ttyo)
 
-patch 설명....
-
+The patch is function to collects bug fixing commit(BFC). There are three ways to collect bug fixing commit(BFC)
 
 * **Jira**<br>
-지라는 프로젝트를 진행하기 위해 필요한 다양한 기능을 제공합니다. 그중에 하나가 이슈 관리입니다. 지라의 이슈 관리 페이지에서는 버그와 관련된 이슈들만 따로 검색할 수 있고, 찾은 내용을 다운로드 받을 수 있습니다. [Find Jira key example](https://github.com/HGUISEL/BugPatchCollector/issues/5) <br>**지라에서 얻어낸 리퍼런스를 통해 프로젝트 내의 버그 정보를 수집하기 위해서는 -j과 -p 옵션을 함께 포함해야 합니다.** -j에는 Jira URL의 앞부분이 들어가고, -p에는 Project Key가 들어갑니다.
+Jira is a repository for managing issues. Jira manages the project with a label indicating the nature of the issue and status information, which is the progress of the issue. DPMiner collects commit hash whose label is bug and progress status is Close.
+[Find Jira key example](https://github.com/HGUISEL/BugPatchCollector/issues/5) 
 
 * **GitHub Issue**<br>
-깃허브도 지라와 같이 버그 이슈들을 관리할 때 버그 라벨을 붙혀서 관리합니다. 이 프로그램은 **-j과 -p 옵션을 포함하지 않은 경우** 깃허브에서 버그 라벨이 붙은 이슈들을 검색해서 버그 정보를 수집합니다. 깃허브에서 옵션을 추가하지 않았을 때 기본적으로 제공하는 버그 라벨은 'bug'입니다. 그래서 초기 검색 버그 라벨은 'bug'이지만, 어떤 프로젝트에서는 버그 분류 라벨을 다르게 지정했기 때문에 이것에 대처하기 위해서는 -l 옵션이 필요합니다. 만약 프로젝트에서 버그 이슈들을 정리할 때 다른 bug 라벨을 사용했을 경우에는 -l 옵션을 통해 검색하는 버그 라벨의 이름을 변경 할 수 있습니다. (예를 들어 -l "buggy") 하지만 깃허브에 이슈 페이지가 존재하지 않는 프로젝트도 존재합니다. 이런 경우에는 자동으로 커밋 메세지를 분석해서 bug,resolved,fix와 같은 키워드가 존재하면 버그라고 판단합니다.
+GitHub provides an issue function for efficient project management. GitHub helps manage version upgrades, defect detection, and feature enhancements by assigning issue.  And the status of the issue is marked as open or closed. DPMiner collects data by considering the issue is a bug and the state is closed as BFC.
 
 * **Commit message**<br>
+Commit messages are recorded using keywords important to each commit for developers to efficiently maintain and collaborate. If there are "bug" and "fix" keywords in the commit message, that commit considers as BFC. DPMiner collects commit hash whose commit message have "bug" and "fix" keyword.
 
 
 ### 3. BIC
