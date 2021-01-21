@@ -15,7 +15,11 @@ DPMiner parses bug commits and saves them as .csv files. To know the bug commit,
 
 ![](https://lh4.googleusercontent.com/zYPwBbqpRVcsT3Qwl737KN8pncUSuIILx60DHDbR1gk-4vSwfJn8SWD5C1oxDIMg9HFH2DD5-0inKeiry8hS-9xMtOdUshfl38RWKwbAH29z_jkzJP32Q7kCrOrWbBEvC65tCv9InzU)
 
-repository list 설명...
+There are cases where a developer needs an open source project with specific conditions for his or her research and experimentation. Accordingly, a list of repository URLs matching the conditions desired by the user is extracted from the version control system and the open source repository, GitHub.
+
+To extract the URL list, DPminer use Search API among GitHub REST APIs. Search API provided by GitHub can receive a list of 100 repository URLs per page by sending information about conditions in query format. 
+
+This framework can collect all of the project repository URLs corresponding to the condition by collecting a list of repository URLs for several queries.
 
 ### 2. Patch
 
