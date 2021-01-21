@@ -1,5 +1,5 @@
 # DPMiner : Mining Repository Tool
-DPMiner parses bug commits and saves them as .csv files. To know the bug commit, we need to get information about the commit. (수정)
+### DPMiner is an integrated framework that can collect various types of data required for defect prediction through a single program.
 
 
 **![](https://lh5.googleusercontent.com/bwjMBR5oG7lcSKPQsph9GTpT0OFa-JPFMTpQON_umhxzaqj4TEAMlBIVVyeeTjHe4XPRiZFhegHSqBpBSh7qzhZwsWsDu12_WY-TuDAJLae__nowPoRHhQU52irbmk4wB1YIRRs)**
@@ -110,7 +110,7 @@ If you have trouble to build using gradlew, enter
 | `-auth*` |     auth Token    |
 * \* : `-auth` is required.
 
-<pre><code> repository example </code></pre>
+<pre><code> findrepo -l java -auth "Auth Token" </code></pre>
 ### 2. Patch
 
 *Commend* : `patch`
