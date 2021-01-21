@@ -10,8 +10,8 @@ package edu.handong.csee.isel.data.processor.input.command;
         	   FindRepoCommand.class,
                BICCommand.class,
                PatchCommand.class,
-               MetricCommand.class,
-               DeveloperMetricCommand.class
+               MetricCommand.class
+//               DeveloperMetricCommand.class
            },  
            mixinStandardHelpOptions = true,
            usageHelpAutoWidth = true,
