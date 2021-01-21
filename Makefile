@@ -1,13 +1,13 @@
 build:
 	gradle build
-	unzip ./build/distributions/BugPatchCollector.zip -d run                                                                                                                  
+	unzip ./build/distributions/DPMiner.zip -d run                                                                                                                  
   
 unzip: 
 	rm -rf run
-	unzip ./build/distributions/BugPatchCollector.zip
+	unzip ./build/distributions/DPMiner.zip
   
 run:
-	./BugPatchCollector/bin/BugPatchCollector $(args) 
+	./BugPatchCollector/bin/DPMiner $(args) 
   
 clean:
 	rm -rf run
