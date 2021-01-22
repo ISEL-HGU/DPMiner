@@ -40,7 +40,7 @@ import edu.handong.csee.isel.data.Input.TaskType;
  
          static class DependentJira {
              @Option(names = "-ij", required = true, description = "--issue jira <Jira project URL> \nJira issues URL (example:issues.apache.org)") 
-             private String jiraURL;    
+             private boolean jiraURL;    
              @Option(names = "-jk", required = true, description = "--jiraProject <Project Key> \nJira project key.") 
              private String jirajiraProjectKey;
          }   
@@ -92,8 +92,8 @@ import edu.handong.csee.isel.data.Input.TaskType;
          Input.gitRemoteURI = Input.gitURL + ".git";
          Input.projectName = getProjectName(Input.gitRemoteURI);
      
-         if(exclusive.dependentJira.jiraURL != null && exclusive.dependentJira.jirajiraProjectKey != null) {
-             Input.jiraURL = exclusive.dependentJira.jiraURL;
+         if(exclusive.dependentJira.jiraURL  && exclusive.dependentJira.jirajiraProjectKey != null) {
+        	 Input.jiraURL = "issues.apache.org";
              Input.jiraProjectKey = exclusive.dependentJira.jirajiraProjectKey;
              Input.mode = Mode.JIRA;
          }else if(exclusive.dependentGithub.github) {
