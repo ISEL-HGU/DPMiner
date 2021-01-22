@@ -125,8 +125,8 @@ If you have trouble to build using gradlew, enter
 * \* : `-jk` is required when using option `-ij`.
 
 ###### Jira example
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"
-patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij issues.apache.org -jk JUDDI </code></pre>
+<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
+patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI </code></pre>
 ###### Github example (-l option)
 <pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
 patch -i https://github.com/apache/camel-quarkus -o /Users/Desktop/camel-quarkus/patch -ig 
@@ -149,14 +149,14 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 - `-z` option is not required.
 
 ###### Jira example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key"</code></pre>
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"</code></pre>
 ###### Github example (BSZZ)
 <pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
 ###### Commit message example (BSZZ)
 <pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
 ###### AG-SZZ and B-SZZ example (Jira)
-<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key" -z BSZZ
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij issues.apache.org -jk "Jira Key" -z AGSZZ</code></pre>
+<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
+ //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ</code></pre>
  
 
 ### 4. Metric
