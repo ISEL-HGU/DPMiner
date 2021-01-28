@@ -9,6 +9,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -29,53 +31,20 @@ public class RepoCollector implements RepoCollectable {
 	private boolean pageLoadBlocked = false; // indicate which the page is over 10 or not.
 	private String lastDate; // standard
 	private HashSet<String> repoResult;
+	private String outPath;
 
 	// for input
 	public String authToken;
 	public HashMap<String, String> findRepoOpt;
 
-	public RepoCollector(String authToken, HashMap<String, String> findRepoOpt) {
+	public RepoCollector(String authToken, HashMap<String, String> findRepoOpt, String outPath) {
 		this.authToken = authToken;
 		this.findRepoOpt = findRepoOpt;
+		this.outPath = outPath;
 		repoResult = new HashSet<>();
 		retrofit = new RetroBasic().createObject(authToken); // Retrofit turns your REST API into a Java // interface.
 	}
 
-	
-	
-//	@Nullable 
-//	public void setOption(String languageType, String forkNum, String createDate, String recentDate) {
-//		String repo_opt = "";
-//
-//		if (languageType != null) {
-//			repo_opt += "language:" + languageType;
-//		}
-//
-//		if (forkNum != null) {
-//			repo_opt += " forks:" + forkNum;
-//		}
-//
-//		if (createDate != null) {
-//			repo_opt += " created:" + createDate;
-//		}
-//
-//		if (recentDate != null) {
-//			repo_opt += " pushed:" + recentDate;
-//		}
-//
-//		if (repo_opt.equals("")) {
-//			System.exit(64);
-//		}
-//
-//		this.findRepoOpt = new HashMap<>();
-//		this.findRepoOpt.put("q", repo_opt);
-//		this.findRepoOpt.put("sort", "updated");
-//		this.findRepoOpt.put("page", "1");
-//		this.findRepoOpt.put("per_page", "100");
-//
-//		if (recentDate != null && recentDate.contains(">="))
-//			findRepoOpt.put("order", "asc");
-//	}
 
 	@Override
 	public HashSet<String> collectFrom() throws InterruptedException, IOException {
@@ -84,17 +53,15 @@ public class RepoCollector implements RepoCollectable {
 		int randomSec;
 		int pages = 1;
 
-		while (!isEndOfData) { // repo값을 받아온 경우 실행됨. while문 하나로 바꾸기, null로 바꾸자
+		while (!isEndOfData) { 
 
-			while (pages != 11 && !isEndOfData) { // 페이지 10페이지를 넘기지 않음. getRepoResult에 값이 없으면 멈춤 즉 더이상 가져올 데이터가 없는 경우
-													// 멈춘다.
+			while (pages != 11 && !isEndOfData) { 
 
-				// random sleep time to 1~3s, 왜 sleep하는가?
 				randomRange = Math.random();
 				randomSec = (int) (randomRange * 2000) + 100;
 				Thread.sleep(randomSec);
 
-				findRepoOpt.replace("page", String.valueOf(pages)); // repoOpt에 있는 page를 계속 업데이트 해준다.
+				findRepoOpt.replace("page", String.valueOf(pages));
 
 				getOneQueryData(""); // 함수호출
 
@@ -106,12 +73,15 @@ public class RepoCollector implements RepoCollectable {
 
 			}
 
-			changeRepoUpdate(findRepoOpt, lastDate); //
+			changeRepoUpdate(findRepoOpt, lastDate); 
 			pages = 1;
 		}
+		SimpleDateFormat sd = new SimpleDateFormat("MM-dd");
+		Date time = new Date();
+		String today = sd.format(time);
 		String base_github = "https://github.com/";
 
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("test" + "_Repo_list.csv"), true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath + File.separator + today + "_Repo_list.csv"), true));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "\n");
 		pw.flush();
@@ -121,7 +91,7 @@ public class RepoCollector implements RepoCollectable {
 			pw.flush();
 		}
 
-//		System.out.println(repoResult.size() + " results are stored in " + "test" + "_Repo_list.csv");
+//		System.out.println(repoResult.size() + " results are stored in " + today + "_Repo_list.csv");
 		bw.close();
 		pw.close();
 
