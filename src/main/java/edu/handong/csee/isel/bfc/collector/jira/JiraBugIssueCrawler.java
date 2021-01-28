@@ -39,17 +39,17 @@ public class JiraBugIssueCrawler {
 		String encodedJql = jqlManager.getEncodedJQL(jqlManager.getJQL1(period.getEnd()));
 		String linkUrl = urlManager.getURL(encodedJql);
 		Connection.Response response = getResponse(linkUrl);
-		System.out.println("\n\tSearching bug issues before " + period.getEnd() + " days");
+//		System.out.println("\n\tSearching bug issues before " + period.getEnd() + " days");
 		
 		boolean flag1 = requestSucceed(response.statusCode());  //flag1 is an indicator that checks whether a response was succeeded when approached linkUrl with encoded JQL1.
 		
-		System.out.println("\n		checking flag1 for issueKeys if 1 => true ..." + flag1);
+//		System.out.println("\n		checking flag1 for issueKeys if 1 => true ..." + flag1);
 		
 		while(!flag1) {
 			encodedJql = jqlManager.getEncodedJQL(jqlManager.getJQL2(period.getStart(), period.getEnd()));
 			linkUrl = urlManager.getURL(encodedJql);
 			response = getResponse(linkUrl);
-			System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
+//			System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
 	
 			boolean flag2 = requestSucceed(response.statusCode()); //flag2 is an indicator that checks whether a response was succeeded when approached linkUrl with encoded JQL2.
 			
@@ -60,20 +60,20 @@ public class JiraBugIssueCrawler {
 				originalStart = period.getStart();
 				if(flag2) { 
 					period.increasePeriod();
-					System.out.println("\tIncreasing period...");
+//					System.out.println("\tIncreasing period...");
 				}else {
 					if(invalidProjectKeyChecker && disconnectionCausedByInvalidProjectKeyCount > MAX_DISCONNECTION) {
 						throw new InvalidProjectKeyException();
 					}
 					period.decreasePeriod();
-					System.out.println("\tDecreasing period...");
+//					System.out.println("\tDecreasing period...");
 					disconnectionCausedByInvalidProjectKeyCount++;
 				}
 				
 				encodedJql = jqlManager.getEncodedJQL(jqlManager.getJQL2(period.getStart(), period.getEnd()));
 				linkUrl = urlManager.getURL(encodedJql);
 				response = getResponse(linkUrl);
-				System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
+//				System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
 				
 				flag2 = requestSucceed(response.statusCode());
 			}
@@ -87,7 +87,7 @@ public class JiraBugIssueCrawler {
 			encodedJql = jqlManager.getEncodedJQL(jqlManager.getJQL2(period.getStart(), period.getEnd()));
 			linkUrl = urlManager.getURL(encodedJql);
 			response = getResponse(linkUrl);
-			System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
+//			System.out.println("\n\tSearching bug issues from " + period.getStart() + " days to " + period.getEnd() + " days");
 			
 			fileManager.storeCSVFile(response); //store CSV file
 			
@@ -97,7 +97,7 @@ public class JiraBugIssueCrawler {
 			linkUrl = urlManager.getURL(encodedJql);
 			
 			response = getResponse(linkUrl);
-			System.out.println("\n\tSearching bug issues before " + period.getEnd() + " days");
+//			System.out.println("\n\tSearching bug issues before " + period.getEnd() + " days");
 			
 			flag1 = requestSucceed(response.statusCode());
 		}
@@ -127,7 +127,7 @@ public class JiraBugIssueCrawler {
 	}
 	
 	private static Connection.Response getResponse(String url) throws IOException{
-		System.out.println("\nConnecting " + url + "...");
+//		System.out.println("\nConnecting " + url + "...");
 		return Jsoup.connect(url)
 				.maxBodySize(0)
 				.timeout(600000)

@@ -52,18 +52,22 @@ public class FindRepoCommand implements Runnable {
         
         if(languageType != null) {
         	repo_opt += "language:" + languageType;
+        	Input.languageType = languageType;
         }
         
         if(forkNum != null) {
         	repo_opt += " forks:" + forkNum;
+        	Input.forkNum = forkNum;
         }
         
         if(createDate != null) {
         	repo_opt += " created:" + createDate;
+        	Input.createDate = createDate;
         }
         
         if(recentDate != null) {
         	repo_opt += " pushed:" + recentDate;
+        	Input.recentDate = recentDate;
         }
        
         

@@ -51,7 +51,6 @@ import edu.handong.csee.isel.bfc.collector.github.CommitParser;
 import edu.handong.csee.isel.bfc.collector.github.IssueLinkParser;
 import edu.handong.csee.isel.bfc.collector.github.NoIssuePagesException;
 import edu.handong.csee.isel.bic.szz.data.BICInfo;
-import edu.handong.csee.isel.data.Input;
 
 public class Utils {
 
@@ -371,15 +370,15 @@ public class Utils {
 	 * @param BICLines bug introducing commit information 
 	 * @throws IOException
 	 */
-	public static void storeOutputFile(String outPath, String GIT_URL, List<BICInfo> BICLines) throws IOException {
+	public static void storeOutputFile(String outPath, String projectName, String GIT_URL, List<BICInfo> BICLines) throws IOException {
 		// Set file name
 		String[] arr = GIT_URL.split("/");
 		String projName = arr[arr.length - 1];
 		
 		//System.getProperty("user.dir") : 현재위치 반환 해줌. 
 //		String fName = System.getProperty("user.dir") + File.separator + "results" + File.separator + projName + ".csv";
-//		String fName = outPath + File.separator + "AGSZZ_"+ Input.projectName + ".csv";	
-		String fName = outPath + File.separator + "BIC_AGSZZ_" + Input.projectName + ".csv";
+//		String fName = outPath + File.separator + "AGSZZ_"+ projectName + ".csv";	
+		String fName = outPath + File.separator + "BIC_AGSZZ_" + projectName + ".csv";
 		
 		File savedFile = new File(fName);
 		savedFile.getParentFile().mkdirs();

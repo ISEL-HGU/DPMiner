@@ -2,7 +2,6 @@ package edu.handong.csee.isel.bfc.collector;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,16 +11,17 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.jira.JiraBugIssueCrawler;
-import edu.handong.csee.isel.data.Input;
 
 public class BFCJiraCollector implements BFCCollectable {
 
-	String url = Input.jiraURL;
-	String key = Input.jiraProjectKey;
-	String path = Input.outPath;
+	private String url;
+	private String key;
+	private String path;
 
-	public BFCJiraCollector() {
-
+	public BFCJiraCollector(String jiraURL, String jiraProjectKey, String outPath) {
+		this.url = jiraURL;
+		this.key = jiraProjectKey;
+		this.path = outPath;
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class BFCJiraCollector implements BFCCollectable {
 					
 					bfcList.add(commit.getName());
 					if(commit.getName().equals("53a3d5530bd337625374396199ab985e115025ed")) {
-						System.out.println("Message: " + message);
-						System.out.println("commit: " + commit.getName());
+//						System.out.println("Message: " + message);
+//						System.out.println("commit: " + commit.getName());
 					}
 				}
 			}

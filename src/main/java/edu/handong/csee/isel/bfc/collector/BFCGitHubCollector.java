@@ -10,14 +10,15 @@ import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.github.CommitParser;
 import edu.handong.csee.isel.bfc.collector.github.IssueLinkParser;
 import edu.handong.csee.isel.bfc.collector.github.NoIssuePagesException;
-import edu.handong.csee.isel.data.Input;
 
 public class BFCGitHubCollector implements BFCCollectable {
 
-	String url = Input.gitURL;
-	String label = Input.label;
+	private String gitURL;
+	private String label;
 
-	public BFCGitHubCollector() {
+	public BFCGitHubCollector(String gitURL, String label) {
+		this.gitURL = gitURL;
+		this.label = label;
 	}
 
 	@Override
@@ -27,11 +28,11 @@ public class BFCGitHubCollector implements BFCCollectable {
 			IssueLinkParser iss = new IssueLinkParser();
 			CommitParser co = new CommitParser();
 
-			iss.parseIssueAddress(url, label);
+			iss.parseIssueAddress(gitURL, label);
 			if (IssueLinkParser.issueAddress.size() == 0) {
-				throw new NoIssuePagesException("There is no bug issue at " + url);
+				throw new NoIssuePagesException("There is no bug issue at " + gitURL);
 			}
-			co.parseCommitAddress(url);
+			co.parseCommitAddress(gitURL);
 
 			HashSet<String> keywordSet = co.getCommitAddress();
 			List<String> bfcList = new ArrayList<>(keywordSet);

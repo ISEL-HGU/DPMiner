@@ -10,8 +10,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.Main;
-import edu.handong.csee.isel.data.Input;
+import edu.handong.csee.isel.GitFunctions;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
 /**
@@ -31,16 +30,25 @@ public class CMetricCollector implements MetricCollector {
 	private static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
+	private String outPath;
+	private String projectName;
+	private String gitURL;
+	public GitFunctions gitUtils;
 	
-	public CMetricCollector(boolean developerHistory) throws IOException {
-		git = Git.open(Main.getGitDirectory());
+	public CMetricCollector(boolean developerHistory, String outPath, String projectName, String gitURL, String startDate, String endDate) throws IOException {
+		this.projectName = projectName;
+		this.outPath = outPath;
+		this.gitURL = gitURL;
+		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+		
+		git = Git.open(gitUtils.getGitDirectory());
 		repo = git.getRepository();
-		referencePath = Input.outPath + File.separator + Input.projectName +"-reference";
+		referencePath = outPath + File.separator + projectName +"-reference";
 		
 		if(startDate == null) this.startDate = "0000-00-00 00:00:00";
-		else this.startDate = Input.startDate;
+		else this.startDate = startDate;
 		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
-		else this.endDate = Input.endDate;
+		else this.endDate = endDate;
 		
 		this.developerHistory = developerHistory;
 	}
@@ -59,9 +67,11 @@ public class CMetricCollector implements MetricCollector {
 		bowCollector.setBIC(bicList);
 		bowCollector.setCommitList(commitList);
 		bowCollector.setReferencePath(referencePath);
-		bowCollector.setProjectName(Input.projectName);
+		bowCollector.setProjectName(projectName);
 		bowCollector.setStartDate(startDate);
 		bowCollector.setEndDate(endDate);
+		bowCollector.setOutPath(outPath);
+		bowCollector.setGitURL(gitURL);
 		bowCollector.collect();
 //		bowCollector.makeArff(); //TODO: will be removed
 		bowArff = bowCollector.getArff();
@@ -73,7 +83,7 @@ public class CMetricCollector implements MetricCollector {
 		cVectorCollector.setBIC(bicList);
 		cVectorCollector.setCommitList(commitList);
 		cVectorCollector.setReferencePath(referencePath);
-		cVectorCollector.setProjectName(Input.projectName);
+		cVectorCollector.setProjectName(projectName);
 		cVectorCollector.setStartDate(startDate);
 		cVectorCollector.setEndDate(endDate);
 		cVectorCollector.collect();
@@ -85,12 +95,12 @@ public class CMetricCollector implements MetricCollector {
 
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
-		arffHelper.setProjectName(Input.projectName);
-		arffHelper.setOutPath(Input.outPath);
+		arffHelper.setProjectName(projectName);
+		arffHelper.setOutPath(outPath);
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector); //arrf 파일이 하나나온다  <<bow-vector arff>>
 
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, Input.projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
 		if(developerHistory) commitCollector.setMidDate(midDate);
 		commitCollector.countCommitMetrics();
 		commitCollector.saveResultToCsvFile();

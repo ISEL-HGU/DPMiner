@@ -39,7 +39,7 @@ public class Input {
 	public static String endDate;
 	
 	public static int percent;
-	/*
+	
 	
 	public static String languageType;
 	
@@ -49,7 +49,6 @@ public class Input {
 	
 	public static String createDate;
 	
-	public static String commitCountBase;*/
 	
 	public static String authToken;
 	

@@ -39,12 +39,12 @@ public class FileManager {
 		fileList.add(savedFileName);
 		
 		//download csv files
-		System.out.println("\n\tFile " + simpleFileName +" is to be downloaded in " + dir);
+//		System.out.println("\n\tFile " + simpleFileName +" is to be downloaded in " + dir);
 		byte[] bytes = response.bodyAsBytes();
 		File savedFile = new File(savedFileName);
 		savedFile.getParentFile().mkdirs();
 		FileUtils.writeByteArrayToFile(savedFile, bytes);
-		System.out.println("\tFile " + simpleFileName +" has been downloaded in " + dir);
+//		System.out.println("\tFile " + simpleFileName +" has been downloaded in " + dir);
 	}
 	
 	private static String validateTeamName(String domain) {
@@ -54,7 +54,7 @@ public class FileManager {
 	
 	public File collectIssueKeys() throws IOException {
 		for(String file:fileList) { //extract and store issue keys into issueKeyList 
-			System.out.println("\nExtracting Issue Keys from " + file);
+//			System.out.println("\nExtracting Issue Keys from " + file);
 			
 			String in = FileUtils.readFileToString(new File(file), "UTF-8");
 			extractIssueKeys(in);

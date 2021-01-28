@@ -19,36 +19,48 @@ import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import edu.handong.csee.isel.GitFunctions;
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.data.csv.BICInfo;
 
 public class CBICCollector implements BICCollector {  //도대체 왜 여기서 에러가 뜨는지가 모르겠다. 건든게 일도 없는데?
+	private List<String> bfcList = null;
 
-//	Input input;
-	List<String> bfcList = null;
+	private Git git;
+	private Repository repo;
+	public int maxSize = 500;
+	public int minSize = 0;
+	
+	private String outPath;
+	private String gitURL;
+	private String projectName;
+	private GitFunctions gitUtils;
 
-	Git git;
-	Repository repo;
-
-//	public CBICCollector(Input input) {
-//		this.input = input;
-//	}
-
+	public CBICCollector(String outPath, String projectName, String gitURL) {
+		this.outPath = outPath;
+		this.gitURL = gitURL;
+		this.projectName = projectName;
+		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+	}
 	@Override
 	public void setBFC(List<String> bfcList) {
 		this.bfcList = bfcList;
+	}
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+	public void setMinSize(int minSize) {
+		this.minSize = minSize;
 	}
 
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
 
 		try {
-			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory());
+			git = Git.open(gitUtils.getGitDirectory());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,7 +117,7 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 			// if minPathsize is defined, check the size and exit a loop if the changes are
 			// bigger than minPatchSize
 			// only consider min <= size <=max
-			if (numLinesChanges < Input.minSize || numLinesChanges > Input.maxSize) {
+			if (numLinesChanges < minSize || numLinesChanges > maxSize) {
 				continue;
 			}
 
