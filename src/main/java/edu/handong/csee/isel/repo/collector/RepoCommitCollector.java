@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -75,7 +77,11 @@ public class RepoCommitCollector implements RepoCollectable {
 		String today = sd.format(time);
 		String base_github = "https://github.com/";
 		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Input.outPath + File.separator + today + "__commit__list.csv"), true));
+		File resultFile = new File(Input.outPath);
+		resultFile.mkdirs();
+		String path = Input.outPath + File.separator + today + "_commit_list.csv";
+		
+		BufferedWriter bw = Files.newBufferedWriter(Paths.get(path));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "," + "COMMITS" + "\n");
 		pw.flush();

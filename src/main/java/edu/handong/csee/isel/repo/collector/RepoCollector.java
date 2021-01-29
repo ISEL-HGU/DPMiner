@@ -6,6 +6,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,7 +76,11 @@ public class RepoCollector implements RepoCollectable{
 		String today = sd.format(time);
 		String base_github = "https://github.com/";
 		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Input.outPath + File.separator + today + "__repository__list.csv"), true));
+		File resultFile = new File(Input.outPath);
+		resultFile.mkdirs();
+		String path = Input.outPath + File.separator + today + "_repository_list.csv";
+		
+		BufferedWriter bw = Files.newBufferedWriter(Paths.get(path));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "\n");
 		pw.flush();
