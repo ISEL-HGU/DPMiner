@@ -41,6 +41,9 @@ public class FindRepoCommand implements Runnable {
     
     @Option(names = "-auth", description = "--authentication token <token> \nSet authentication token") 
     private String authToken;
+    
+    @Option(names = "-o", required = true, description = "--result <directory> \nDirectory will have result file. \noption must be used in this program.") 
+    private String outputPath;
   
     @Spec CommandSpec spec;
 	
@@ -88,6 +91,8 @@ public class FindRepoCommand implements Runnable {
         if(authToken != null) {
         	Input.authToken = authToken;
         }
+        
+        Input.outPath = outputPath;
     
     }    
 

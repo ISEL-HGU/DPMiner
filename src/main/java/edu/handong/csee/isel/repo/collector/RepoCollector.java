@@ -69,9 +69,12 @@ public class RepoCollector implements RepoCollectable{
 			changeRepoUpdate(Input.findRepoOpt, lastDate); //
 			pages = 1;
 		}
+		SimpleDateFormat sd = new SimpleDateFormat( "MM-dd" );
+		Date time = new Date();
+		String today = sd.format(time);
 		String base_github = "https://github.com/";
 		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("test" + "_Repo_list.csv"), true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Input.outPath + File.separator + today + "__repository__list.csv"), true));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "\n");
 		pw.flush();

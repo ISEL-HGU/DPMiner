@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 
 import com.google.gson.Gson;
@@ -68,9 +70,12 @@ public class RepoCommitCollector implements RepoCollectable {
 				
 			}
 		}
+		SimpleDateFormat sd = new SimpleDateFormat( "MM-dd" );
+		Date time = new Date();
+		String today = sd.format(time);
 		String base_github = "https://github.com/";
 		
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File("commit" + "__list.csv"), true));
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Input.outPath + File.separator + today + "__commit__list.csv"), true));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "," + "COMMITS" + "\n");
 		pw.flush();
