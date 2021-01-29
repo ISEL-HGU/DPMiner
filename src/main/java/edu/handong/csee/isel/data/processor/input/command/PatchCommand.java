@@ -122,7 +122,7 @@
  
      }
  
-     private String getProjectName(String gitURI) {
+     public String getProjectName(String gitURI) {
          Pattern p = Pattern.compile(".*/(.+)\\.git");
          Matcher m = p.matcher(gitURI);
          m.find();
