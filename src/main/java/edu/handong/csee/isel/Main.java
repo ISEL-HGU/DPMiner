@@ -147,7 +147,7 @@ public class Main {
 		}
 	}
 	
-	private static List<RevCommit> getAllCommitList() throws InvalidRemoteException, TransportException, GitAPIException, IOException{
+	public static List<RevCommit> getAllCommitList() throws InvalidRemoteException, TransportException, GitAPIException, IOException{
 		File gitDirectory = null;
 		if (isCloned() && isValidRepository()) {
 			gitDirectory = getGitDirectory();
@@ -217,7 +217,7 @@ public class Main {
 
 	
 
-	private static boolean isValidRepository() {
+	public static boolean isValidRepository() {
 		File directory = getGitDirectory();
 		try {
 			Git git = Git.open(directory);  //여기가 쓰이는데 왜안쓰인다고 뜨는지 모르겠다.
@@ -246,7 +246,7 @@ public class Main {
 		return clonedDirectory;
 	}
 
-	private static File GitClone() throws InvalidRemoteException, TransportException, GitAPIException {
+	public static File GitClone() throws InvalidRemoteException, TransportException, GitAPIException {
 		String remoteURI = Input.gitRemoteURI;
 		String projectName = Input.projectName;
 		File clonedDirectory = getGitDirectory();
@@ -258,7 +258,7 @@ public class Main {
 		return git.getRepository().getDirectory();
 	}
 
-	private static boolean isCloned() {
+	public static boolean isCloned() {
 		File clonedDirectory = getGitDirectory();
 		return clonedDirectory.exists();
 	}
