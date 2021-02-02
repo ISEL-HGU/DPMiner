@@ -108,9 +108,14 @@ If you have trouble to build using gradlew, enter
 |   `-f`   |      fork Num     |
 |   `-l`   |   language Type   |
 | `-auth*` |     auth Token    |
+| `-o*`    |     output path    |
 * \* : `-auth` is required.
 
-<pre><code> findrepo -l java -auth "Auth Token" </code></pre>
+<pre><code> ./DPMiner findrepo -o /Users/Desktop/repository -l java -auth "Auth Token" 
+./DPMiner findrepo -o /Users/Desktop/repository -c 2019-01-01..2020-01-15 -f 10..200 -auth "Auth Token"
+./DPMiner findrepo -o /Users/Desktop/repository -d 2019-01-01..2020-06-30 -cb over500 -auth "Auth Token"
+</code></pre>
+
 ### 2. Patch
 
 *Command* : `patch`
@@ -149,14 +154,23 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 - `-z` option is not required.
 
 ###### Jira example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"</code></pre>
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z "SZZ Mode"
+./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI</code></pre>
+</code></pre>
 ###### Github example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+./DPMiner bic -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect</code></pre>
 ###### Commit message example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
+<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+./DPMiner bic -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik </code></pre>
 ###### AG-SZZ and B-SZZ example (Jira)
 <pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ</code></pre>
+./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI
+./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z BSZZ
+//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ
+./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ
+ </code></pre>
+
  
 
 ### 4. Metric
