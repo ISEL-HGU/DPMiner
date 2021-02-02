@@ -133,12 +133,12 @@ findrepo -o /Users/Desktop/repository -d 2019-01-01..2020-06-30 -cb over500 -aut
 <pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
 patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI </code></pre>
 ###### Github example (-l option)
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
 patch -i https://github.com/apache/camel-quarkus -o /Users/Desktop/camel-quarkus/patch -ig 
 patch -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect
 </code></pre>
 ###### Commit message example (-k option)
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik -k help </code></pre>
 
@@ -167,9 +167,9 @@ bic -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/
 <pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
 bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI
 bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z BSZZ
+
 //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ
-bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ
- </code></pre>
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ</code></pre>
 
  
 
