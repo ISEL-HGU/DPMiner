@@ -98,7 +98,7 @@ If you have trouble to build using gradlew, enter
 
 ### 1. Repository list
 
-*Commend* : `findrepo`
+*Command* : `findrepo`
 
 | Option |    Description    |
 |:------:|:-----------------:|
@@ -113,7 +113,7 @@ If you have trouble to build using gradlew, enter
 <pre><code> findrepo -l java -auth "Auth Token" </code></pre>
 ### 2. Patch
 
-*Commend* : `patch`
+*Command* : `patch`
 
 
 | Option |               | Option |                                 |
@@ -139,7 +139,7 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 
 ### 3. BIC
 
-*Commend* : `bic`
+*Command* : `bic`
 (Same with patch option table)
 
 |  SZZ Option  |    Description   |
@@ -161,7 +161,7 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 
 ### 4. Metric
 
-*Commend* : `metric`
+*Command* : `metric`
 
 |  Option  |    Description   |
 |:--------:|:----------------:|
