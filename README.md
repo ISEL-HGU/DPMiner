@@ -109,11 +109,11 @@ If you have trouble to build using gradlew, enter
 |   `-l`   |   language Type   |
 | `-auth*` |     auth Token    |
 | `-o*`    |     output path    |
-* \* : `-auth` is required.
+* \* : `-auth` and `-o*` are required.
 
-<pre><code> ./DPMiner findrepo -o /Users/Desktop/repository -l java -auth "Auth Token" 
-./DPMiner findrepo -o /Users/Desktop/repository -c 2019-01-01..2020-01-15 -f 10..200 -auth "Auth Token"
-./DPMiner findrepo -o /Users/Desktop/repository -d 2019-01-01..2020-06-30 -cb over500 -auth "Auth Token"
+<pre><code>findrepo -o /Users/Desktop/repository -l java -auth "Auth Token" 
+findrepo -o /Users/Desktop/repository -c 2019-01-01..2020-01-15 -f 10..200 -auth "Auth Token"
+findrepo -o /Users/Desktop/repository -d 2019-01-01..2020-06-30 -cb over500 -auth "Auth Token"
 </code></pre>
 
 ### 2. Patch
@@ -130,7 +130,7 @@ If you have trouble to build using gradlew, enter
 * \* : `-jk` is required when using option `-ij`.
 
 ###### Jira example
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
 patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI </code></pre>
 ###### Github example (-l option)
 <pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
@@ -154,21 +154,21 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 - `-z` option is not required.
 
 ###### Jira example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z "SZZ Mode"
-./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z "SZZ Mode"
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI</code></pre>
 </code></pre>
 ###### Github example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
-./DPMiner bic -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+bic -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect</code></pre>
 ###### Commit message example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
-./DPMiner bic -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik </code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+bic -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik </code></pre>
 ###### AG-SZZ and B-SZZ example (Jira)
-<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
-./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI
-./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z BSZZ
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z BSZZ
 //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ
-./DPMiner bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ
  </code></pre>
 
  
