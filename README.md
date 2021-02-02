@@ -120,7 +120,7 @@ If you have trouble to build using gradlew, enter
 |:------:|:-------------:|:------:|:-------------------------------:|
 |  `-ij`  |    jira url   |  `-jk*`  |           jira keyword          |
 |  `-ik`  |     commit message   |   `-k`   | bug keyword (default : bug,fix) |
-|  `-ig`  | github issue |   `-l`   | issue bug label (default : big) |
+|  `-ig`  | github issue |   `-l`   | issue bug label (default : bug) |
 * One of `-ij`, `-ik` and `-ig` is mandatory
 * \* : `-jk` is required when using option `-ij`.
 
