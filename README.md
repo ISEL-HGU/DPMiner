@@ -98,48 +98,53 @@ If you have trouble to build using gradlew, enter
 
 ### 1. Repository list
 
-*Commend* : `findrepo`
+*Command* : `findrepo`
 
-| Option |    Description    |
-|:------:|:-----------------:|
-|   `-c`   |    create Date    |
-|   `-cb`  | commit Count Base |
-|   `-d`   |    recent Date    |
-|   `-f`   |      fork Num     |
-|   `-l`   |   language Type   |
-| `-auth*` |     auth Token    |
-* \* : `-auth` is required.
+| Option |    Description    |   usage  | 
+|:------:|:-----------------:|:--------:|
+|   `-c`   |    create Date    |-c 2019-01-01..2020-01-15| 
+|   `-cb`  | commit Count Base |-cb less500 -cb over500|
+|   `-d`   |    recent Date    |-d 2019-01-01..2020-06-30|
+|   `-f`   |      fork Num     |-f 10..200|
+|   `-l`   |   language Type   |-l java|
+| `-auth*` |     auth Token    |-auth "Auth Token"|
+| `-o*`    |     output path   |-o /Users/Desktop/repository|
+* \* : `-auth` and `-o*` are required.
 
-<pre><code> findrepo -l java -auth "Auth Token" </code></pre>
+<pre><code>findrepo -o /Users/Desktop/repository -l java -auth "Auth Token" 
+findrepo -o /Users/Desktop/repository -c 2019-01-01..2020-01-15 -f 10..200 -auth "Auth Token"
+findrepo -o /Users/Desktop/repository -d 2019-01-01..2020-06-30 -cb over500 -auth "Auth Token"
+</code></pre>
+
 ### 2. Patch
 
-*Commend* : `patch`
+*Command* : `patch`
 
 
 | Option |               | Option |                                 |
 |:------:|:-------------:|:------:|:-------------------------------:|
 |  `-ij`  |    jira url   |  `-jk*`  |           jira keyword          |
 |  `-ik`  |     commit message   |   `-k`   | bug keyword (default : bug,fix) |
-|  `-ig`  | github issue |   `-l`   | issue bug label (default : big) |
+|  `-ig`  | github issue |   `-l`   | issue bug label (default : bug) |
 * One of `-ij`, `-ik` and `-ig` is mandatory
 * \* : `-jk` is required when using option `-ij`.
 
 ###### Jira example
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"
 patch -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI </code></pre>
 ###### Github example (-l option)
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
 patch -i https://github.com/apache/camel-quarkus -o /Users/Desktop/camel-quarkus/patch -ig 
 patch -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect
 </code></pre>
 ###### Commit message example (-k option)
-<pre><code> //patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+<pre><code>//patch -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik
 patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik -k help </code></pre>
 
 ### 3. BIC
 
-*Commend* : `bic`
+*Command* : `bic`
 (Same with patch option table)
 
 |  SZZ Option  |    Description   |
@@ -149,19 +154,28 @@ patch -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/judd
 - `-z` option is not required.
 
 ###### Jira example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key"</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z "SZZ Mode"
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI</code></pre>
+</code></pre>
 ###### Github example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ig -l "issue keyword"
+bic -i https://github.com/google/guava -o /Users/Desktop/camel-quarkus/patch -ig -l type=defect</code></pre>
 ###### Commit message example (BSZZ)
-<pre><code>  //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ik -k "bug keyword"
+bic -i https://github.com/facebook/facebook-android-sdk -o /Users/Desktop/juddi/patch -ik </code></pre>
 ###### AG-SZZ and B-SZZ example (Jira)
-<pre><code> //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
- //bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ</code></pre>
+<pre><code>//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z BSZZ
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z BSZZ
+
+//bic -i "Github URL" -o "local directory path"/"ProjectName"/patch -ij -jk "Jira Key" -z AGSZZ
+bic -i https://github.com/apache/juddi -o /Users/Desktop/juddi/patch -ij -jk JUDDI -z AGSZZ</code></pre>
+
  
 
 ### 4. Metric
 
-*Commend* : `metric`
+*Command* : `metric`
 
 |  Option  |    Description   |
 |:--------:|:----------------:|
