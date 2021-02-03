@@ -229,7 +229,7 @@ public class Main {
 
 	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().all().call();
+		Iterable<RevCommit> walk = git.log().call();
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;
