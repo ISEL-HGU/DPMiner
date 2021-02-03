@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import edu.handong.csee.isel.Main;
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.bic.szz.data.BICInfo;
@@ -61,7 +62,7 @@ public class AGSZZBICCollector implements BICCollector{
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) throws IOException {
 		try {
-			git = Git.open(edu.handong.csee.isel.Main.getGitDirectory());
+			git = Git.open(Main.getGitDirectory());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -229,7 +229,12 @@ public class Main {
 
 	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().call();
+		Iterable<RevCommit> walk;
+		if(Input.taskType == Input.TaskType.BIC && Input.szzMode == Input.SZZMode.AGSZZ) {
+			walk = git.log().call();
+		} else {
+			walk = git.log().all().call();
+		}
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;
