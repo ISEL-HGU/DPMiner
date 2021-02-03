@@ -100,15 +100,15 @@ If you have trouble to build using gradlew, enter
 
 *Command* : `findrepo`
 
-| Option |    Description    |
-|:------:|:-----------------:|
-|   `-c`   |    create Date    |
-|   `-cb`  | commit Count Base |
-|   `-d`   |    recent Date    |
-|   `-f`   |      fork Num     |
-|   `-l`   |   language Type   |
-| `-auth*` |     auth Token    |
-| `-o*`    |     output path    |
+| Option |    Description    |   usage  | 
+|:------:|:-----------------:|:--------:|
+|   `-c`   |    create Date    |-c 2019-01-01..2020-01-15| 
+|   `-cb`  | commit Count Base |-cb less500 -cb over500|
+|   `-d`   |    recent Date    |-d 2019-01-01..2020-06-30|
+|   `-f`   |      fork Num     |-f 10..200|
+|   `-l`   |   language Type   |-l java|
+| `-auth*` |     auth Token    |-auth "Auth Token"|
+| `-o*`    |     output path   |-o /Users/Desktop/repository|
 * \* : `-auth` and `-o*` are required.
 
 <pre><code>findrepo -o /Users/Desktop/repository -l java -auth "Auth Token" 
