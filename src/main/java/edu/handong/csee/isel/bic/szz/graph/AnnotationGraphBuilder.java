@@ -1,7 +1,6 @@
 package edu.handong.csee.isel.bic.szz.graph;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -12,25 +11,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 
-/**
- * The {@code AnnotationGraphBuilder} class is for making Annotation Graph<br>
- * 
- * 
- * @author SJ
- * @author JY
- * @version 1.0
- */
-
 public class AnnotationGraphBuilder {
-	/**
-     * spiting Map RevsWithPath<br>
-     * executing AnnotationGraphBuilderThread<br>
-     *
-     * @param repo Github repository
-     * @param revsWithPath revs With Path
-     * @return annotationGraph annotation Graph
-     */
-	// 1. call function in collectFrom method of AGSZZBICCollector class 
+
 	public AnnotationGraphModel buildAnnotationGraph(Repository repo, RevsWithPath revsWithPath) {
 		// Phase 1 : split Map (i.e. RevsWithPath)
 		int mapSize = revsWithPath.size();  // ?? 
@@ -40,7 +22,7 @@ public class AnnotationGraphBuilder {
 		if (mapSize < arrSize)
 			arrSize = mapSize;
 		
-		// 아마도 그룹을 총 10개로 나누려고 하려고 한거임. 
+		// 아마도 그룹을 총 10개로 하려고 한거임. 
 		RevsWithPath[] revsWithPathArr = new RevsWithPath[arrSize];
 		for (int i = 0; i < arrSize; i++) {
 			revsWithPathArr[i] = new RevsWithPath();
@@ -70,7 +52,7 @@ public class AnnotationGraphBuilder {
 		
 		executor.shutdown(); // no new tasks will be accepted.
 		
-		// thread들이 모두 마칠때까지 기다려주는 역할이다. (마치 wait() 처럼... )
+		// thread들이 모두 마칠때까지 기다려주는 역할이다. (마치 wait() 처럼… )
 		while (!executor.isTerminated()) {
 			
 		}

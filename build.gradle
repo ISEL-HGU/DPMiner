@@ -21,6 +21,9 @@ repositories {
 apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.Main"
 
+sourceCompatibility = 11 
+targetCompatibility = 11
+
 dependencies {
 
 	// https://mvnrepository.com/artifact/com.github.gumtreediff/core

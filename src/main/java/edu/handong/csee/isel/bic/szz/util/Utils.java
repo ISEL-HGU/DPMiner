@@ -21,7 +21,7 @@ public class Utils {
 	public static boolean isWhitespace(String str) {
 		return str.replaceAll("\\s", "").equals("");
 	}
-	// 1. call function in AnnotationGraphBuilderThread
+
 	public static String mergeLineList(List<Line> list) {
 		String mergedContent = "";
 
@@ -31,7 +31,7 @@ public class Utils {
 
 		return mergedContent.replaceAll("\\s", "");
 	}
-	// 1. call function in An notationGraphBuilderThread
+
 	public static String removeComments(String code) {
 
 		JavaASTParser codeAST = new JavaASTParser(code);
