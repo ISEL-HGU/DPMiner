@@ -39,7 +39,7 @@ public class CMetricCollector implements MetricCollector {
 		this.projectName = projectName;
 		this.outPath = outPath;
 		this.gitURL = gitURL;
-		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, false);
 		
 		git = Git.open(gitUtils.getGitDirectory());
 		repo = git.getRepository();

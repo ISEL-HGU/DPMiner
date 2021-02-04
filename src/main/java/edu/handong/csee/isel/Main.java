@@ -72,7 +72,7 @@ public class Main {
 			
 			break;
 		case PATCH:
-			GitFunctions test = new GitFunctions(Input.projectName, Input.outPath, Input.gitURL);
+			GitFunctions test = new GitFunctions(Input.projectName, Input.outPath, Input.gitURL, false);
 			commitList = test.getAllCommitList();
 			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector, Input.mode);	
 			
@@ -202,7 +202,12 @@ public class Main {
 
 	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().all().call();
+		Iterable<RevCommit> walk;
+		if(Input.taskType == Input.TaskType.BIC && Input.szzMode == Input.SZZMode.AGSZZ) {
+			walk = git.log().call();
+		} else {
+			walk = git.log().all().call();
+		}
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;

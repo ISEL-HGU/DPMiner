@@ -43,7 +43,7 @@ public class CBICCollector implements BICCollector {  //도대체 왜 여기서 
 		this.outPath = outPath;
 		this.gitURL = gitURL;
 		this.projectName = projectName;
-		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, false);
 	}
 	@Override
 	public void setBFC(List<String> bfcList) {

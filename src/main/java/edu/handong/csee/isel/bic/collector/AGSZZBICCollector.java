@@ -43,7 +43,7 @@ public class AGSZZBICCollector implements BICCollector{
 		this.outPath = outPath;
 		this.gitURL = gitURL;
 		this.projectName = projectName;
-		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, true);
 	}
 	
 	/**

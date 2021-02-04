@@ -29,7 +29,7 @@ public class CPatchCollector implements PatchCollector {
 	public GitFunctions gitUtils;
 
 	public CPatchCollector(String projectName, String outPath, String gitURL) {
-		gitUtils = new GitFunctions(projectName, outPath, gitURL);
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, false);
 		this.projectName = projectName;
 	}
 

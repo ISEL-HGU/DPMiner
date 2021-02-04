@@ -144,7 +144,11 @@ public class Tracer {
 					// Phase 2 : trace
 					if (0 <= begin && 0 <= end) {
 						for (int i = begin; i < end; i++) {
+							if(linesToTrace.get(i) == null) {
+								continue;
+							}
 							Line line = linesToTrace.get(i);
+							
 							// analysiz는 cli 모드이다. 
 							trace(line);			
 						}

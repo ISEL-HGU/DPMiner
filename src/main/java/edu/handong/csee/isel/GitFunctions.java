@@ -18,11 +18,13 @@ public class GitFunctions {
 	private String projectName;
 	private String outPath;
 	private String gitRemoteURI;
+	private static boolean isAGSZZ = false;
 	
-	public GitFunctions(String projectName, String outPath, String gitURL) {
+	public GitFunctions(String projectName, String outPath, String gitURL, boolean isAGSZZ) {
 		this.projectName = projectName;
 		this.outPath = outPath;
 		this.gitRemoteURI = gitURL + ".git";
+		this.isAGSZZ = isAGSZZ;
 	}
 	
 	public List<RevCommit> getAllCommitList() throws InvalidRemoteException, TransportException, GitAPIException, IOException{
@@ -53,7 +55,12 @@ public class GitFunctions {
 
 	private static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
-		Iterable<RevCommit> walk = git.log().all().call();
+		Iterable<RevCommit> walk;
+		if(isAGSZZ) {
+			walk = git.log().call();
+		} else {
+			walk = git.log().all().call();
+		}
 		List<RevCommit> commitList = IterableUtils.toList(walk);
 
 		return commitList;
