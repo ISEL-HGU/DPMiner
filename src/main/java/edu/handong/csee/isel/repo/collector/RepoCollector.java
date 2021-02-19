@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.repo.RepoCollectable;
 import edu.handong.csee.isel.repo.control.GithubService;
 import edu.handong.csee.isel.repo.control.RetroBasic;
@@ -78,13 +79,17 @@ public class RepoCollector implements RepoCollectable {
 			changeRepoUpdate(findRepoOpt, lastDate); 
 			pages = 1;
 		}
-
-		SimpleDateFormat sd = new SimpleDateFormat("MM-dd");
+		SimpleDateFormat sd = new SimpleDateFormat( "MM-dd" );
 		Date time = new Date();
 		String today = sd.format(time);
 		String base_github = "https://github.com/";
+		
+		File resultFile = new File(Input.outPath);
+		resultFile.mkdirs();
+		String path = Input.outPath + File.separator + today + "_repository_list.csv";
+		
+		BufferedWriter bw = Files.newBufferedWriter(Paths.get(path));
 
-		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath + File.separator + today + "_Repo_list.csv"), true));
 		PrintWriter pw = new PrintWriter(bw, true);
 		pw.write("REPO" + "\n");
 		pw.flush();
