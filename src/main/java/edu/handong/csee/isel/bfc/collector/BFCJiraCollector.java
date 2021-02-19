@@ -48,7 +48,6 @@ public class BFCJiraCollector implements BFCCollectable {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
 		}
 
 		for (RevCommit commit : commitList) {
