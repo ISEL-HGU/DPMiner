@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -15,25 +14,23 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.Main;
+import edu.handong.csee.isel.GitFunctions;
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.data.Input;
 import edu.handong.csee.isel.data.csv.PatchInfo;
-import edu.handong.csee.isel.data.processor.input.converter.CLIConverter;
 import edu.handong.csee.isel.patch.PatchCollector;
 
 public class CPatchCollector implements PatchCollector {
 
 	List<String> bfcList = null;
-//	private Input input;
-//
-//	public CPatchCollector(Input input) {
-//		this.input = input;
-//	}
+	String projectName;
+	public int maxSize = 500;
+	public int minSize = 0;
+	public GitFunctions gitUtils;
 
-	public CPatchCollector() {
-		// TODO Auto-generated constructor stub
+	public CPatchCollector(String projectName, String outPath, String gitURL) {
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, false);
+		this.projectName = projectName;
 	}
 
 	@Override
@@ -41,6 +38,17 @@ public class CPatchCollector implements PatchCollector {
 		this.bfcList = bfcList;
 
 	}
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+	public void setMinSize(int minSize) {
+		this.minSize = minSize;
+	}
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+	
+	
 
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) {
@@ -60,7 +68,7 @@ public class CPatchCollector implements PatchCollector {
 				List<CSVInfo> patch = getPatchBetween(parent, commit);
 				int patchSize = getPatchSize(patch);
 
-				if (patchSize < Input.minSize || patchSize > Input.maxSize) {
+				if (patchSize < minSize || patchSize > maxSize) {
 					continue;
 				}
 //				System.out.println("CPatchCollector collectFrom if Working");
@@ -103,7 +111,7 @@ public class CPatchCollector implements PatchCollector {
 					continue;
 
 				PatchInfo patch = new PatchInfo();
-				patch.project = Input.projectName;
+				patch.project = projectName;
 				patch.commitName = commit.getName();
 				patch.commitMessage = commit.getFullMessage();
 				patch.date = Utils.getStringDateTimeFromCommit(commit);
@@ -126,7 +134,7 @@ public class CPatchCollector implements PatchCollector {
 		return csvInfoList;
 	}
 
-	private int getChangedLine(String content) {
+	public int getChangedLine(String content) {
 		if (content == null) {
 			return 0;
 		}
@@ -193,8 +201,8 @@ public class CPatchCollector implements PatchCollector {
 	}
 
 	
-	private Git openGitRepository() {
-		File clonedDirectory = Main.getGitDirectory();
+	public Git openGitRepository() {
+		File clonedDirectory = gitUtils.getGitDirectory();
 		Git git = null;
 		try {
 			git = Git.open(clonedDirectory);

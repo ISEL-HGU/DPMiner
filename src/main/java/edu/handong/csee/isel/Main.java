@@ -25,11 +25,11 @@ import edu.handong.csee.isel.bic.collector.AGSZZBICCollector;
 import edu.handong.csee.isel.bic.collector.CBICCollector;
 import edu.handong.csee.isel.data.CSVInfo;
 import edu.handong.csee.isel.data.Input;
+import edu.handong.csee.isel.data.Input.Mode;
 import edu.handong.csee.isel.data.csv.CSVMaker;
 import edu.handong.csee.isel.data.processor.input.command.Task;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.collector.CMetricCollector;
-import edu.handong.csee.isel.metric.collector.DeveloperHistory;
 import edu.handong.csee.isel.metric.metadata.Utils;
 import edu.handong.csee.isel.patch.PatchCollector;
 import edu.handong.csee.isel.patch.collector.CPatchCollector;
@@ -48,20 +48,6 @@ public class Main {
 		int exitCode = cmd.execute(args);
 		if(exitCode != 0)
 			System.exit(exitCode);	
-	
-		// 2. get all commits from GIT directory
-//		List<RevCommit> commitList;
-//		File gitDirectory = null;
-//		if (isCloned() && isValidRepository()) {
-//			gitDirectory = getGitDirectory();
-//		} else if (isCloned() && (!isValidRepository())) {
-//			File directory = getGitDirectory();
-//			directory.delete();
-//			gitDirectory = GitClone();
-//		} else {
-//			gitDirectory = GitClone();
-//		}
-//		commitList = getCommitListFrom(gitDirectory);
 
 		// 3. collect Bug-Fix-Commit
 		List<RevCommit> commitList = null;
@@ -75,20 +61,22 @@ public class Main {
 
 		switch (Input.taskType) {
 		case FINDREPO:
-			RepoCollector searchRepo = new RepoCollector(); //git token 받아오기 아아 얘가 리파지토리 찾아오는 
+			RepoCollector searchRepo = new RepoCollector(Input.authToken, Input.findRepoOpt, Input.outPath); //git token 받아오기 아아 얘가 리파지토리 찾아오는 
+//			searchRepo.setOption(Input.languageType, Input.forkNum, Input.createDate, Input.recentDate);
 			repoResult = searchRepo.collectFrom();
 			
 			if(Input.commitCountBase != null) {
-				RepoCommitCollector searchCommit = new RepoCommitCollector(repoResult);
+				RepoCommitCollector searchCommit = new RepoCommitCollector(repoResult, Input.authToken ,Input.commitCountBase, Input.outPath);
 				repoCommitResult = searchCommit.collectFrom();
 			}
 			
 			break;
 		case PATCH:
-			commitList = getAllCommitList();
-			bfcList=makeBFCCollector(bfcList,commitList,bfcCollector);	
+			GitFunctions test = new GitFunctions(Input.projectName, Input.outPath, Input.gitURL, false);
+			commitList = test.getAllCommitList();
+			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector, Input.mode);	
 			
-			PatchCollector patchCollector = new CPatchCollector();
+			PatchCollector patchCollector = new CPatchCollector(Input.projectName, Input.outPath, Input.gitURL);
 			patchCollector.setBFC(bfcList);
 			csvInfoLst = patchCollector.collectFrom(commitList);
 			
@@ -98,19 +86,19 @@ public class Main {
 
 		case BIC:
 			commitList = getAllCommitList();
-			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector);
+			bfcList = makeBFCCollector(bfcList,commitList,bfcCollector, Input.mode);
 			BICCollector bicCollector;
 			
 			switch (Input.szzMode) {
 			case BSZZ:
-				bicCollector = new CBICCollector();
+				bicCollector = new CBICCollector(Input.outPath, Input.projectName, Input.gitURL);
 				bicCollector.setBFC(bfcList);
 				csvInfoLst = bicCollector.collectFrom(commitList);
 				printCSV(csvInfoLst);
 				break;
 				
 			case AGSZZ:
-				bicCollector = new AGSZZBICCollector();
+				bicCollector = new AGSZZBICCollector(Input.outPath, Input.projectName, Input.gitURL);
 				bicCollector.setBFC(bfcList);
 				bicCollector.collectFrom(commitList);
 				break;
@@ -121,29 +109,14 @@ public class Main {
 		case METRIC:
 			//BIC 파일 읽기
 			commitList = getAllCommitList();
-			bicList= readBICcsv();			
-			metricCollector = new CMetricCollector(false);
+			bicList= readBICcsv(Input.BICpath);			
+			metricCollector = new CMetricCollector(false, Input.outPath, Input.projectName, Input.gitURL, Input.startDate, Input.endDate);
 			metricCollector.setBIC(bicList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
 			break;
 			
-		case DEVELOPERMETRIC:
-			//BIC 파일 읽기
-			commitList = getAllCommitList();
-			bicList=readBICcsv();
-			
-			DeveloperHistory developerHistory = new DeveloperHistory();
-			String midDate = developerHistory.findDeveloperDate();
-			System.out.println("MidDate : "+midDate);
-			
-			metricCollector = new CMetricCollector(true);
-			metricCollector.setMidDate(midDate);
-			metricCollector.setBIC(bicList);
-			metricCollector.collectFrom(commitList);
-			
-			break;
 		}
 	}
 	
@@ -163,13 +136,12 @@ public class Main {
 	}
 
 	
-	public static List<String> readBICcsv(){
-		File BIC = new File(Input.BICpath);
+	public static List<String> readBICcsv(String BICpath){
+		File BIC = new File(BICpath);
 		if (!BIC.isFile()) {
 			System.out.println("There is no BIC file");
-			System.exit(1);
 		}
-		 List<String> bicList = Utils.readBICCsvFile(Input.BICpath);
+		 List<String> bicList = Utils.readBICCsvFile(BICpath);
 		
 		return bicList;
 		
@@ -183,30 +155,30 @@ public class Main {
 		}
 		CSVMaker printer = new CSVMaker();
 		printer.setDataType(csvInfoLst);
-		printer.setPath();
+		printer.setPath(Input.outPath, Input.projectName);
 		printer.print(csvInfoLst);
 		
 	}
 	
-	public static List<String> makeBFCCollector (List<String> bfcList, List<RevCommit> commitList, BFCCollectable bfcCollector)
+	public static List<String> makeBFCCollector (List<String> bfcList, List<RevCommit> commitList, BFCCollectable bfcCollector, Mode InputMode)
 			throws IOException,InvalidProjectKeyException, InvalidDomainException{
 		
-		switch (Input.mode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
+		switch (InputMode) {  //CLIConverter에서 각각 옵션 모드를 설정해 주었다. 
 		case JIRA:
 //			System.out.println("Main Jira part!");
-			bfcCollector = new BFCJiraCollector();
+			bfcCollector = new BFCJiraCollector(Input.jiraURL, Input.jiraProjectKey, Input.outPath);
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 			
 		case KEYWORD:
 //			System.out.println("Main KeyWord part!");
-			bfcCollector = new BFCKeywordCollector();
+			bfcCollector = new BFCKeywordCollector(Input.issueKeyWord);
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 			
 		case GITHUB:
 //			System.out.println("Main GitHub part!");
-			bfcCollector = new BFCGitHubCollector();
+			bfcCollector = new BFCGitHubCollector(Input.gitURL, Input.label);
 			bfcList = bfcCollector.collectFrom(commitList);
 			break;
 		

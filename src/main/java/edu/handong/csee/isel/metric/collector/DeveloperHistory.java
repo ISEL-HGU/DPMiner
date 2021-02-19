@@ -18,7 +18,7 @@ import edu.handong.csee.isel.Utils;
  * @author 
  *
  */
-public class DeveloperHistory {
+class DeveloperHistory {
 	private Git git;
 	private Repository repo;
 	private String startDate;
@@ -26,7 +26,7 @@ public class DeveloperHistory {
 	private String midDate;
 	private double percent;
 	
-	public DeveloperHistory(){
+	private DeveloperHistory(){
 		try {
 			this.git = Git.open(Main.getGitDirectory());
 			this.repo = git.getRepository();
@@ -47,7 +47,7 @@ public class DeveloperHistory {
 	 * 
 	 * @return
 	 */
-	public String findDeveloperDate() {
+	private String findDeveloperDate() {
 		midDate = null;
 		ArrayList<String> newDeveloper = new ArrayList<String>();
 		ArrayList<String> dateOfCameIn = new ArrayList<String>();
@@ -111,7 +111,7 @@ public class DeveloperHistory {
 	 * 
 	 * @return
 	 */
-	public String getMidDate() {
+	private String getMidDate() {
 		return midDate;
 	}
 
@@ -119,7 +119,7 @@ public class DeveloperHistory {
 	 * 
 	 * @param git
 	 */
-	public void setGit(Git git) {
+	private void setGit(Git git) {
 		this.git = git;
 	}
 
@@ -127,7 +127,7 @@ public class DeveloperHistory {
 	 * 
 	 * @param repo
 	 */
-	public void setRepo(Repository repo) {
+	private void setRepo(Repository repo) {
 		this.repo = repo;
 	}
 	

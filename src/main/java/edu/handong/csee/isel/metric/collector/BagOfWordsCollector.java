@@ -27,6 +27,8 @@ public class BagOfWordsCollector {
 	private String projectName;
 	private String startDate;
 	private String endDate;
+	private String outPath;
+	private String gitURL;
 	
 
 	private File arff = null;
@@ -85,7 +87,7 @@ public class BagOfWordsCollector {
 //					CMetricCollector.tooLongNameIndex++;
 //				}
 			
-				CPatchCollector helper = new CPatchCollector();
+				CPatchCollector helper = new CPatchCollector(projectName, outPath, gitURL);
 				String patch = helper.getPatch(diff, repo);
 
 				for (String line : patch.split("\n")) {
@@ -256,6 +258,17 @@ public class BagOfWordsCollector {
 	 */
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	public void setOutPath(String outPath) {
+		// TODO Auto-generated method stub
+		this.outPath = outPath;
+	}
+
+	public void setGitURL(String gitURL) {
+		// TODO Auto-generated method stub
+		this.gitURL = gitURL;
+		
 	}
 	
 	

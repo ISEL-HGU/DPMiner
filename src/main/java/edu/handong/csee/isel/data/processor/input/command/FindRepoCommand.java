@@ -42,8 +42,10 @@ public class FindRepoCommand implements Runnable {
     @Option(names = "-auth", description = "--authentication token <token> \nSet authentication token") 
     private String authToken;
     
+
     @Option(names = "-o", required = true, description = "--result <directory> \nDirectory will have result file. \noption must be used in this program.") 
     private String outputPath;
+
   
     @Spec CommandSpec spec;
 	
@@ -55,18 +57,22 @@ public class FindRepoCommand implements Runnable {
         
         if(languageType != null) {
         	repo_opt += "language:" + languageType;
+        	Input.languageType = languageType;
         }
         
         if(forkNum != null) {
         	repo_opt += " forks:" + forkNum;
+        	Input.forkNum = forkNum;
         }
         
         if(createDate != null) {
         	repo_opt += " created:" + createDate;
+        	Input.createDate = createDate;
         }
         
         if(recentDate != null) {
         	repo_opt += " pushed:" + recentDate;
+        	Input.recentDate = recentDate;
         }
        
         
@@ -92,7 +98,9 @@ public class FindRepoCommand implements Runnable {
         	Input.authToken = authToken;
         }
         
+
         Input.outPath = outputPath;
+
     
     }    
 

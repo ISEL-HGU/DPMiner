@@ -21,6 +21,7 @@ repositories {
 apply plugin: 'application'
 mainClassName = "edu.handong.csee.isel.Main"
 
+
 sourceCompatibility = 11
 targetCompatibility = 11
 

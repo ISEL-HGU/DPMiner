@@ -45,7 +45,7 @@ public class CommitParser {
 
 		for (int i = 0; i < size; i++) {
 			String issAddress = IssueLinkParser.getIssueAddress().get(i);
-			System.out.println(issAddress);
+//			System.out.println(issAddress);
 			Document doc = Jsoup.connect(issAddress).header("User-Agent",
 					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36")
 					.get();
@@ -102,7 +102,7 @@ public class CommitParser {
 		
 		int i = 0;
 		for(String ele : commitAddress) {
-			System.out.println((i + 1) +" : "+ ele);
+//			System.out.println((i + 1) +" : "+ ele);
 			i++;
 		}
 //		System.exit(0);

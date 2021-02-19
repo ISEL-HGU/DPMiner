@@ -8,16 +8,16 @@ import java.util.regex.Pattern;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import edu.handong.csee.isel.bfc.BFCCollectable;
-import edu.handong.csee.isel.data.Input;
 
 public class BFCKeywordCollector implements BFCCollectable {
-	public String[] bugKeywords;
+	private String[] bugKeywords;
 
-	public BFCKeywordCollector() {
+	public BFCKeywordCollector(String issueKeyWord) {
 		super();
-		if(Input.issueKeyWord != null) {
+		if(issueKeyWord != null) {
+//			System.out.println(issueKeyWord);
 			this.bugKeywords = new String[1];
-			this.bugKeywords[0]="("+Input.issueKeyWord+")";
+			this.bugKeywords[0]="("+issueKeyWord+")";
 		}
 		else {
 			this.bugKeywords = new String[2];
@@ -36,7 +36,7 @@ public class BFCKeywordCollector implements BFCCollectable {
 
 		for (RevCommit commit : commitList) {
 			Matcher bugKeyMatcher = bugMessagePattern.matcher(commit.getShortMessage());
-
+//			System.out.println("bug Isskey in BFCKEYWORDS: "+ bugMessagePattern);
 			if (bugKeyMatcher.find()) {
 				bfcList.add(commit.getName());
 			}

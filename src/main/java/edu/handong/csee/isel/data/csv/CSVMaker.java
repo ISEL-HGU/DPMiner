@@ -11,7 +11,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.data.Input;
 
 public class CSVMaker {
 	public CSVPrinter printer = null;
@@ -22,9 +21,7 @@ public class CSVMaker {
 		PATCH, BIC, METRIC 
 	}
 
-	public void setPath() {
-
-		String outPath = Input.outPath;
+	public void setPath(String outPath, String projectName) {
 
 		if (this.type != null) {
 			switch (type) {
@@ -42,7 +39,7 @@ public class CSVMaker {
 				break;
 			}
 		}
-		outPath += Input.projectName + ".csv";
+		outPath += projectName + ".csv";
 
 		this.path = outPath;
 
@@ -57,7 +54,6 @@ public class CSVMaker {
 
 		if (csvInfo.size() < 1) {
 			System.err.println("WARNNING: There is no BFC");
-			System.exit(1);
 		}
 
 		String[] headers = csvInfo.get(0).getHeaders();

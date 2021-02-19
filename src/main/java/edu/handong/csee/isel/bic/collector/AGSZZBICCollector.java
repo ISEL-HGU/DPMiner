@@ -9,7 +9,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import edu.handong.csee.isel.Main;
+
+import edu.handong.csee.isel.GitFunctions;
+
 import edu.handong.csee.isel.Utils;
 import edu.handong.csee.isel.bic.BICCollector;
 import edu.handong.csee.isel.bic.szz.data.BICInfo;
@@ -19,7 +21,6 @@ import edu.handong.csee.isel.bic.szz.model.RevsWithPath;
 import edu.handong.csee.isel.bic.szz.trace.Tracer;
 import edu.handong.csee.isel.bic.szz.util.GitUtils;
 import edu.handong.csee.isel.data.CSVInfo;
-import edu.handong.csee.isel.data.Input;
 
 /**
  * The {@code AGSZZBICCollector} class do collect BIC(bug introducing commit)<br>
@@ -33,11 +34,18 @@ import edu.handong.csee.isel.data.Input;
 public class AGSZZBICCollector implements BICCollector{
 	
 	private List<String> bfcList = null;
-
 	private Git git;
 	private Repository repo;
+	private String outPath;
+	private String gitURL;
+	private String projectName;
+	private GitFunctions gitUtils;
 	
-	public AGSZZBICCollector() {
+	public AGSZZBICCollector(String outPath, String projectName, String gitURL) {
+		this.outPath = outPath;
+		this.gitURL = gitURL;
+		this.projectName = projectName;
+		gitUtils = new GitFunctions(projectName, outPath, gitURL, true);
 	}
 	
 	/**
@@ -62,7 +70,8 @@ public class AGSZZBICCollector implements BICCollector{
 	@Override
 	public List<CSVInfo> collectFrom(List<RevCommit> commitList) throws IOException {
 		try {
-			git = Git.open(Main.getGitDirectory());
+			git = Git.open(gitUtils.getGitDirectory());
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,7 +113,7 @@ public class AGSZZBICCollector implements BICCollector{
 
 		// Phase 3 : store outputs
 		// GIT_URL : input.
-		Utils.storeOutputFile(Input.outPath, Input.gitURL, BILines);
+		Utils.storeOutputFile(outPath, projectName, gitURL, BILines);
 		
 		return null;
 	}

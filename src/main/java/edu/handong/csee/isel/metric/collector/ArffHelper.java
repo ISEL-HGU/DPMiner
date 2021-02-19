@@ -433,8 +433,8 @@ public class ArffHelper {
 		}
 
 		// Should be equal
-		System.out.println("First arff data count: " + dataLineList1.size());
-		System.out.println("Second arff data count: " + dataLineList2.size());
+//		System.out.println("First arff data count: " + dataLineList1.size());
+//		System.out.println("Second arff data count: " + dataLineList2.size());
 
 		int plusAttributeNum = attributeLineList1.size();
 		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
@@ -698,9 +698,9 @@ public class ArffHelper {
 		}
 
 		// Should be equal
-		System.out.println("First arff data count: " + dataLineList1.size());
-		System.out.println("Second arff data count: " + dataLineList2.size());
-		System.out.println();
+//		System.out.println("First arff data count: " + dataLineList1.size());
+//		System.out.println("Second arff data count: " + dataLineList2.size());
+//		System.out.println();
 		int plusAttributeNum = attributeLineList1.size();
 		List<String> dataPlusLineList = plusAttributeSize(dataLineList2, plusAttributeNum);
 ////////?????????
