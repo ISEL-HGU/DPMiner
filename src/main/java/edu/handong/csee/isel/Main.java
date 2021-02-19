@@ -140,7 +140,6 @@ public class Main {
 		File BIC = new File(BICpath);
 		if (!BIC.isFile()) {
 			System.out.println("There is no BIC file");
-			System.exit(1);
 		}
 		 List<String> bicList = Utils.readBICCsvFile(BICpath);
 		

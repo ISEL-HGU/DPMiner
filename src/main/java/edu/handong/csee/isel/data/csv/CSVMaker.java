@@ -54,7 +54,6 @@ public class CSVMaker {
 
 		if (csvInfo.size() < 1) {
 			System.err.println("WARNNING: There is no BFC");
-			System.exit(1);
 		}
 
 		String[] headers = csvInfo.get(0).getHeaders();

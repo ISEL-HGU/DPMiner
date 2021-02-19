@@ -47,7 +47,6 @@ public class RepoCommitCollector implements RepoCollectable {
 			commitRange = Integer.parseInt(this.commitCountBase.substring(4, this.commitCountBase.length()));
 		} else {
 			commitRange = Integer.parseInt(this.commitCountBase);
-			// 안하는걸로
 		}
 	}
 
@@ -126,7 +125,7 @@ public class RepoCommitCollector implements RepoCollectable {
 				yearlyCommit += total.get("total").getAsInt();
 			}
 
-			if (excess) {// less일때 true
+			if (excess) { // over일 경우 true
 				if (yearlyCommit >= commitRange)
 					finalResult.add(query + "#" + yearlyCommit);
 			} else {
