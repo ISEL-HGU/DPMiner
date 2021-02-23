@@ -59,10 +59,14 @@ public class RepoCollector implements RepoCollectable {
 		while (!isEndOfData) { 
 
 			while (pages != 11 && !isEndOfData) { 
-
-				randomRange = Math.random();
-				randomSec = (int) (randomRange * 2000) + 100;
-				Thread.sleep(randomSec);
+				try {
+					randomRange = Math.random();
+					randomSec = (int) (randomRange * 2000) + 100;
+					Thread.sleep(randomSec);
+				}catch(InterruptedException e) {
+	                e.printStackTrace();
+	                return null;
+	            }
 
 				findRepoOpt.replace("page", String.valueOf(pages));
 

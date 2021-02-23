@@ -77,6 +77,7 @@ public class IssueLinkParser {
 				Thread.sleep(randomNumber);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				return;
 			}
 
 		}

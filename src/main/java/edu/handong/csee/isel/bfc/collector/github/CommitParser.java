@@ -94,8 +94,13 @@ public class CommitParser {
 					randomNumber = 3000 + r.nextInt(1000);
 				}
 			}
-			randomNumber = 5000 + r.nextInt(10000);
-			Thread.sleep(randomNumber);
+			try {
+				randomNumber = 5000 + r.nextInt(10000);
+				Thread.sleep(randomNumber);
+			}catch(InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
 		}
 		
 		System.out.println("Success to parsing bug commit addresses!");

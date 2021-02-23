@@ -61,7 +61,12 @@ public class RepoCommitCollector implements RepoCollectable {
 			double progress = 0, percentage = 0;
 
 			for (String query : repoResult) {
-				Thread.sleep(300);
+				try {
+					Thread.sleep(300);
+				}catch(InterruptedException e) {
+	                e.printStackTrace();
+	                return null;
+	            }
 				if (!pageLoadBlocked) {
 					percentage = progress / repoResult.size() * 100.0;
 //					System.out.println(String.format("%.1f", percentage) + "% work completed.");
@@ -71,7 +76,12 @@ public class RepoCommitCollector implements RepoCollectable {
 
 				else {
 					while (pageLoadBlocked) {
-						Thread.sleep(300);
+						try {
+							Thread.sleep(300);
+						}catch(InterruptedException e) {
+			                e.printStackTrace();
+			                return null;
+			            }
 						getOneQueryData(query);
 					}
 
