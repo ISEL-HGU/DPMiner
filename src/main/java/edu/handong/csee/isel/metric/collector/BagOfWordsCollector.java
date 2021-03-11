@@ -3,6 +3,8 @@ package edu.handong.csee.isel.metric.collector;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
@@ -73,13 +75,34 @@ public class BagOfWordsCollector {
 				
 				contentBuffer.append(commit.getFullMessage());
 				contentBuffer.append("\n");
-
+				
 				String newPath = diff.getNewPath();
 
 				if (newPath.indexOf("Test") >= 0 || !newPath.endsWith(".java"))
 					continue;
 				
 				key = Utils.getKeyName(commit.getName(), newPath);
+				
+				//add file Path
+				String sourcePath = diff.getNewPath().toString();
+				String[] temp = sourcePath.split("/");
+				
+				for(int i = temp.length-2; i > -1; i--) {
+					contentBuffer.append(temp[i]);
+					contentBuffer.append("\n");
+				}
+				
+				//add file Name
+				String fileName = temp[temp.length-1].substring(0, temp[temp.length-1].lastIndexOf(".java"));
+				temp = fileName.split("/");
+				
+				fileName = camelCaseToLowerCaseWithUnderscore(fileName);
+				temp = fileName.split("_");
+				
+				for(String word : temp) {
+					contentBuffer.append(word);
+					contentBuffer.append("\n");
+				}
 				
 //				if(key.length() > 254) {
 //					CMetricCollector.tooLongName.put(key, CMetricCollector.tooLongNameIndex);
@@ -125,6 +148,25 @@ public class BagOfWordsCollector {
 	/**
 	 * 
 	 */
+	public static String camelCaseToLowerCaseWithUnderscore(String string) {
+	    if (string.matches(".*[a-z].*")) {
+	        final Matcher matcher= Pattern.compile("(_?[A-Z][a-z]?)").matcher(string);
+	        StringBuffer stringBuffer= new StringBuffer();
+	        matcher.find(); //This is just to escape the first group (beginning of string)
+	        while (matcher.find()) {
+	            final String group= matcher.group();
+	            if (!group.startsWith("_")) {
+	                matcher.appendReplacement(stringBuffer, "_" + group);
+	            }
+	        }
+	        matcher.appendTail(stringBuffer);
+	        return stringBuffer.toString().toLowerCase();
+	    }
+	    else {
+	        return string;
+	    }
+	}
+	
 	public void makeArff() {
 
 		String bowDirectoryPath = getBOWDirectoryPath();

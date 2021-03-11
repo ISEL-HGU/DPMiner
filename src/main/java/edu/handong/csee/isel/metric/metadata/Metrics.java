@@ -24,8 +24,6 @@ public class Metrics { //Metrics
 	String commitTime;
 	double entropy;
 	int developerSubsystem;
-	String fullFilePath; 
-	String filename;
 	int numOfModifyChunk;
 	int numOfAddChunk;
 	int numOfDeleteChunk;
@@ -53,27 +51,9 @@ public class Metrics { //Metrics
 		this.commitTime = null;
 		this.entropy = 0.0;
 		this.developerSubsystem = 0;
-		this.fullFilePath = null;
-		this.filename = null;
 		this.numOfModifyChunk = 0;
 		this.numOfAddChunk = 0;
 		this.numOfDeleteChunk = 0;
-	}
-
-	public String getFullFilePath() {
-		return fullFilePath;
-	}
-
-	public void setFullFilePath(String fullFilePath) {
-		this.fullFilePath = fullFilePath;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
 	}
 
 	public int getNumOfModifyChunk() {
