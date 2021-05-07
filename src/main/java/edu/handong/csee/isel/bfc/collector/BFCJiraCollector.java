@@ -12,6 +12,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import edu.handong.csee.isel.bfc.BFCCollectable;
 import edu.handong.csee.isel.bfc.collector.jira.JiraBugIssueCrawler;
 
+/**
+ * This class is a Collector to find BUG FIX COMMITS using Jira, an issue tracker.
+ */
 public class BFCJiraCollector implements BFCCollectable {
 
 	private String url;
@@ -24,13 +27,19 @@ public class BFCJiraCollector implements BFCCollectable {
 		this.path = outPath;
 	}
 
+	/**
+	 * This is a method that collects Jira Key whose Type is Bug and Status is Closed in Jria,
+	 * and then collects the commits connected to the key.
+	 * @param commitList
+	 * @return bfcList
+	 */
+
 	@Override
 	public List<String> collectFrom(List<RevCommit> commitList) {
 		
 		Pattern pattern = Pattern.compile(key + "-\\d+", Pattern.CASE_INSENSITIVE);
 		
 		// JUDDI-1013 을 뜻한다. juddi or JUDDI
-		
 		List<String> bfcList = new ArrayList<>();
 		List<String> keywordList = new ArrayList<>();
 
@@ -52,21 +61,12 @@ public class BFCJiraCollector implements BFCCollectable {
 
 		for (RevCommit commit : commitList) {
 			String message;
-
 			message = commit.getShortMessage();
-			
 			Matcher matcher = pattern.matcher(message);
-
 			if (matcher.find()) {
 				String key = matcher.group();
-				
 				if(keywordList.contains(key)) {
-					
 					bfcList.add(commit.getName());
-					if(commit.getName().equals("53a3d5530bd337625374396199ab985e115025ed")) {
-//						System.out.println("Message: " + message);
-//						System.out.println("commit: " + commit.getName());
-					}
 				}
 			}
 		}
