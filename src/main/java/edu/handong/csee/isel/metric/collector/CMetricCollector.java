@@ -13,11 +13,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import edu.handong.csee.isel.GitFunctions;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
-/**
- * 
- * @author 
- *
- */
+
 public class CMetricCollector implements MetricCollector {
 	private Git git;
 	private Repository repo;
@@ -53,9 +49,6 @@ public class CMetricCollector implements MetricCollector {
 		this.developerHistory = developerHistory;
 	}
 
-	/**
-	 * @param commitList
-	 */
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
@@ -126,20 +119,13 @@ public class CMetricCollector implements MetricCollector {
 		return resultArff;
 	}
 
-	/**
-	 * @param bicList
-	 * @return
-	 */
 	@Override
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 
 	}
 	
-	/**
-	 * @param bicList
-	 * @return
-	 */
+
 	public void setMidDate(String midDate) {
 		this.midDate = midDate;
 	}

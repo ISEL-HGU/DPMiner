@@ -11,6 +11,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Connection;
 
+/**
+ * 지라에서 정보를 수집할 때, 필요한 정보를 파일로 반환해주거나 저장하는 서비스를 제공한다. <br>
+ * When Jira collects information, it provides a service that returns or saves necessary information as a file.
+ */
 public class FileManager {
 	private String path;
 	private String domain;
@@ -25,7 +29,12 @@ public class FileManager {
 		this.domain = domain;
 		this.projectKey = projectKey;
 	}
-	
+
+	/**
+	 *
+	 * @param response Save jira's bug issue key list as a file.
+	 * @throws IOException
+	 */
 	public void storeCSVFile(Connection.Response response) throws IOException {
 		//Set file name
 		Date date= new Date();
@@ -51,7 +60,12 @@ public class FileManager {
 		String[] elements = domain.split("\\.");
 		return (elements.length == 3) ? domain.substring(domain.indexOf('.') + 1, domain.lastIndexOf('.')) : domain; //TeamName is between . marks in domain.
 	}
-	
+
+	/**
+	 *
+	 * @return Returns the jira issue key list as a file.
+	 * @throws IOException
+	 */
 	public File collectIssueKeys() throws IOException {
 		for(String file:fileList) { //extract and store issue keys into issueKeyList 
 //			System.out.println("\nExtracting Issue Keys from " + file);

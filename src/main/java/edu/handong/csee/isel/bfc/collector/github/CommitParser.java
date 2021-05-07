@@ -18,7 +18,6 @@ import org.jsoup.select.Elements;
 
 /**
  * Parsing commit addresses and print bug commit contents to .csv file.
- * 
  * @author yangsujin
  *
  */
@@ -32,11 +31,9 @@ public class CommitParser {
 	private String line2;
 
 	/**
-	 * Parse commit addresses in bug issue addresses.
-	 * 
-	 * @param address Github repository address
-	 * @throws IOException
-	 * @throws InterruptedException 
+	 * 입력된 github repository의 issue page에서 bug fixing commit을 수집한다. (Collect bug fixing commits from the issue page of the entered github repository.)
+	 * @param address 특정 github repository url이다. (It is a specific github repository url.)
+	 * @throws Exception
 	 */
 	public void parseCommitAddress(String address) throws Exception {
 		int size = IssueLinkParser.getIssueAddress().size();
@@ -114,6 +111,10 @@ public class CommitParser {
 		
 	}
 
+	/**
+	 *
+	 * @return Returns a bug fixing commit.
+	 */
 	public HashSet<String> getCommitAddress() {
 		HashSet<String> hashset = new HashSet(this.commitAddress);
 		 

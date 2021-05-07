@@ -363,13 +363,7 @@ public class Utils {
 	}
 	// call function in collectFrom method of AGSZZBICCollecor class 
 	// added part because of ag-szz
-	/**
-	 * 
-	 * @param outPath output local path 
-	 * @param GIT_URL input github url 
-	 * @param BICLines bug introducing commit information 
-	 * @throws IOException
-	 */
+
 	public static void storeOutputFile(String outPath, String projectName, String GIT_URL, List<BICInfo> BICLines) throws IOException {
 		// Set file name
 		String[] arr = GIT_URL.split("/");

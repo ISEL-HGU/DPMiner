@@ -33,6 +33,10 @@ public class CPatchCollector implements PatchCollector {
 		this.projectName = projectName;
 	}
 
+	/**
+	 *
+	 * @param bfcList
+	 */
 	@Override
 	public void setBFC(List<String> bfcList) {
 		this.bfcList = bfcList;

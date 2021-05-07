@@ -12,24 +12,19 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Parse the issue addresses class.
- * 
- * @author yangsujin
- *
+ * 입력된 Github Repository의 특정 Label의 Issue page Link를 수집하는 서비스를 제공한다. <br>
+ * Provides a service that collects the issue page link of a specific label of the entered Github Repository.
  */
 public class IssueLinkParser {
-	/**
-	 * Save parsing Github issues addresses.
-	 */
 	public static ArrayList<String> issueAddress = new ArrayList<String>();
 
+
 	/**
-	 * Parse the issue addresses of a specific label in Github repository.
-	 * 
-	 * @param address Github repository address
-	 * @param label   Github repository issues label names
-	 * @author yangsujin
-	 *
+	 * 입력된 Github Repository의 Label이 입력된 label이고, 상태가 Closed인 issue link를 가져온다.<br>
+	 * The input label of the Github Repository is the input label, and the issue link with a status of Closed is brought.
+	 * @param address the Github Repository URL.
+	 * @param label an issue label managed by Github.
+	 * @throws IOException
 	 */
 	public void parseIssueAddress(String address, String label) throws IOException {
 
@@ -84,9 +79,8 @@ public class IssueLinkParser {
 	}
 
 	/**
-	 * Using issueAddress in another class.
-	 * 
-	 * 
+	 *
+	 * @return Returns the Issue Link url list.
 	 */
 	public static ArrayList<String> getIssueAddress() {
 		return issueAddress;

@@ -6,6 +6,10 @@ import java.io.IOException;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 
+/**
+ * 지라에서 버그 이슈를 크롤링 결과를 제공한다. <br>
+ * Provides results of crawling bug issues in Jira.
+ */
 public class JiraBugIssueCrawler {
 	private String domain;
 	private String projectKey;
@@ -30,6 +34,11 @@ public class JiraBugIssueCrawler {
 		this.path = path;
 	}
 
+	/**
+	 * @return Returns a list of issue keys whose status is bug in Jira as a csv file.
+	 * @throws IOException
+	 * @throws InvalidProjectKeyException
+	 */
 	public File getJiraBugs() throws IOException, InvalidProjectKeyException {
 		Period period = new Period(INITIAL_START, INITIAL_END);
 		JQLManager jqlManager = new JQLManager(this.projectKey);

@@ -20,11 +20,6 @@ import com.github.gumtreediff.tree.ITree;
 
 import edu.handong.csee.isel.Utils;
 
-/**
- * 
- * @author 
- *
- */
 public class CharacteristicVectorCollector {
 	private Git git;
 	private Repository repo;
@@ -37,9 +32,6 @@ public class CharacteristicVectorCollector {
 
 	private File arff = null;
 
-	/**
-	 * 
-	 */
 	public void collect() {
 
 		File cleanDirectory = getCleanDirectory();
@@ -146,9 +138,7 @@ public class CharacteristicVectorCollector {
 
 	}
 
-	/**
-	 * 
-	 */
+
 	public void makeArff() {
 
 		String characteristicDirectoryPath = getCVectorirectoryPath();
@@ -174,13 +164,6 @@ public class CharacteristicVectorCollector {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param prevFileSource
-	 * @param fileSource
-	 * @return
-	 * @throws IOException
-	 */
 	public List<Action> getCharacteristicVector(String prevFileSource, String fileSource) throws IOException {
 
 		Run.initGenerators();
@@ -198,90 +181,51 @@ public class CharacteristicVectorCollector {
 		return actions;
 	}
 
-	/**
-	 * 
-	 * @param commitList
-	 */
 	public void setCommitList(List<RevCommit> commitList) {
 		this.commitList = commitList;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public File getArff() {
 		return arff;
 	}
 
-	/**
-	 * 
-	 * @param git
-	 */
 	public void setGit(Git git) {
 		this.git = git;
 	}
 
-	/**
-	 * 
-	 * @param repo
-	 */
 	public void setRepository(Repository repo) {
 		this.repo = repo;
 	}
 
-	/**
-	 * 
-	 * @param bicList
-	 */
 	public void setBIC(List<String> bicList) {
 		this.bicList = bicList;
 	}
 
-	/**
-	 * 
-	 * @param projectName
-	 */
+
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
 
-	/**
-	 * 
-	 * @param referencePath
-	 */
 	public void setReferencePath(String referencePath) {
 		this.referencePath = referencePath;
 	}
 	
-	/**
-	 * 
-	 * @param startDate
-	 */
+
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	/**
-	 * 
-	 * @param endDate
-	 */
+
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
+
 	public String getCVectorirectoryPath() {
 		return referencePath + File.separator + projectName + "-characteristic_vector";
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
+
 	public File getBuggyDirectory() {
 
 		String directoryPath = getCVectorirectoryPath();
@@ -289,10 +233,7 @@ public class CharacteristicVectorCollector {
 		return new File(path);
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
+
 	public File getCleanDirectory() {
 		String directoryPath = getCVectorirectoryPath();
 		String path = directoryPath + File.separator + "clean";
