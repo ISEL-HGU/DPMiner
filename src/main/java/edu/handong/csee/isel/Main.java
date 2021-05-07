@@ -189,7 +189,7 @@ public class Main {
 
 	
 
-	public static boolean isValidRepository() {
+	private static boolean isValidRepository() {
 		File directory = getGitDirectory();
 		try {
 			Git git = Git.open(directory);  //여기가 쓰이는데 왜안쓰인다고 뜨는지 모르겠다.
@@ -199,7 +199,7 @@ public class Main {
 		}
 	}
 
-	public static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
+	private static List<RevCommit> getCommitListFrom(File gitDir) throws IOException, NoHeadException, GitAPIException {
 		Git git = Git.open(gitDir);
 		Iterable<RevCommit> walk;
 		if(Input.taskType == Input.TaskType.BIC && Input.szzMode == Input.SZZMode.AGSZZ) {
@@ -212,7 +212,7 @@ public class Main {
 		return commitList;
 	}
 
-	public static String getReferencePath() {
+	private static String getReferencePath() {
 		return Input.outPath + File.separator + "reference";
 	}
 
@@ -223,7 +223,7 @@ public class Main {
 		return clonedDirectory;
 	}
 
-	public static File GitClone() throws InvalidRemoteException, TransportException, GitAPIException {
+	private static File GitClone() throws InvalidRemoteException, TransportException, GitAPIException {
 		String remoteURI = Input.gitRemoteURI;
 		String projectName = Input.projectName;
 		File clonedDirectory = getGitDirectory();
@@ -235,7 +235,7 @@ public class Main {
 		return git.getRepository().getDirectory();
 	}
 
-	public static boolean isCloned() {
+	private static boolean isCloned() {
 		File clonedDirectory = getGitDirectory();
 		return clonedDirectory.exists();
 	}
