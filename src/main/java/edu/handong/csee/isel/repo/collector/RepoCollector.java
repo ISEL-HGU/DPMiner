@@ -86,7 +86,7 @@ public class RepoCollector implements RepoCollectable {
 
 			}
 
-			changeRepoUpdate(findRepoOpt, lastDate); 
+			changeRepoUpdate(findRepoOpt, lastDate);
 			pages = 1;
 		}
 		long end = System.currentTimeMillis();
@@ -99,9 +99,9 @@ public class RepoCollector implements RepoCollectable {
 		String today = sd.format(time);
 		String base_github = "https://github.com/";
 		
-		File resultFile = new File(Input.outPath);
+		File resultFile = new File(outPath);
 		resultFile.mkdirs();
-		String path = Input.outPath + File.separator + today + "_repository_list.csv";
+		String path = outPath + File.separator + today + "_repository_list.csv";
 		
 		BufferedWriter bw = Files.newBufferedWriter(Paths.get(path));
 
