@@ -55,6 +55,7 @@ public class RepoCollector implements RepoCollectable {
 		double randomRange;
 		int randomSec;
 		int pages = 1;
+		long start = System.currentTimeMillis();
 
 		while (!isEndOfData) { 
 
@@ -63,6 +64,7 @@ public class RepoCollector implements RepoCollectable {
 					randomRange = Math.random();
 					randomSec = (int) (randomRange * 2000) + 100;
 					Thread.sleep(randomSec);
+					System.out.println(randomSec);
 				}catch(InterruptedException e) {
 	                e.printStackTrace();
 	                return null;
@@ -70,7 +72,11 @@ public class RepoCollector implements RepoCollectable {
 
 				findRepoOpt.replace("page", String.valueOf(pages));
 
+				long start2 = System.currentTimeMillis();
 				getOneQueryData(""); // 함수호출
+				long end2 = System.currentTimeMillis();
+
+				System.out.println( "하나의 쿼리 실행 시간 : " + ( end2 - start2 )/1000.0 );
 
 //				System.out.println("current page : " + pages);
 //				System.out.println(findRepoOpt.get("q"));
@@ -83,6 +89,11 @@ public class RepoCollector implements RepoCollectable {
 			changeRepoUpdate(findRepoOpt, lastDate); 
 			pages = 1;
 		}
+		long end = System.currentTimeMillis();
+
+		System.out.println( "실행 시간 : " + ( end - start )/1000.0 );
+
+
 		SimpleDateFormat sd = new SimpleDateFormat( "MM-dd" );
 		Date time = new Date();
 		String today = sd.format(time);

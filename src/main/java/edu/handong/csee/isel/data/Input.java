@@ -54,6 +54,8 @@ public class Input {
 	public static String languageType;
 	
 	public static String forkNum;
+
+	public static String starNum;
 	
 	
 	

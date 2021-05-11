@@ -29,6 +29,9 @@ public class FindRepoCommand implements Runnable {
     
     @Option(names = "-f", description = "--fork counts <num..num> \nSet the count of forks to range of repositories.") 
     private String forkNum;
+
+    @Option(names = "-s", description = "--star counts <num..num> \nSet the count of stars to range of repositories.")
+    private String starNum;
     
     @Option(names = "-d", description = "--recent push date <yyyy-MM-dd..yyyy-MM-dd> \nSet the date when the author pushed lately") 
     private String recentDate;
@@ -63,6 +66,11 @@ public class FindRepoCommand implements Runnable {
         if(forkNum != null) {
         	repo_opt += " forks:" + forkNum;
         	Input.forkNum = forkNum;
+        }
+
+        if(starNum != null) {
+            repo_opt += " star:" + starNum;
+            Input.starNum = starNum;
         }
         
         if(createDate != null) {
