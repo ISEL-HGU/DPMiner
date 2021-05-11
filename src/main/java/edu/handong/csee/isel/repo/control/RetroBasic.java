@@ -18,7 +18,7 @@ public class RetroBasic {
 	
 	public Retrofit createObject(String token) {
 		
-		if (!token.isBlank()) {
+		if (!token.isEmpty()) {
 			OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
 				@Override
 				public Response intercept(Chain chain) throws IOException {
