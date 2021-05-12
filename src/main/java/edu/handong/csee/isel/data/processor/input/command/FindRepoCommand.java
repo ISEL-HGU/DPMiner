@@ -69,7 +69,7 @@ public class FindRepoCommand implements Runnable {
         }
 
         if(starNum != null) {
-            repo_opt += " star:" + starNum;
+            repo_opt += " stars:" + starNum;
             Input.starNum = starNum;
         }
         
