@@ -13,6 +13,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import edu.handong.csee.isel.GitFunctions;
 import edu.handong.csee.isel.metric.MetricCollector;
 import edu.handong.csee.isel.metric.metadata.CommitCollector;
+import weka.core.WekaPackageManager;
 
 public class CMetricCollector implements MetricCollector {
 	private Git git;
@@ -40,7 +41,7 @@ public class CMetricCollector implements MetricCollector {
 		git = Git.open(gitUtils.getGitDirectory());
 		repo = git.getRepository();
 		referencePath = outPath + File.separator + projectName +"-reference";
-		
+		///data/dpminer/platform/output/juddi/juddi-reference
 		if(startDate == null) this.startDate = "0000-00-00 00:00:00";
 		else this.startDate = startDate;
 		if(endDate == null) this.endDate = "9999-99-99 99:99:99";
@@ -52,7 +53,7 @@ public class CMetricCollector implements MetricCollector {
 	@Override
 	public File collectFrom(List<RevCommit> commitList) {
 		File bowArff, cVectorArff;
-		
+		System.out.println("BagOfWordsCollector");
 		// 1. collect BOW arff
 		BagOfWordsCollector bowCollector = new BagOfWordsCollector();
 		bowCollector.setGit(git);
@@ -69,6 +70,7 @@ public class CMetricCollector implements MetricCollector {
 //		bowCollector.makeArff(); //TODO: will be removed
 		bowArff = bowCollector.getArff();
 
+		System.out.println("Characteristic");
 		// 2. collect Characteristic vector arff
 		CharacteristicVectorCollector cVectorCollector = new CharacteristicVectorCollector();
 		cVectorCollector.setGit(git);
@@ -83,34 +85,47 @@ public class CMetricCollector implements MetricCollector {
 //		cVectorCollector.makeArff();
 		cVectorArff = cVectorCollector.getArff();
 
+		System.out.println("merged1");
 		// 3. make merged arff between BOW and C-Vector
 		File mergedArff = null;
 
 		ArffHelper arffHelper = new ArffHelper();
 		arffHelper.setReferencePath(referencePath);
+		System.out.println("referencePath " + referencePath);
 		arffHelper.setProjectName(projectName);
+		System.out.println("projectName " + projectName);
 		arffHelper.setOutPath(outPath);
+		System.out.println("outPath " + outPath);
 		mergedArff = arffHelper.getMergedBOWArffBetween(bowCollector, cVectorCollector); //arrf 파일이 하나나온다  <<bow-vector arff>>
 
+		System.out.println("merged2");
 		// TODO: 4. Meta data, SJ help me
 		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
+
 		if(developerHistory) commitCollector.setMidDate(midDate);
+		System.out.println("[check here 2]");
 		commitCollector.countCommitMetrics();
+		System.out.println("[check here 3]");
 		commitCollector.saveResultToCsvFile();
+		System.out.println("[check here 4]");
 		String arffOutputPath = commitCollector.CSV2ARFF();
-		
+		System.out.println("arffOutputPath " + arffOutputPath);
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
+		System.out.println("[check here 6]");
 																					// metadata arff //reference 안에 있는 arff...!
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
+//		System.out.println("keyOrder " + keyOrder);
 
 		// 5. Merge 1,2,3, and return csv
 
 		File resultArff = null;
 
 		try {
-			if(!developerHistory)resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
-			else resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
+			if(!developerHistory){resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
+			System.out.println("[check here 8]");}
+			else {resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
+			System.out.println("[check here 9]");}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

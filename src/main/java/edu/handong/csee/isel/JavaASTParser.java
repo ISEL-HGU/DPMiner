@@ -39,7 +39,6 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Repository;
 
-
 public class JavaASTParser {
 	public CompilationUnit cUnit;
 	String source;

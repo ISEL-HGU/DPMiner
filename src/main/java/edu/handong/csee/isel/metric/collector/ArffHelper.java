@@ -13,11 +13,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 
 import weka.core.Instances;
+import weka.core.WekaPackageManager;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.TextDirectoryLoader;
 import weka.core.stemmers.SnowballStemmer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
+
+import weka.core.Utils;
 
 public class ArffHelper {
 	private String projectName;
@@ -54,6 +57,7 @@ public class ArffHelper {
 	public File getArffFromDirectory(String bowDirectoryPath) {
 		File arff = null;
 
+		System.out.println("[            getArffFromDirectory         ]\n");
 		File bowDirectory = new File(bowDirectoryPath);
 		TextDirectoryLoader directoryLoader = new TextDirectoryLoader();
 
@@ -61,16 +65,18 @@ public class ArffHelper {
 			directoryLoader.setDirectory(bowDirectory);
 
 			Instances dataRaw = directoryLoader.getDataSet();
-			SnowballStemmer stemmer = new SnowballStemmer();
+//			SnowballStemmer stemmer = new SnowballStemmer();
 			StringToWordVector filter = new StringToWordVector();
-			String option = "-R 1,2 -W 70000 -prune-rate -1.0 -N 0 -stemmer weka.core.stemmers.SnowballStemmer -stopwords-handler weka.core.stopwords.Null -M 1 -tokenizer weka.core.tokenizers.WordTokenizer";
-			filter.setOptions(option.split(" "));
-			filter.setStemmer(stemmer);
+//			String option = "-R 1,2 -W 70000 -prune-rate -1.0 -N 0 -stemmer weka.core.stemmers.SnowballStemmer -stopwords-handler weka.core.stopwords.Null -M 1 -tokenizer weka.core.tokenizers.WordTokenizer";
+//			filter.setOptions(option.split(" "));
+//			filter.setStemmer(stemmer);
+			filter.setWordsToKeep(70000);
 			filter.setInputFormat(dataRaw);
 
 			Instances dataFiltered = Filter.useFilter(dataRaw, filter);
 
 			arff = new File(bowDirectoryPath + File.separator + projectName + ".arff");
+			System.out.println(bowDirectoryPath + File.separator + projectName + ".arff");
 			ArffSaver arffSaver = new ArffSaver();
 			arffSaver.setInstances(dataFiltered);
 			arffSaver.setFile(arff);
@@ -167,8 +173,10 @@ public class ArffHelper {
 				e.printStackTrace();
 			}
 			String mergedContent = bow + "\n" + cVector;
+//			System.out.println("getMergedBOWArffBetween- mergedContent" + mergedContent);
 
 			String mergedPath = getBuggyDirectory() + File.separator + fileName;
+//			System.out.println("getMergedBOWArffBetween- mergedPath" + mergedPath);
 			File mergedFile = new File(mergedPath);
 
 			mergedFile.getParentFile().mkdirs();
@@ -179,9 +187,12 @@ public class ArffHelper {
 			}
 		}
 
+		System.out.println("[merged1 - getMergedBOWArffBetween - 106 Line mergedPath :" + getMergedDirectoryPath() + "                   ]");
 		// 2. get merged arff
 		File arff = this.getArffFromDirectory(getMergedDirectoryPath());
 
+		if(arff == null)
+			System.out.println("      it is null!!!!!!!!");
 		return arff;
 	}
 

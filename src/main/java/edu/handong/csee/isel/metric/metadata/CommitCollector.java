@@ -61,15 +61,20 @@ public class CommitCollector {
 
 	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
-
+		System.out.println("CommitCollector-outputPath " + outputPath);
 		this.startDate = startDate;
 		this.endDate = endDate;
+		System.out.println("CommitCollector-startDate " + startDate);
+		System.out.println("CommitCollector-endDate " + endDate);
 		
 		this.bugCommit = buggyCommit;//버그 커밋해쉬 저장
 		this.git = git;
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
 		this.developerHistory = developerHistory;
+
+		System.out.println("CommitCollector-csvOutputPath" + csvOutputPath);
+		System.out.println("CommitCollector-arffOutputPath" + arffOutputPath);
 	}
 
 	public void countCommitMetrics() {
