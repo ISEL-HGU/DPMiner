@@ -61,7 +61,7 @@ public class Main {
 
 		switch (Input.taskType) {
 		case FINDREPO:
-			RepoCollector searchRepo = new RepoCollector(Input.authToken, Input.findRepoOpt, Input.outPath); //git token 받아오기 아아 얘가 리파지토리 찾아오는 
+			RepoCollector searchRepo = new RepoCollector(Input.authToken, Input.findRepoOpt, Input.outPath);
 //			searchRepo.setOption(Input.languageType, Input.forkNum, Input.createDate, Input.recentDate);
 			repoResult = searchRepo.collectFrom();
 			
