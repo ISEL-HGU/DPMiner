@@ -126,21 +126,25 @@ public class MetricCollector { //metric Collector
 		String[] pathToken = sourcePath.split("/");
 		String subsystem = pathToken[0];
 		String file = pathToken[pathToken.length-1];
-		String directorie = null;
+		String directory = null;
 
 		Pattern pattern = Pattern.compile("(.+)/.+");
 		Matcher matcher = pattern.matcher(sourcePath);
 		while(matcher.find()) {
-			directorie = matcher.group(1);
+			directory = matcher.group(1);
 		}
 		
 		if(!subsystem.startsWith("src")) {
 			commitUnitInfo.setSubsystems(subsystem);
 			developerExperience.get(authorId).setNumOfSubsystem(subsystem);
 		}
+		
+		if(directory == null) {
+			directory = "null";
+		}
 
 		commitUnitInfo.setKey(key);
-		commitUnitInfo.setDirectories(directorie);
+		commitUnitInfo.setDirectories(directory);
 		commitUnitInfo.setFiles(file);
 	}
 	
