@@ -112,6 +112,32 @@ public class Utils {
 		System.out.println("Size of BIC : "+resultList.size());
 		return resultList;
 	}
+	
+	public static List<String> readBFCCsvFile(String BICcsvPath) {
+		TreeSet<String> buggyFixCommit = new TreeSet<String>();
+		Reader reader;
+
+		try {
+			reader = Files.newBufferedReader(Paths.get(BICcsvPath));
+			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+
+			for (CSVRecord csvRecord : csvParser) {
+				if(csvRecord.get(0) != null || csvRecord.get(1) != null) {
+					String hash = csvRecord.get(3);
+					String source = csvRecord.get(2);
+					String key = hash + "-" + source;
+					buggyFixCommit.add(key);
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		List<String> resultList = new ArrayList<String>(buggyFixCommit);
+		System.out.println("Size of BFC : "+resultList.size());
+		return resultList;
+	}
 
 	public static int calDate(String first, String second) throws ParseException {
 		SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

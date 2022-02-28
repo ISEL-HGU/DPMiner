@@ -27,6 +27,7 @@ public class CMetricCollector implements MetricCollector {
 	private static int tooLongNameIndex = 0;
 	
 	List<String> bicList;
+	List<String> bfcList;
 	private String outPath;
 	private String projectName;
 	private String gitURL;
@@ -100,18 +101,15 @@ public class CMetricCollector implements MetricCollector {
 
 		System.out.println("merged2");
 		// TODO: 4. Meta data, SJ help me
-		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, projectName, startDate, endDate, developerHistory); //StartDate, strEndDate, test
+		CommitCollector commitCollector = new CommitCollector(git, referencePath, bicList, projectName, startDate, endDate, developerHistory, bfcList); //StartDate, strEndDate, test
 
 		if(developerHistory) commitCollector.setMidDate(midDate);
-		System.out.println("[check here 2]");
+		
 		commitCollector.countCommitMetrics();
-		System.out.println("[check here 3]");
 		commitCollector.saveResultToCsvFile();
-		System.out.println("[check here 4]");
 		String arffOutputPath = commitCollector.CSV2ARFF();
 		System.out.println("arffOutputPath " + arffOutputPath);
 		File metaArff = new File(arffOutputPath); // TODO: Here your logic: make
-		System.out.println("[check here 6]");
 																					// metadata arff //reference 안에 있는 arff...!
 
 		ArrayList<String> keyOrder = arffHelper.getKeyOrder();
@@ -122,10 +120,12 @@ public class CMetricCollector implements MetricCollector {
 		File resultArff = null;
 
 		try {
-			if(!developerHistory){resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
-			System.out.println("[check here 8]");}
-			else {resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
-			System.out.println("[check here 9]");}
+			if(!developerHistory){
+				resultArff = arffHelper.makeMergedArff(mergedArff, metaArff, keyOrder);// 여기서 섞는 최종 key-data arff
+			}
+			else {
+				resultArff = arffHelper.makeMergedDeveloperHistoryArff(mergedArff, metaArff, keyOrder, midDate);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -140,6 +140,11 @@ public class CMetricCollector implements MetricCollector {
 
 	}
 	
+	@Override
+	public void setBFC(List<String> bfcList) {
+		this.bfcList = bfcList;
+
+	}
 
 	public void setMidDate(String midDate) {
 		this.midDate = midDate;

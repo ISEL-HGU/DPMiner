@@ -27,6 +27,7 @@ public class Metrics { //Metrics
 	int numOfModifyChunk;
 	int numOfAddChunk;
 	int numOfDeleteChunk;
+	int fix;
 	
 
 	public Metrics() {
@@ -54,6 +55,7 @@ public class Metrics { //Metrics
 		this.numOfModifyChunk = 0;
 		this.numOfAddChunk = 0;
 		this.numOfDeleteChunk = 0;
+		this.fix = 0;
 	}
 
 	public int getNumOfModifyChunk() {
@@ -251,6 +253,12 @@ public class Metrics { //Metrics
 		this.developerSubsystem = developerSubsystem;
 	}
 	
-	
+	public int getFix() {
+		return this.fix;
+	}
+
+	public void setFix(int fix) {
+		this.fix = fix;
+	}
 	
 }

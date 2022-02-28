@@ -109,9 +109,11 @@ public class Main {
 		case METRIC:
 			//BIC 파일 읽기
 			commitList = getAllCommitList();
-			bicList= readBICcsv(Input.BICpath);			
+			bicList= readBICcsv(Input.BICpath);	
+			bfcList= readBFCcsv(Input.BICpath);
 			metricCollector = new CMetricCollector(false, Input.outPath, Input.projectName, Input.gitURL, Input.startDate, Input.endDate);
 			metricCollector.setBIC(bicList);
+			metricCollector.setBFC(bfcList);
 			File arff = metricCollector.collectFrom(commitList);
 			System.out.println("Metric was saved in " + arff.getAbsolutePath());
 
@@ -144,6 +146,17 @@ public class Main {
 		 List<String> bicList = Utils.readBICCsvFile(BICpath);
 		
 		return bicList;
+		
+	}
+	
+	public static List<String> readBFCcsv(String BICpath){
+		File BIC = new File(BICpath);
+		if (!BIC.isFile()) {
+			System.out.println("There is no BIC file");
+		}
+		 List<String> bfcList = Utils.readBFCCsvFile(BICpath);
+		
+		return bfcList;
 		
 	}
 	

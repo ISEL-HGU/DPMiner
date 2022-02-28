@@ -52,6 +52,7 @@ public class CommitCollector {
 	private boolean developerHistory;
 	private ArrayList<RevCommit> commits = new ArrayList<RevCommit>();
 	private List<String> bugCommit = null;
+	private List<String> bugFixCommit = null;
 
 	private HashMap<String,DeveloperExperienceInfo> developerExperience = new HashMap<String,DeveloperExperienceInfo>();
 	//여기 바꿈 public
@@ -59,7 +60,7 @@ public class CommitCollector {
 	//여기 바꿈 public static
 	private HashMap<String,Metrics> metrics = new HashMap<String,Metrics>();//////이놈!!!
 
-	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory) { // String strStartDate,String strEndDate,boolean test
+	public CommitCollector(Git git, String resultDirectory, List<String> buggyCommit, String projectName, String startDate, String endDate, boolean developerHistory, List<String> buggyFixCommit) { // String strStartDate,String strEndDate,boolean test
 		this.outputPath = resultDirectory;
 		System.out.println("CommitCollector-outputPath " + outputPath);
 		this.startDate = startDate;
@@ -72,6 +73,7 @@ public class CommitCollector {
 		this.csvOutputPath = outputPath + File.separator + projectName + ".csv";
 		this.arffOutputPath = outputPath + File.separator + projectName + ".arff";
 		this.developerHistory = developerHistory;
+		this.bugFixCommit = buggyFixCommit;
 
 		System.out.println("CommitCollector-csvOutputPath" + csvOutputPath);
 		System.out.println("CommitCollector-arffOutputPath" + arffOutputPath);
@@ -122,6 +124,7 @@ public class CommitCollector {
 					String sourcePath = entry.getNewPath().toString();
 
 					boolean isBugCommit = isBuggy(commit, entry);//현재 커밋-소스가 버그인가? true-false
+					boolean isBugFixCommit = isBuggyFix(commit, entry);
 					
 					if (sourcePath.indexOf("Test") >= 0 || !sourcePath.endsWith(".java"))
 						continue;
@@ -147,6 +150,7 @@ public class CommitCollector {
 					metric.setCommitAuthor(authorId);//metaDataInfo에 author 저장 
 					metric.setIsBugCommit((isBugCommit) ? 1 : 0);//metaDataInfo에 isBugCommit을 integer로 저장 
 					metric.setCommitTime(commitTime);
+					metric.setFix((isBugFixCommit) ? 1 : 0);
 
 					if(numOfentry == 0) Utils.countDeveloperCommit(developerExperience,authorId,commitTime);// test와 .java를 포함하지 않은 커밋의 개발자 정보만 count 한다.
 					numOfentry++;
@@ -205,16 +209,16 @@ public class CommitCollector {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
 				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_Label.csv"));
 				
-				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-numOfModifyChunk","meta_data-numOfAddChunk","meta_data-numOfDeleteChunk","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-SEXP","meta_data-LT","meta_data-commitTime","Key","meta_data-Key"));
-				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","numOfModifyChunk","numOfAddChunk","numOfDeleteChunk","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","meta_data-commitTime","Key"));
+				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-numOfModifyChunk","meta_data-numOfAddChunk","meta_data-numOfDeleteChunk","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-SEXP","meta_data-LT","meta_data-FIX","meta_data-commitTime","Key","meta_data-Key"));
+				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","numOfModifyChunk","numOfAddChunk","numOfDeleteChunk","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","FIX","meta_data-commitTime","Key"));
 			}else {
 				writer = new BufferedWriter(new FileWriter(csvOutputPath));
 				developerTrainWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_train_developer.csv"));
 				developerTestWriter = new BufferedWriter(new FileWriter(csvOutputPath.substring(0, csvOutputPath.lastIndexOf(".csv"))+"_test_developer.csv"));
 
-				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-SEXP","meta_data-LT","meta_data-commitTime","meta_data-Key"));
-				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","Key"));
-				developerCsvPrinterTest = new CSVPrinter(developerTestWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","commitTime","Key"));
+				csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("meta_data-Modify Lines","meta_data-Add Lines","meta_data-Delete Lines","meta_data-Distribution modified Lines","meta_data-numOfBIC","meta_data-AuthorID","meta_data-fileAge","meta_data-SumOfSourceRevision","meta_data-SumOfDeveloper","meta_data-CommitHour","meta_data-CommitDate","meta_data-AGE","meta_data-numOfSubsystems","meta_data-numOfDirectories","meta_data-numOfFiles","meta_data-NUC","meta_data-developerExperience","meta_data-REXP","meta_data-SEXP","meta_data-LT","meta_data_FIX","meta_data-commitTime","meta_data-Key"));
+				developerCsvPrinterTrain = new CSVPrinter(developerTrainWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","FIX","Key"));
+				developerCsvPrinterTest = new CSVPrinter(developerTestWriter, CSVFormat.DEFAULT.withHeader("isBuggy","Modify Lines","Add Lines","Delete Lines","Distribution modified Lines","numOfBIC","AuthorID","fileAge","SumOfSourceRevision","SumOfDeveloper","CommitHour","CommitDate","AGE","numOfSubsystems","numOfDirectories","numOfFiles","NUC","developerExperience","REXP","SEXP","LT","FIX","commitTime","Key"));
 			}
 			
 			//no is bug commit
@@ -247,6 +251,7 @@ public class CommitCollector {
 				int numOfModifyChunk = entry.getValue().getNumOfModifyChunk();
 				int numOfAddChunk = entry.getValue().getNumOfAddChunk();
 				int numOfDeleteChunk = entry.getValue().getNumOfDeleteChunk();
+				int isBugFixCommit = entry.getValue().getFix();
 				
 				if(numOfModifyLines == 0) continue; //if the metric modify only comments, move on to the next
 				
@@ -272,14 +277,14 @@ public class CommitCollector {
 				}
 				
 				if(developerHistory == false) {
-					csvPrinter.printRecord(MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,commitTime,key,key);
-					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,commitTime,key);
+					csvPrinter.printRecord(MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key,key);
+					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key);
 				}else {
-					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,commitTime,key);
+					csvPrinter.printRecord(MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key);
 					if(midDate.compareTo(commitTime) > 0) {//commit time이 mid date보다 작으면 train, 크면 test
-						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,key);
+						developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,key);
 					}else {
-						developerCsvPrinterTest.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,commitTime,key);
+						developerCsvPrinterTest.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key);
 
 					}
 				}
@@ -374,11 +379,24 @@ public class CommitCollector {
 
 		for (String bic : bugCommit) {
 			if (commit.getShortMessage().contains(bic)) {
+				
 				return true;
 			}
 			
 			String key = commit.getId().getName() + "-" + diff.getNewPath().toString();
 			if(key.contains(bic)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	
+	private boolean isBuggyFix(RevCommit commit, DiffEntry diff) {
+
+		for (String bfc : bugFixCommit) {
+			String key = commit.getId().getName() + "-" + diff.getNewPath().toString();
+			if(key.contains(bfc)) {
 				return true;
 			}
 		}
