@@ -92,7 +92,7 @@ public class CharacteristicVectorCollector {
 					case "UPD":
 					case "MOV":
 
-						String changedNode = element.getName() + String.valueOf(element.getNode().getType());//node
+						String changedNode = "characteristic_vector_metric_ISEL"+ element.getName() + String.valueOf(element.getNode().getType());
 
 						contentBuffer.append(changedNode);
 						contentBuffer.append(" ");
