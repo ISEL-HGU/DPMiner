@@ -122,7 +122,7 @@ public class Utils {
 			CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
 			for (CSVRecord csvRecord : csvParser) {
-				if(csvRecord.get(0) != null || csvRecord.get(1) != null) {
+				if(csvRecord.get(3) != null || csvRecord.get(2) != null) {
 					String hash = csvRecord.get(3);
 					String source = csvRecord.get(2);
 					String key = hash + "-" + source;

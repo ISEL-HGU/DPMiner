@@ -276,6 +276,11 @@ public class CommitCollector {
 					MoL = numOfModifyLines;
 				}
 				
+				//decrease the current buggy state
+				if(numOfBIC > 0) {
+					numOfBIC--;
+				}
+				
 				if(developerHistory == false) {
 					csvPrinter.printRecord(MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key,key);
 					developerCsvPrinterTrain.printRecord(isBugCommit == 1? "buggy" : "clean",MoL,LA,LD,numOfModifyChunk,numOfAddChunk,numOfDeleteChunk,entropy,numOfBIC,commitAuthor,fileAge,sumOfSourceRevision,sumOfDeveloper,commitHour,commitDay,timeBetweenLastAndCurrentCommitDate,numOfSubsystems,numOfDirectories,numOfFiles,NUC,developerExperience,recentDeveloperExperience,developerSubsystem,linesOfCodeBeforeTheChange,isBugFixCommit,commitTime,key);
@@ -378,11 +383,6 @@ public class CommitCollector {
 	private boolean isBuggy(RevCommit commit, DiffEntry diff) {
 
 		for (String bic : bugCommit) {
-			if (commit.getShortMessage().contains(bic)) {
-				
-				return true;
-			}
-			
 			String key = commit.getId().getName() + "-" + diff.getNewPath().toString();
 			if(key.contains(bic)) {
 				return true;
