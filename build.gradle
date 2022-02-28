@@ -108,11 +108,6 @@ dependencies {
     // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable
     compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.8.5'
 
-    // https://mvnrepository.com/artifact/org.tartarus/snowball
-//    compile group: 'org.tartarus', name: 'snowball', version: '1.0'
-
-	compile files('lib/snowball-20051019.jar')
-
 
 }
 /*

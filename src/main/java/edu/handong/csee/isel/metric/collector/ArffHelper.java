@@ -13,14 +13,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 
 import weka.core.Instances;
-import weka.core.WekaPackageManager;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.TextDirectoryLoader;
-import weka.core.stemmers.SnowballStemmer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
-
-import weka.core.Utils;
 
 public class ArffHelper {
 	private String projectName;
