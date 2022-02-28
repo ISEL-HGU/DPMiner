@@ -70,7 +70,7 @@ public class ArffHelper {
 //			String option = "-R 1,2 -W 70000 -prune-rate -1.0 -N 0 -stemmer weka.core.stemmers.SnowballStemmer -stopwords-handler weka.core.stopwords.Null -M 1 -tokenizer weka.core.tokenizers.WordTokenizer";
 //			filter.setOptions(option.split(" "));
 //			filter.setStemmer(stemmer);
-			filter.setWordsToKeep(70000);
+			filter.setWordsToKeep(100000);
 			filter.setInputFormat(dataRaw);
 
 			Instances dataFiltered = Filter.useFilter(dataRaw, filter);
