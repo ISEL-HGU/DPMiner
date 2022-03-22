@@ -130,8 +130,7 @@ public class CommitCollector {
 						continue;
 
 					//key 생성 & 해쉬맵 생성 
-					String keySourcePath = sourcePath.replaceAll("/", "-");
-					String key = commitHash+"-"+keySourcePath;
+					String key = edu.handong.csee.isel.Utils.getKeyName(commitHash, sourcePath);
 //					if(key.length() > 254) {
 //						if(CMetricCollector.tooLongName.containsKey(key)) {
 //							key = CMetricCollector.tooLongName.get(key).toString();

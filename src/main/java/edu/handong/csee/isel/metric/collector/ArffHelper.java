@@ -34,7 +34,7 @@ public class ArffHelper {
 	private final static String firstCommitTimePatternStr = ".+\\{'(\\d+-\\d+-\\d+\\s+\\d+:\\d+:\\d+)',.+\\}";
 	private final static Pattern firstCommitTimePattern = Pattern.compile(firstCommitTimePatternStr);
 	
-	private final static String firstCommitKeyPatternStr = "\\{([\\w|\\d|\\-]+.java)\\,(.+)\\}";
+	private final static String firstCommitKeyPatternStr = "\\{([\\w|\\d|\\:|\\-]+.java)\\,(.+)\\}";
 	private final static Pattern firstCommitKeyPattern = Pattern.compile(firstCommitKeyPatternStr);
 	
 	private final static String commitTimePatternStr = "\\{.+\\,\\d+\\s'(.+)'";

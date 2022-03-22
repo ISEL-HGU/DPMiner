@@ -328,11 +328,11 @@ public class Utils {
 
 	public static String getKeyName(String commitName, String newPath) {
 
-		if (newPath.contains("\\")) {
-			newPath = newPath.replace("\\", "-");
+		if (newPath.contains(":")) {
+			newPath = newPath.replace(":", "ISUJIN");
 		}
 		if (newPath.contains("/")) {
-			newPath = newPath.replace("/", "-");
+			newPath = newPath.replace("/", ":");
 		}
 
 		return commitName + "-" + newPath;
