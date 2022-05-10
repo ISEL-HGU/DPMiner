@@ -125,3 +125,6 @@ Temporary Items
 
 # Directories created on usage of vscode editor
 .vscode/
+
+# directories created during the prebuild.sh
+pool/
