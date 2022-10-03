@@ -9,4 +9,4 @@ cd ./DPMiner/bin
 #cd ../../../..
 
 # apply options
-./DPMiner patch -i https://github.com/apache/camel-quarkus -o /home/codemodel/leshen/DPMiner/pool/camel-quarkus/patch -ig
+./DPMiner patch -i -jk hadoop -o /home/codemodel/leshen/DPMiner/pool/camel-quarkus/patch
